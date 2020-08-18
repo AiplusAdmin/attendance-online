@@ -24,13 +24,16 @@ export default new Vuex.Store({
 		},
 		SET_CURRENT_GROUP(state,group){
 			state.currentGroup = group;
+			window.localStorage.currentGroup = JSON.stringify(group);
 		},
 		SET_GROUP_STUDENTS(state,students){
 			state.groupStudents = students;
+			window.localStorage.groupStudents = JSON.stringify(students);
 		},
 		SET_CURRENT_TEACHER(state,teacher){
 			state.offices = teacher.Offices;
 			state.currentTeacher = teacher;
+			window.localStorage.currentTeacher = JSON.stringify(teacher);
 		},
 		SET_SUBTEACHER(state,teacher){
 			state.subTeacher = teacher[0];
@@ -59,11 +62,23 @@ export default new Vuex.Store({
 		},
 		RESET_GROUP(state){
 			state.currentGroup = {};
+			window.localStorage.currentUser = JSON.stringify({});
+			window.localStorage.officeName = "";
+			window.localStorage.timeFrom = "";
+			window.localStorage.timeTo = "";
+			window.localStorage.currentGroup = JSON.stringify({});
+			window.localStorage.currentTeacher = JSON.stringify({});
 		},
 		RESET_CURRENT_USER(state){
 			state.currentUser = {};
-			window.localStorage.currentUser = JSON.stringify({});
 			state.currentTeacher = {};
+			window.localStorage.currentUser = JSON.stringify({});
+			window.localStorage.officeName = "";
+			window.localStorage.timeFrom = "";
+			window.localStorage.timeTo = "";
+			window.localStorage.currentGroup = JSON.stringify({});
+			window.localStorage.currentTeacher = JSON.stringify({});
+
 		},
 		RESET(){
 		}

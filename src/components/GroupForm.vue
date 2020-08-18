@@ -4,13 +4,13 @@
 			<v-row class="px-5">
 				<v-col class="pa-0">
 					<v-select
-						v-model="params.officeId"
+						v-model="officeName"
 						:items="offices"
 						item-text="Name"
-						item-value="Id"
 						label="Филиал"
 						color="#fbab17"
-						solo rounded outlined flat dense >
+						@input="getOfficeId"
+						solo rounded outlined flat dense cache-items>
 					</v-select>
 				</v-col>
 			</v-row>
@@ -74,9 +74,6 @@
 						dense clearable
 						label="ФИО Тренера"
 					>
-						<template>
-							
-						</template>
 					</v-autocomplete>
 				</v-col>
 			</v-row>
@@ -99,12 +96,13 @@ export default {
 		return {
 			params : {
 				teacherId : this.teacherId,
-				officeId : '',
+				officeId: '',
 				date : new Date().toISOString().substr(0, 10),
 				timeFrom : '',
 				timeTo : '',
 				change: false
 			},
+			officeName: "",
 			subTeachers:[],
 			isLoading: false,
 			search: null
@@ -113,9 +111,24 @@ export default {
 	mounted(){
 		this.$store.dispatch('GetTeacherById', this.teacherId);
 	},
+	created(){
+		if(localStorage.officeName){
+			this.officeName = localStorage.officeName;
+			this.getOfficeId();
+		}
+		if(localStorage.timeFrom){
+			this.params.timeFrom = localStorage.timeFrom;
+			this.changeTimeFrom();
+		}
+		if(localStorage.timeTo)
+			this.params.timeTo = localStorage.timeTo;
+		
+	},
 	computed : {
-		offices(){
-			return this.$store.state.offices;
+		offices(){			
+			var offices = this.$store.state.offices;
+			localStorage.offices = offices; 
+			return offices;
 		},
 		timesFrom(){
 			return this.$store.state.timesFrom;
@@ -139,6 +152,13 @@ export default {
 				alert(result.error);
 			}
 		},
+		getOfficeId(){
+			this.offices.find(office => {
+				if(office.Name===this.officeName){
+					this.params.officeId=office.Id
+				}
+			});
+		},
 		async SetSubTeacher(subTeacherId){
 			if(subTeacherId == this.teacherId){
 				alert('Вы не можете сделать замену');
@@ -156,7 +176,17 @@ export default {
 			this.isLoading = true
 			var response = await this.$store.dispatch('SearchTeacher','*'+val+'*');
 			this.subTeachers = response;
-        }
+		},
+		params:{
+			handler: function(newValue){
+				localStorage.timeFrom = newValue.timeFrom;
+				localStorage.timeTo = newValue.timeTo;
+			},
+			deep: true
+		},
+		officeName: function(newOffice){
+			localStorage.officeName = newOffice;
+		}
 	}
 }
 </script>

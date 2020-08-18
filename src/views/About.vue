@@ -1,13 +1,13 @@
 <template>
   <v-container fluid>
 		<v-row class="d-flex justify-space-around align-center">
-			<v-col cols="12" xl="2" lg="2">
+			<v-col  cols="4" xl="2" lg="2" md="2" sm="2">
 				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115"></v-img>
 			</v-col>
-			<v-col cols="12" xl="4" lg="4">
+			<v-col  cols="9"  xl="4" lg="4" md="4" sm="5"> 
 				<h3>ДОБРО ПОЖАЛОВАТЬ УЧИТЕЛЬ</h3>
 			</v-col>
-			<v-col cols="12" xl="1" lg="1">
+			<v-col  cols="3" xl="1" lg="1" md="2" sm="2" >
 				<v-btn @click="LogOut" text>Выйти</v-btn>
 			</v-col>
 		</v-row>

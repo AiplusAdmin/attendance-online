@@ -42,33 +42,33 @@
 					no-data-text = "Нет учеников"
 					hide-default-footer
 				>
-					<template #item.index="{index}">
-						<p>{{index}}</p>
+					<template v-slot:[`item.index`]="{ item }">
+						<p>{{groupStudents.indexOf(item) + 1}}</p>
 					</template>
-					<template  #item.attendence="{item}">
+					<template  v-slot:[`item.attendence`]="{ item }">
 						<v-checkbox v-model="item.attendence"></v-checkbox>
 					</template>
-					<template #item.homework="{item}">
+					<template v-slot:[`item.homework`]="{ item }">
 						<v-select  
 							v-model="item.homework" 
 							:disabled="!item.attendence"
 							:items="homeworks">
 						</v-select>
 					</template>
-					<template  #item.test="{item}">
+					<template v-slot:[`item.test`]="{ item }">
 						<v-select  
 							v-model="item.test" 
 							:disabled="!item.attendence"
 							:items="tests">
 						</v-select>
 					</template>
-					<template  #item.lesson="{item}">
+					<template  v-slot:[`item.lesson`]="{ item }">
 						<v-text-field v-model="item.lesson" :disabled="!item.attendence"></v-text-field>
 					</template>
-					<template  #item.point="{item}">
+					<template v-slot:[`item.point`]="{ item }">
 						<v-text-field v-model="item.point" :disabled="!item.attendence"></v-text-field>
 					</template>
-					<template #item.comment="{item}">
+					<template v-slot:[`item.comment`]="{ item }">
 						<v-text-field v-model="item.comment" :disabled="!item.attendence"></v-text-field>
 					</template>
 				</v-data-table>
@@ -96,7 +96,8 @@
 				{
 					text : '№',
 					value : 'index',
-					class : "orange"
+					class : "orange",
+					sortable: false
 				},
 				{
 					text : 'ФИО ребенка',
@@ -104,34 +105,41 @@
 					class : "orange"
 				},
 				{
-					text : 'Пропуск',
+					text : 'Присутствовал',
 					value : 'attendence',
 					class : "orange"
 				},
 				{ 
 					text : 'Д/з',
 					value: 'homework',
-					class : "orange"
+					class : "orange",
+					sortable: false
+
 				},
 				{ 
 					text : 'Срез',
 					value: 'test',
-					class : "orange"
+					class : "orange",
+					sortable: false
 				},
 				{
 					text : 'Активность',
 					value : 'lesson',
-					class : "orange"
+					class : "orange",
+					sortable: false
+
 				},
 				{
 					text : 'Баллы',
 					value : 'point',
-					class : "orange"
+					class : "orange",
+					sortable: false
 				},
 				{
 					text : 'Комментарии',
 					value : 'comment',
-					class : "orange"
+					class : "orange",
+					sortable: false
 				}
 			],
 			isLoading: true		
@@ -161,6 +169,15 @@
 		var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
 		if(response.status)
 			this.isLoading = false;
+	},
+	created(){
+		if(Object.entries(this.currentGroup).length === 0)
+			this.$store.state.currentGroup = JSON.parse(localStorage.currentGroup);
+		if(Object.entries(this.currentTeacher).length === 0)
+			this.$store.state.currentTeacher = JSON.parse(localStorage.currentTeacher);
+		if(Object.entries(this.groupStudents).length === 0)
+			this.$store.state.groupStudents = JSON.parse(localStorage.groupStudents);
+
 	},
 	methods : {
 		async setAttendence(){
