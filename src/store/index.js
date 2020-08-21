@@ -14,7 +14,7 @@ export default new Vuex.Store({
 	timesFrom : ['08:00','08:45','09:15','09:30','10:15','10:45','11:00','11:45','12:15','12:30','13:30','13:45','14:30','15:00','15:15','16:00','16:45','17:30','18:15','19:00','19:45'],
 	timesTo : ['00:00'],
 	offices : [],
-	homeworks : ['0','1','2','3','4'],
+	homeworks : [0,1,2,3,4,5,6,7,8,9,10,11],
 	tests : [0,1,2,3,4,5,6,7,8,9,10,11,12],
 },
   mutations: {
@@ -62,12 +62,11 @@ export default new Vuex.Store({
 		},
 		RESET_GROUP(state){
 			state.currentGroup = {};
-			window.localStorage.currentUser = JSON.stringify({});
 			window.localStorage.officeName = "";
 			window.localStorage.timeFrom = "";
 			window.localStorage.timeTo = "";
+			window.localStorage.groupStudents = [];
 			window.localStorage.currentGroup = JSON.stringify({});
-			window.localStorage.currentTeacher = JSON.stringify({});
 		},
 		RESET_CURRENT_USER(state){
 			state.currentUser = {};
@@ -76,6 +75,7 @@ export default new Vuex.Store({
 			window.localStorage.officeName = "";
 			window.localStorage.timeFrom = "";
 			window.localStorage.timeTo = "";
+			window.localStorage.groupStudents = [];
 			window.localStorage.currentGroup = JSON.stringify({});
 			window.localStorage.currentTeacher = JSON.stringify({});
 
@@ -94,11 +94,13 @@ export default new Vuex.Store({
 		try{
 			var response  = await Api().post('/login', login);
 			var user = response.data;
-
-			commit('SET_CURRENT_USER',user);
+			
+			if(user.status == 200)
+				commit('SET_CURRENT_USER',user);
+			
 			return user;
-		}catch{
-			return {error: "Ошибка"};
+		}catch(err){
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	async GetTeacherById({commit},teacherId){
@@ -106,8 +108,8 @@ export default new Vuex.Store({
 			var response = await Api().post('/teachers', {teacherId});
 			var teacher = response.data[0];
 			commit('SET_CURRENT_TEACHER',teacher);
-		}catch{
-			return {error: "Ошибка"};
+		}catch(err){
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	async GetGroup({commit}, params){
@@ -125,7 +127,7 @@ export default new Vuex.Store({
 				return {status: false};
 			}
 		}catch{
-			return {error: "Ошибка"};
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	async GetStudents({commit}, params){
@@ -137,7 +139,7 @@ export default new Vuex.Store({
 
 			return {status: true};
 		}catch{
-			return {error: "Ошибка"};
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	async SetAttendence({commit}, params){
@@ -153,7 +155,7 @@ export default new Vuex.Store({
 
 			return {status: true};
 		}catch{
-			return {error: "Ошибка"};
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	async SearchTeacher({commit}, name){
@@ -162,7 +164,7 @@ export default new Vuex.Store({
 			commit('RESET');
 			return response.data;
 		}catch{
-			return {error: "Ошибка"};
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	AddStudentGroup({commit},params){
@@ -171,7 +173,7 @@ export default new Vuex.Store({
 				var result = await Api().get('/student',{params:student});
 				if(result.data){
 					var response = await Api().post('/addtogroup',{group: params.group, clientId: result.data});
-					if(response.data.error){
+					if(response.data.status == 200){
 						commit('ADD_STUDENT_GROUP',{attendence: true, clientid: result.data, name: student.value, status: false});
 						commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: false});
 					} else {
@@ -185,7 +187,7 @@ export default new Vuex.Store({
 			});
 			return {status: true};
 		}catch{
-			return {error: "Ошибка"};
+			commit('RESET_CURRENT_USER');
 		}
 	},
 	async GetTeacherByTeacherId({commit},teacherId){
@@ -194,7 +196,7 @@ export default new Vuex.Store({
 			commit('RESET');
 			return response.data[0];
 		}catch{
-			return {error: "Ошибка"};
+			commit('RESET_CURRENT_USER');
 		}
 	}
   },

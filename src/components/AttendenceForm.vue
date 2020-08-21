@@ -65,9 +65,6 @@
 					<template  v-slot:[`item.lesson`]="{ item }">
 						<v-text-field v-model="item.lesson" :disabled="!item.attendence"></v-text-field>
 					</template>
-					<template v-slot:[`item.point`]="{ item }">
-						<v-text-field v-model="item.point" :disabled="!item.attendence"></v-text-field>
-					</template>
 					<template v-slot:[`item.comment`]="{ item }">
 						<v-text-field v-model="item.comment" :disabled="!item.attendence"></v-text-field>
 					</template>
@@ -130,12 +127,6 @@
 
 				},
 				{
-					text : 'Баллы',
-					value : 'point',
-					class : "orange",
-					sortable: false
-				},
-				{
 					text : 'Комментарии',
 					value : 'comment',
 					class : "orange",
@@ -163,6 +154,12 @@
 		},
 		groupStudents(){
 			return this.$store.state.groupStudents;
+		}
+	},
+	beforeCreate(){
+		var user = JSON.parse(window.localStorage.currentUser);
+		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
+			this.$router.push('/');
 		}
 	},
 	async mounted(){

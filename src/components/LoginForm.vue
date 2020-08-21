@@ -30,7 +30,7 @@
 			</v-row>
 			<v-row>
 				<v-col>
-					<v-checkbox label="Запомнить"></v-checkbox>
+					<v-checkbox label="Запомнить" v-model="login.remember"></v-checkbox>
 				</v-col>
 			</v-row>
 			<v-row >
@@ -49,23 +49,27 @@ export default {
     return {
       login: {
         email: "",
-        password: "",
+		password: "",
+		remember: false
       },
       showPassword: false,
     };
   },
-  mounted() {
+  beforeCreate() {
     var user = JSON.parse(window.localStorage.currentUser);
     if (!(Object.keys(user).length === 0 && user.constructor === Object)) {
-      this.$router.push({ path: `/teacher/${user.teacherId}` });
+		this.$router.push({ path: `/teacher/${user.teacherId}` });
     }
   },
   methods: {
     async loginUser() {
-      var data = await this.$store.dispatch("LogIn", this.login);
-      if (data.status)
-        this.$router.push({ path: `/teacher/${data.teacherId}` });
-      else alert(data.message);
+		var data = await this.$store.dispatch("LogIn", this.login);
+		if(data.status == 200)
+			this.$router.push({ path: `/teacher/${data.teacherId}` });
+		else if(data.status == 404)
+			alert(data.message);
+		else
+			alert('Ошибка сервером')
     },
   },
 };

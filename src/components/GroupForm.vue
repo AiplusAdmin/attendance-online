@@ -108,8 +108,12 @@ export default {
 			search: null
 		}
 	},
-	mounted(){
-		this.$store.dispatch('GetTeacherById', this.teacherId);
+	async mounted(){
+		await this.$store.dispatch('GetTeacherById', this.teacherId);
+		var user = JSON.parse(window.localStorage.currentUser);
+		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
+			this.$router.push('/');
+		}
 	},
 	created(){
 		if(localStorage.officeName){
@@ -126,9 +130,7 @@ export default {
 	},
 	computed : {
 		offices(){			
-			var offices = this.$store.state.offices;
-			localStorage.offices = offices; 
-			return offices;
+			return this.$store.state.offices;
 		},
 		timesFrom(){
 			return this.$store.state.timesFrom;

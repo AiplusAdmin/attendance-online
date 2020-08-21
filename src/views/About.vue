@@ -29,6 +29,12 @@ export default {
 	components: {
 		GroupForm
 	},
+	beforeCreate() {
+		var user = JSON.parse(window.localStorage.currentUser);
+		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
+			this.$router.push('/');
+		}
+	},
 	methods: {
 		LogOut(){
 			this.$store.dispatch('LogOut');
