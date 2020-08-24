@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import About from '@/views/About'
 import AttendenceList from '@/views/AttendenceList'
+import Journal from '@/views/Journal'
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,11 @@ Vue.use(VueRouter)
 	path: '/group',
 	name: 'AttendenceList',
 	component: AttendenceList
+  },
+  {
+	path: '/journal',
+	name: 'Journal',
+	component: Journal
   }
 ]
 

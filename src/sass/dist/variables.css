@@ -1,0 +1,11 @@
+@font-face {
+  font-family: "GoodProMedium";
+  src: url("~@/assets/fonts/FontFont - GoodPro-Medium_0.otf") format("otf");
+}
+body {
+  font-family: "GoodProMedium", sans-serif;
+}
+
+.v-text-field--rounded > .v-input__control > .v-input__slot {
+  padding: 0 12px;
+}

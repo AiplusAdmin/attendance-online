@@ -16,6 +16,7 @@ export default new Vuex.Store({
 	offices : [],
 	homeworks : [0,1,2,3,4,5,6,7,8,9,10,11],
 	tests : [0,1,2,3,4,5,6,7,8,9,10,11,12],
+	currentRegister: []
 },
   mutations: {
 		SET_CURRENT_USER(state,user){
@@ -37,6 +38,9 @@ export default new Vuex.Store({
 		},
 		SET_SUBTEACHER(state,teacher){
 			state.subTeacher = teacher[0];
+		},
+		SET_CURRENT_REGISTER(state,register){
+			state.currentRegister = register;
 		},
 		SET_TIMES_TO(state, timeFrom){
 			state.timesTo = [];
@@ -148,7 +152,12 @@ export default new Vuex.Store({
 			if(response.data){
 				var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
 				if(pass_response.status == 200 && pass_response.statusText === 'OK'){
-					Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id,students: params.students});
+					var today = new Date();
+					var day = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+					var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id,students: params.students});
+					var isSubmitted = result.data.status;
+					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students})
 				}
 			}
 			commit('RESET_GROUP');
@@ -197,6 +206,25 @@ export default new Vuex.Store({
 			return response.data[0];
 		}catch{
 			commit('RESET_CURRENT_USER');
+		}
+	},
+
+	async GetRegisterByTeacherId({commit},teacherId){
+		try{
+			var response = await Api().get('/getregister',{teacherId});
+			var register = response.data;
+			commit('SET_CURRENT_REGISTER',register);
+		}catch(err){
+			return {error: err};
+		}
+	},
+	async GetRegisterDetails({commit},registerId){
+		try{
+			var response = await Api().get('/getregisterdetails',{registerId});
+			commit('RESET');
+			return response.data;
+		}catch(err){
+			return {error: err};
 		}
 	}
   },

@@ -4,11 +4,11 @@
 		<v-main>
 			<router-view/>
 		</v-main>
-		<v-footer class='justify-center' color="#616161" >
+		<v-footer class='justify-center' color="grey darken-2" >
 			<v-row > 
 				<v-col class="text-center"  cols="12">
-					<span>AIPLUS. </span>
-					<span>ATTENDENCE . 2020</span>
+					<span class="orange--text font-weight-bold">AIPLUS. </span>
+					<span class="grey--text text--darken-1 font-weight-bold">ATTENDANCE . 2020</span>
 				</v-col>
 			</v-row>
 		</v-footer>
@@ -25,17 +25,10 @@ export default {
   }),
 };
 </script>
-<style>
-	@font-face {
-		font-family: "GoodPro-Medium";
-		src: url('~@/assets/fonts/FontFont - GoodPro-Medium_0.otf');
-	}
-	.v-applicatio .text-lg-h4{ 
-		font-family: "GoodPro-Medium" !important;
-	}
-</style>
 <style scoped>
 	.v-main{
 		background: url('~@/assets/images/background.svg') no-repeat;
+		background-attachment: fixed;
+		background-size: cover;
 	}
 </style>

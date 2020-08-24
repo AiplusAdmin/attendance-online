@@ -14,7 +14,7 @@
 					</v-select>
 				</v-col>
 			</v-row>
-			<v-row class="px-5">
+			<v-row class="px-5 font-weight-bold grey--text text--darken-2">
 				<v-col>
 					Дата занятии
 				</v-col>
@@ -26,13 +26,13 @@
 						color="#fbab17" 
 						locale="ru" 
 						first-day-of-week="1"
-						no-title full-width>
+						no-title full-width >
 					</v-date-picker><br/>
 				</v-col>
 			</v-row>
 			<v-divider></v-divider>
-			<v-row class="px-5" align="center">
-				<v-col cols="12" lg="4">
+			<v-row class="px-5" align="center" justify="center">
+				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" lg="4" >
 					<span>Время занятии </span> 
 				</v-col>
 				<v-col cols="12" lg="3">	
@@ -40,24 +40,26 @@
 							@change="changeTimeFrom" 
 							:items="timesFrom"
 							label="00:00"
-							solo rounded outlined flat dense>
+							color="#fbab17"
+							solo rounded outlined flat dense hide-details hide-selected>
 					</v-select>
 				</v-col>
-				<v-col cols="12" lg="1">
+				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" lg="1">
 					<span> - </span>
 				</v-col>
 				<v-col cols="12" lg="3">	
 					<v-select v-model="params.timeTo"
 							:items="timesTo"
 							label="00:00"
-							solo rounded outlined flat dense>
+							color="#fbab17"
+							solo rounded outlined flat dense hide-details hide-selected>
 					</v-select>
 				</v-col>
 			</v-row>
 			<v-divider></v-divider>
 			<v-row class="justify-end px-5">
 				<v-col cols="12" lg="4">
-					<v-checkbox v-model="params.change" label="Замена"></v-checkbox>
+					<v-checkbox v-model="params.change"  color="#fbab17" label="Замена"></v-checkbox>
 				</v-col>
 			</v-row>
 			<v-row class="px-5" v-show="params.change">
@@ -72,14 +74,14 @@
 						:search-input.sync="search"
 						no-data-text="Нет учителей"
 						dense clearable
-						label="ФИО Тренера"
+						label="ФИО Тренера" color="#fbab17"
 					>
 					</v-autocomplete>
 				</v-col>
 			</v-row>
 			<v-row class="px-5">
 				<v-col>
-					<v-btn @click="getGroup" block rounded height="42">Журнал</v-btn>
+					<v-btn class="rounded-btn white--text" @click="getGroup" block rounded height="50">Журнал</v-btn>
 				</v-col>
 			</v-row>
 		</v-container>
@@ -196,5 +198,10 @@ export default {
 	.myform{
 		background: #ffffff;
 		border-radius: 12px;
+	}
+
+	.rounded-btn{
+		background-image: linear-gradient(to right,rgb(251, 171, 23) 0%,rgb(250, 191, 82) 100%);
+		box-shadow: 0px 8px 5px rgba(196, 197, 197);
 	}
 </style>

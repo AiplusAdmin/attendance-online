@@ -10,7 +10,7 @@ export default new Vuetify({
 	},
 	theme: {
 		themes: {
-			orange : '#fed337'
+			orange : '#fed337',
 		},
 	}
 });

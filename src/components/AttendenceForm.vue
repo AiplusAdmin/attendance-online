@@ -1,29 +1,32 @@
 <template>
 	<v-container>
-		<v-row>
+		<v-row class="d-flex flex-row" align="center">
+			<v-col cols="12" lg="2">
+				<div class="font-weight-bold text-lg-h5">Attendance list</div>
+			</v-col>
 			<v-col>
-				<h2>Attendance list</h2>
+				<router-link class="pl-4 orange--text text-decoration-underline" :to="{path:`/teacher/${this.$store.state.currentTeacher.Id}`}">Изменить</router-link>
 			</v-col>
 		</v-row>
 		<v-row class="pb-4">		
-			<v-col class="white currentTeacher">
-				<span>Тренер</span>
+			<v-col cols = "12" lg="3" class="white currentTeacher">
+				<span class="font-weight-bold grey--text text--darken-2">Тренер</span>
 				<p>{{currentTeacher.LastName +' '+currentTeacher.FirstName}}</p>
 			</v-col>
 			<v-col v-if="currentGroup.change">
-				<span>Заменяю</span>
+				<span class="font-weight-bold grey--text text--darken-2">Заменяю</span>
 				<p>{{subTeacher.fullName}}</p>
 			</v-col>
 			<v-col>
-				<span>Группа</span>
+				<span class="font-weight-bold grey--text text--darken-2">Группа</span>
 				<p>{{currentGroup.name}}</p>
 			</v-col>
 			<v-col>
-				<span>Время</span>
+				<span class="font-weight-bold grey--text text--darken-2">Время</span>
 				<p>{{currentGroup.time}}</p>
 			</v-col>
 			<v-col>
-				<span>Дни обучения</span>
+				<span class="font-weight-bold grey--text text--darken-2">Дни обучения</span>
 				<p>{{currentGroup.days}}</p>
 			</v-col>
 			<v-col>
@@ -72,8 +75,13 @@
 			</v-col>
 		</v-row>
 		<v-row>
-			<v-col class="px-0">
-				<v-btn @click="setAttendence">Отправить</v-btn>
+			<v-col>
+				<v-divider color="black"></v-divider>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" lg="4" class="px-0">
+				<v-btn class="rounded-btn white--text"  height="50" @click="setAttendence" block rounded>Отправить</v-btn>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -190,5 +198,10 @@
 <style scoped>
 	.currentTeacher{
 		border-radius: 15px;
+	}
+
+	.rounded-btn{
+		background-image: linear-gradient(to right,rgb(251, 171, 23) 0%,rgb(250, 191, 82) 100%);
+		box-shadow: 0px 5px 5px rgba(196, 197, 197);
 	}
 </style>

@@ -11,18 +11,19 @@
 		</v-row>
 		<v-row>
 			<v-col cols="12" lg="12">
-				<AttendenceForm />
+				<JournalForm />
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-import AttendenceForm from '@/components/AttendenceForm'
+import JournalForm from '@/components/JournalForm'
+
 export default {
-	name: 'AttendenceList',
+	name: 'Journal',
 	components: {
-		AttendenceForm
+		JournalForm
 	},
 	computed: {
 		currentTeacher(){
@@ -37,3 +38,7 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+
+</style>
