@@ -37,7 +37,8 @@ export default new Vuex.Store({
 			window.localStorage.currentTeacher = JSON.stringify(teacher);
 		},
 		SET_SUBTEACHER(state,teacher){
-			state.subTeacher = teacher[0];
+			state.subTeacher = teacher;
+			window.localStorage.subTeacher = JSON.stringify(teacher);
 		},
 		SET_CURRENT_REGISTER(state,register){
 			state.currentRegister = register;
@@ -69,7 +70,7 @@ export default new Vuex.Store({
 			window.localStorage.officeName = "";
 			window.localStorage.timeFrom = "";
 			window.localStorage.timeTo = "";
-			window.localStorage.groupStudents = [];
+			window.localStorage.groupStudents = JSON.stringify([]);
 			window.localStorage.currentGroup = JSON.stringify({});
 		},
 		RESET_CURRENT_USER(state){
@@ -125,7 +126,11 @@ export default new Vuex.Store({
 				group.date = params.params.date;
 				group.change = params.params.change;
 
+				if(params.params.change)
+					commit('SET_SUBTEACHER', params.subTeacher);
+
 				commit('SET_CURRENT_GROUP', group);
+
 				return {status: true};
 			} else {
 				return {status: false};
@@ -148,17 +153,25 @@ export default new Vuex.Store({
 	},
 	async SetAttendence({commit}, params){
 		try{
-			var response = await Api().post('/registeramount',{teacherId: params.teacherId, groupId:params.group.Id,lessonDate: params.group.date});
+			
+			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date});
 			if(response.data){
-				var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
+				/*var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
+				
 				if(pass_response.status == 200 && pass_response.statusText === 'OK'){
 					var today = new Date();
 					var day = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 					var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id,students: params.students});
 					var isSubmitted = result.data.status;
-					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students})
-				}
+					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students});					
+					if(isSubmitted && (params.group.change || params.group.isOperator)){
+						Api().post('/sendpersonalmessage',params);
+					}
+				}*/
+			} else {
+				commit('RESET_GROUP');
+				return {status: false, text: 'Аттенданс уже заполнен'};
 			}
 			commit('RESET_GROUP');
 
@@ -209,9 +222,9 @@ export default new Vuex.Store({
 		}
 	},
 
-	async GetRegisterByTeacherId({commit},teacherId){
+	async GetRegisterByTeacherId({commit},params){
 		try{
-			var response = await Api().get('/getregister',{teacherId});
+			var response = await Api().get('/getregister',{params});
 			var register = response.data;
 			commit('SET_CURRENT_REGISTER',register);
 		}catch(err){

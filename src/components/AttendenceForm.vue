@@ -84,16 +84,19 @@
 				<v-btn class="rounded-btn white--text"  height="50" @click="setAttendence" block rounded>Отправить</v-btn>
 			</v-col>
 		</v-row>
+		<InfoModal :dialog="dialog" :message="messageModal" path="journal"/>
 	</v-container>
 </template>
 
 <script>
 	import AddStudent from '@/components/modal/Add'
+	import InfoModal from '@/components/modal/Info'
 
   export default {
     name: 'AttendenceForm',
 	components: {
-		AddStudent
+		AddStudent,
+		InfoModal
 	},
     data (){
 		return {
@@ -141,7 +144,9 @@
 					sortable: false
 				}
 			],
-			isLoading: true		
+			isLoading: true	,
+			dialog: false,
+			messageModal: 'Успешно добавлен'
 		}
 	},
 	computed : {
@@ -176,22 +181,28 @@
 			this.isLoading = false;
 	},
 	created(){
-		if(Object.entries(this.currentGroup).length === 0)
+		if(Object.entries(this.currentGroup).length == 0)
 			this.$store.state.currentGroup = JSON.parse(localStorage.currentGroup);
-		if(Object.entries(this.currentTeacher).length === 0)
+		if(Object.entries(this.currentTeacher).length == 0)
 			this.$store.state.currentTeacher = JSON.parse(localStorage.currentTeacher);
-		if(Object.entries(this.groupStudents).length === 0)
+		if(this.groupStudents.length == 0)
 			this.$store.state.groupStudents = JSON.parse(localStorage.groupStudents);
+		if(Object.entries(this.subTeacher).length == 0)
+			this.$store.state.subTeacher = JSON.parse(localStorage.subTeacher);
 
 	},
 	methods : {
 		async setAttendence(){
-			var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id});
-			if(response.status)
-				this.$router.push({path:`/teacher/${this.$store.state.currentTeacher.Id}`});
-			else 
-				alert(response.message);
-		}
+			var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
+			if(response.status){
+				this.dialog = true;
+			} else if(!response.status && response.text){
+				this.messageModal = response.text;
+				this.dialog = true;
+			}
+				//
+			//else 
+						}
 	}
   }
 </script>

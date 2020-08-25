@@ -48,7 +48,8 @@ var _default = new _vuex["default"].Store({
       window.localStorage.currentTeacher = JSON.stringify(teacher);
     },
     SET_SUBTEACHER: function SET_SUBTEACHER(state, teacher) {
-      state.subTeacher = teacher[0];
+      state.subTeacher = teacher;
+      window.localStorage.subTeacher = JSON.stringify(teacher);
     },
     SET_CURRENT_REGISTER: function SET_CURRENT_REGISTER(state, register) {
       state.currentRegister = register;
@@ -80,7 +81,7 @@ var _default = new _vuex["default"].Store({
       window.localStorage.officeName = "";
       window.localStorage.timeFrom = "";
       window.localStorage.timeTo = "";
-      window.localStorage.groupStudents = [];
+      window.localStorage.groupStudents = JSON.stringify([]);
       window.localStorage.currentGroup = JSON.stringify({});
     },
     RESET_CURRENT_USER: function RESET_CURRENT_USER(state) {
@@ -185,38 +186,39 @@ var _default = new _vuex["default"].Store({
               response = _context3.sent;
 
               if (!response.data.status) {
-                _context3.next = 14;
+                _context3.next = 15;
                 break;
               }
 
               group = response.data.group;
               group.date = params.params.date;
               group.change = params.params.change;
+              if (params.params.change) commit('SET_SUBTEACHER', params.subTeacher);
               commit('SET_CURRENT_GROUP', group);
               return _context3.abrupt("return", {
                 status: true
               });
 
-            case 14:
+            case 15:
               return _context3.abrupt("return", {
                 status: false
               });
 
-            case 15:
-              _context3.next = 20;
+            case 16:
+              _context3.next = 21;
               break;
 
-            case 17:
-              _context3.prev = 17;
+            case 18:
+              _context3.prev = 18;
               _context3.t0 = _context3["catch"](1);
               commit('RESET_CURRENT_USER');
 
-            case 20:
+            case 21:
             case "end":
               return _context3.stop();
           }
         }
-      }, null, null, [[1, 17]]);
+      }, null, null, [[1, 18]]);
     },
     GetStudents: function GetStudents(_ref6, params) {
       var commit, response, students;
@@ -250,7 +252,7 @@ var _default = new _vuex["default"].Store({
       }, null, null, [[1, 10]]);
     },
     SetAttendence: function SetAttendence(_ref7, params) {
-      var commit, response, pass_response, today, day, time, result, isSubmitted;
+      var commit, response;
       return regeneratorRuntime.async(function SetAttendence$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
@@ -259,7 +261,6 @@ var _default = new _vuex["default"].Store({
               _context5.prev = 1;
               _context5.next = 4;
               return regeneratorRuntime.awrap((0, _api["default"])().post('/registeramount', {
-                teacherId: params.teacherId,
                 groupId: params.group.Id,
                 lessonDate: params.group.date
               }));
@@ -268,64 +269,37 @@ var _default = new _vuex["default"].Store({
               response = _context5.sent;
 
               if (!response.data) {
-                _context5.next = 18;
+                _context5.next = 8;
                 break;
               }
 
-              _context5.next = 8;
-              return regeneratorRuntime.awrap((0, _api["default"])().post('/setpasses', {
-                date: params.group.date,
-                groupId: params.group.Id,
-                students: params.students
-              }));
+              _context5.next = 10;
+              break;
 
             case 8:
-              pass_response = _context5.sent;
-
-              if (!(pass_response.status == 200 && pass_response.statusText === 'OK')) {
-                _context5.next = 18;
-                break;
-              }
-
-              today = new Date();
-              day = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-              time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-              _context5.next = 15;
-              return regeneratorRuntime.awrap((0, _api["default"])().post('/setattendence', {
-                date: params.group.date,
-                groupId: params.group.Id,
-                students: params.students
-              }));
-
-            case 15:
-              result = _context5.sent;
-              isSubmitted = result.data.status;
-              (0, _api["default"])().post('/addregister', {
-                teacherId: params.teacherId,
-                group: params.group,
-                submitDay: day,
-                submitTime: time,
-                isSubmitted: isSubmitted,
-                students: params.students
+              commit('RESET_GROUP');
+              return _context5.abrupt("return", {
+                status: false,
+                text: 'Аттенданс уже заполнен'
               });
 
-            case 18:
+            case 10:
               commit('RESET_GROUP');
               return _context5.abrupt("return", {
                 status: true
               });
 
-            case 22:
-              _context5.prev = 22;
+            case 14:
+              _context5.prev = 14;
               _context5.t0 = _context5["catch"](1);
               commit('RESET_CURRENT_USER');
 
-            case 25:
+            case 17:
             case "end":
               return _context5.stop();
           }
         }
-      }, null, null, [[1, 22]]);
+      }, null, null, [[1, 14]]);
     },
     SearchTeacher: function SearchTeacher(_ref8, name) {
       var commit, response;
@@ -472,7 +446,7 @@ var _default = new _vuex["default"].Store({
         }
       }, null, null, [[1, 9]]);
     },
-    GetRegisterByTeacherId: function GetRegisterByTeacherId(_ref11, teacherId) {
+    GetRegisterByTeacherId: function GetRegisterByTeacherId(_ref11, params) {
       var commit, response, register;
       return regeneratorRuntime.async(function GetRegisterByTeacherId$(_context9) {
         while (1) {
@@ -482,7 +456,7 @@ var _default = new _vuex["default"].Store({
               _context9.prev = 1;
               _context9.next = 4;
               return regeneratorRuntime.awrap((0, _api["default"])().get('/getregister', {
-                teacherId: teacherId
+                params: params
               }));
 
             case 4:

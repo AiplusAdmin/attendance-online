@@ -84,15 +84,21 @@
 					<v-btn class="rounded-btn white--text" @click="getGroup" block rounded height="50">Журнал</v-btn>
 				</v-col>
 			</v-row>
+			<InfoModal :dialog="dialog" message="Такой группы нет" path=""/>
 		</v-container>
 	</v-form>
 </template>
 
 <script>
+import InfoModal from '@/components/modal/Info'
+
 export default {
 	name: 'GroupForm',
 	props: {
 		teacherId : String
+	},
+	components: {
+		InfoModal
 	},
 	data () {
 		return {
@@ -107,7 +113,8 @@ export default {
 			officeName: "",
 			subTeachers:[],
 			isLoading: false,
-			search: null
+			search: null,
+			dialog: false
 		}
 	},
 	async mounted(){
@@ -152,9 +159,9 @@ export default {
 			var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
 			if(result.status)
 				this.$router.push({path: '/group'});	
-			else {
-				alert(result.error);
-			}
+			else
+				this.dialog = true;
+			
 		},
 		getOfficeId(){
 			this.offices.find(office => {

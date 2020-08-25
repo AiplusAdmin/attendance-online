@@ -4,6 +4,9 @@
 			<v-col cols="12" lg="2">
 				<div class="font-weight-bold text-lg-h5">Attendance list</div>
 			</v-col>
+			<v-col>
+				<router-link class="pl-4 orange--text text-decoration-underline" :to="{path:`/teacher/${this.$store.state.currentTeacher.Id}`}">Назад</router-link>
+			</v-col>
 		</v-row>
 		<v-row class="white" justify="start">		
 			<v-col cols = "12" lg = "4" class="currentTeacher">
@@ -21,6 +24,7 @@
 					:headers="headers"
 					:items = "currentRegister"
 					:expanded.sync="expanded"
+					no-data-text = "Нет Записи"
 					@item-expanded="ShowMore"
 					@click:row="highlightClickedRow"
 					show-expand
@@ -113,7 +117,7 @@ export default {
 				},
 			],
 			expanded: [],
-			expandedStudents:[]
+			expandedStudents:[],
 		}
 	},
 	computed : {
@@ -124,8 +128,18 @@ export default {
 			return this.$store.state.currentRegister;
 		}
 	},
+	beforeCreate(){
+		var user = JSON.parse(window.localStorage.currentUser);
+		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
+			this.$router.push('/');
+		}
+	},
 	async mounted(){
-		await this.$store.dispatch('GetRegisterByTeacherId', this.currentTeacher.Id);
+		await this.$store.dispatch('GetRegisterByTeacherId',{teacherId:this.currentTeacher.Id, date: new Date().toISOString().substr(0, 10)});
+	},
+	created(){
+		if(Object.entries(this.currentTeacher).length === 0)
+			this.$store.state.currentTeacher = JSON.parse(localStorage.currentTeacher);
 	},
 	methods: {
 		async ShowMore(value){
@@ -135,6 +149,9 @@ export default {
 			const tr = value.target.parentNode;
 			tr.classList.add('highlight');
 		}
+	},
+	watch:{
+
 	}
 }
 </script>

@@ -22,21 +22,30 @@
 			v-model="date"
             type="date"
 			locale="ru"
+			first-day-of-week="1"
             no-title>
 			<v-spacer></v-spacer>
             <v-btn text color="primary" @click="menu = false">ОТМЕНИТЬ</v-btn>
-            <v-btn text color="primary" @click="$refs.menu.save(date)">ОК</v-btn>
+            <v-btn text color="primary" @click="GetRegister">ОК</v-btn>
         </v-date-picker>
     </v-menu>
 </template>
 
 <script>
 export default {
+	name: 'DateModal',
 	data(){
 		return{
-			date: new Date().toISOString().substr(0, 7),
+			date: new Date().toISOString().substr(0, 10),
 			menu: false,
 			modal: false,
+		}
+	},
+	methods:{
+		async GetRegister(){
+			await this.$store.dispatch('GetRegisterByTeacherId',{teacherId:this.$store.state.currentTeacher.Id, date: this.date})
+			this.$refs.menu.save(this.date);
+			this.menu = false;
 		}
 	}
 }
