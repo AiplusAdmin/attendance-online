@@ -14,8 +14,109 @@ export default new Vuex.Store({
 	timesFrom : ['08:00','08:45','09:15','09:30','10:15','10:45','11:00','11:45','12:15','12:30','13:30','13:45','14:30','15:00','15:15','16:00','16:45','17:30','18:15','19:00','19:45'],
 	timesTo : ['00:00'],
 	offices : [],
-	homeworks : [0,1,2,3,4,5,6,7,8,9,10,11],
-	tests : [0,1,2,3,4,5,6,7,8,9,10,11,12],
+	homeworks : [
+			{
+				text:'0',
+				value: 0
+			},
+			{
+				text: '1',
+				value: 1
+			},
+			{
+				text: '2',
+				value: 2
+			},
+			{
+				text: '3',
+				value: 3
+			},
+			{
+				text: '4',
+				value: 4
+			},
+			{
+				text: '5',
+				value: 5
+			},
+			{
+				text: '6',
+				value: 6
+			},
+			{
+				text: '7',
+				value: 7
+			},
+			{
+				text: '8',
+				value: 8
+			},
+			{
+				text: '9',
+				value: 9
+			},
+			{
+				text: '10',
+				value: 10
+			},
+			{
+				text:'Не задовали',
+				value: 11
+			}
+		],
+	tests : [{
+				text:'0',
+				value: 0
+			},
+			{
+				text: '1',
+				value: 1
+			},
+			{
+				text: '2',
+				value: 2
+			},
+			{
+				text: '3',
+				value: 3
+			},
+			{
+				text: '4',
+				value: 4
+			},
+			{
+				text: '5',
+				value: 5
+			},
+			{
+				text: '6',
+				value: 6
+			},
+			{
+				text: '7',
+				value: 7
+			},
+			{
+				text: '8',
+				value: 8
+			},
+			{
+				text: '9',
+				value: 9
+			},
+			{
+				text: '10',
+				value: 10
+			},
+			{
+				text:'Не писал',
+				value: 11
+			},
+			{
+				text: 'Не писала группа',
+				value: 12
+			}
+	],
 	currentRegister: []
 },
   mutations: {
@@ -156,7 +257,7 @@ export default new Vuex.Store({
 			
 			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date});
 			if(response.data){
-				/*var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
+				var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
 				
 				if(pass_response.status == 200 && pass_response.statusText === 'OK'){
 					var today = new Date();
@@ -168,7 +269,7 @@ export default new Vuex.Store({
 					if(isSubmitted && (params.group.change || params.group.isOperator)){
 						Api().post('/sendpersonalmessage',params);
 					}
-				}*/
+				}
 			} else {
 				commit('RESET_GROUP');
 				return {status: false, text: 'Аттенданс уже заполнен'};
@@ -231,9 +332,9 @@ export default new Vuex.Store({
 			return {error: err};
 		}
 	},
-	async GetRegisterDetails({commit},registerId){
+	async GetRegisterDetails({commit},params){
 		try{
-			var response = await Api().get('/getregisterdetails',{registerId});
+			var response = await Api().get('/getregisterdetails',{params});
 			commit('RESET');
 			return response.data;
 		}catch(err){

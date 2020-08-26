@@ -1,5 +1,5 @@
 <template>
-	<v-form class="myform px-0 py-6">
+	<v-form v-model="valid" ref="form" class="myform px-0 py-6">
 		<v-container class="">
 			<v-row class="px-5">
 				<v-col class="pa-0">
@@ -10,7 +10,8 @@
 						label="Филиал"
 						color="#fbab17"
 						@input="getOfficeId"
-						solo rounded outlined flat dense cache-items>
+						solo rounded outlined flat dense cache-items
+						:rules="[required('Филиал')]" required>
 					</v-select>
 				</v-col>
 			</v-row>
@@ -26,7 +27,8 @@
 						color="#fbab17" 
 						locale="ru" 
 						first-day-of-week="1"
-						no-title full-width >
+						no-title full-width
+						:rules="[required('Дата')]" required>
 					</v-date-picker><br/>
 				</v-col>
 			</v-row>
@@ -41,7 +43,8 @@
 							:items="timesFrom"
 							label="00:00"
 							color="#fbab17"
-							solo rounded outlined flat dense hide-details hide-selected>
+							solo rounded outlined flat dense hide-details hide-selected
+							:rules="[required('Начала время')]" required>
 					</v-select>
 				</v-col>
 				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" lg="1">
@@ -52,7 +55,8 @@
 							:items="timesTo"
 							label="00:00"
 							color="#fbab17"
-							solo rounded outlined flat dense hide-details hide-selected>
+							solo rounded outlined flat dense hide-details hide-selected
+							:rules="[required('Конец время')]" required>
 					</v-select>
 				</v-col>
 			</v-row>
@@ -91,6 +95,7 @@
 
 <script>
 import InfoModal from '@/components/modal/Info'
+import validations from '@/utils/validations'
 
 export default {
 	name: 'GroupForm',
@@ -102,6 +107,7 @@ export default {
 	},
 	data () {
 		return {
+			valid: true,
 			params : {
 				teacherId : this.teacherId,
 				officeId: '',
@@ -114,7 +120,8 @@ export default {
 			subTeachers:[],
 			isLoading: false,
 			search: null,
-			dialog: false
+			dialog: false,
+			...validations
 		}
 	},
 	async mounted(){
@@ -156,12 +163,16 @@ export default {
 			this.$store.dispatch('changeTimesTo',this.params.timeFrom);
 		},
 		async getGroup(){
-			var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-			if(result.status)
-				this.$router.push({path: '/group'});	
-			else
-				this.dialog = true;
-			
+			if(!this.valid)
+				this.$refs.form.validate();
+			else {
+				var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+
+				if(result.status)
+					this.$router.push({path: '/group'});	
+				else
+					this.dialog = true;
+			}
 		},
 		getOfficeId(){
 			this.offices.find(office => {

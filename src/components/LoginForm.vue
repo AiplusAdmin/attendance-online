@@ -1,5 +1,5 @@
 <template>
-    <v-form class="myform mx-auto pt-9 pb-10 px-11">
+    <v-form v-model="valid"  ref="form" class="myform mx-auto pt-9 pb-10 px-11">
 		<v-container fluid>
 			<v-row>
 				<v-col class="pa-0">
@@ -13,7 +13,7 @@
 			</v-row>
 			<v-row class="mt-6">
 				<v-col>
-					<v-text-field label="Почта" v-model="login.email" color="#fbab17"></v-text-field>
+					<v-text-field label="Почта" v-model="login.email" color="#fbab17" :rules="[required('email'),emailFormat()]" required></v-text-field>
 				</v-col>
 			</v-row>
 			<v-row>
@@ -25,6 +25,7 @@
 					:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
 					@click:append="showPassword = !showPassword"
 					color="#fbab17"
+					:rules="[required('password')]" required
 					></v-text-field>
 				</v-col>
 			</v-row>
@@ -43,17 +44,21 @@
 </template>
 
 <script>
+import validations from '@/utils/validations'
+
 export default {
   name: "LoginForm",
   data() {
     return {
-      login: {
-        email: "",
-		password: "",
-		remember: false
-      },
-      showPassword: false,
-    };
+		valid: true,
+		login: {
+			email: "",
+			password: "",
+			remember: false
+		},
+		showPassword: false,
+		...validations
+    }
   },
   beforeCreate() {
     var user = JSON.parse(window.localStorage.currentUser);
@@ -63,14 +68,18 @@ export default {
   },
   methods: {
     async loginUser() {
-		var data = await this.$store.dispatch("LogIn", this.login);
-		if(data.status == 200)
-			this.$router.push({ path: `/teacher/${data.teacherId}` });
-		else if(data.status == 404)
-			alert(data.message);
-		else
-			alert('Ошибка сервером')
-    },
+		if(!this.valid)
+			this.$refs.form.validate();
+		else {
+			var data = await this.$store.dispatch("LogIn", this.login);
+			if(data.status == 200)
+				this.$router.push({ path: `/teacher/${data.teacherId}` });
+			else if(data.status == 404)
+				alert(data.message);
+			else
+				alert('Ошибка сервером');
+		} 
+	},
   },
 };
 </script>

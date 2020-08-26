@@ -35,10 +35,15 @@
 							<v-data-table
 								:headers="expandheaders"
 								:items="expandedStudents"
-								hide-default-footer
-								dark>
+								hide-default-footer>
 							</v-data-table>
 						</td>
+					</template>
+					<template v-slot:[`item.lessonDate`]="{ item }">
+						<td>{{ addDay(item.lessonDate) }}</td>
+					</template>
+					<template v-slot:[`item.submitDay`]="{ item }">
+						<td>{{ addDay(item.submitDay) }}</td>
 					</template>
 				</v-data-table>
 			</v-col>
@@ -143,11 +148,17 @@ export default {
 	},
 	methods: {
 		async ShowMore(value){
-			this.expandedStudents = await this.$store.dispatch('GetRegisterDetails', value.id);	
+			if(value.value)
+				this.expandedStudents = await this.$store.dispatch('GetRegisterDetails', {registerId: value.item.id});
 		},
 		highlightClickedRow(value){
 			const tr = value.target.parentNode;
 			tr.classList.add('highlight');
+		},
+		addDay(day){
+			var date = new Date(day);
+			date.setDate(date.getDate()+1);
+			return date.toISOString().substr(0, 10)
 		}
 	},
 	watch:{

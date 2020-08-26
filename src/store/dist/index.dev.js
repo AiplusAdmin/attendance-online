@@ -25,8 +25,83 @@ var _default = new _vuex["default"].Store({
     timesFrom: ['08:00', '08:45', '09:15', '09:30', '10:15', '10:45', '11:00', '11:45', '12:15', '12:30', '13:30', '13:45', '14:30', '15:00', '15:15', '16:00', '16:45', '17:30', '18:15', '19:00', '19:45'],
     timesTo: ['00:00'],
     offices: [],
-    homeworks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    tests: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    homeworks: [{
+      text: '0',
+      value: 0
+    }, {
+      text: '1',
+      value: 1
+    }, {
+      text: '2',
+      value: 2
+    }, {
+      text: '3',
+      value: 3
+    }, {
+      text: '4',
+      value: 4
+    }, {
+      text: '5',
+      value: 5
+    }, {
+      text: '6',
+      value: 6
+    }, {
+      text: '7',
+      value: 7
+    }, {
+      text: '8',
+      value: 8
+    }, {
+      text: '9',
+      value: 9
+    }, {
+      text: '10',
+      value: 10
+    }, {
+      text: 'Не задовали',
+      value: 11
+    }],
+    tests: [{
+      text: '0',
+      value: 0
+    }, {
+      text: '1',
+      value: 1
+    }, {
+      text: '2',
+      value: 2
+    }, {
+      text: '3',
+      value: 3
+    }, {
+      text: '4',
+      value: 4
+    }, {
+      text: '5',
+      value: 5
+    }, {
+      text: '6',
+      value: 6
+    }, {
+      text: '7',
+      value: 7
+    }, {
+      text: '8',
+      value: 8
+    }, {
+      text: '9',
+      value: 9
+    }, {
+      text: '10',
+      value: 10
+    }, {
+      text: 'Не писал',
+      value: 11
+    }, {
+      text: 'Не писала группа',
+      value: 12
+    }],
     currentRegister: []
   },
   mutations: {
@@ -252,7 +327,7 @@ var _default = new _vuex["default"].Store({
       }, null, null, [[1, 10]]);
     },
     SetAttendence: function SetAttendence(_ref7, params) {
-      var commit, response;
+      var commit, response, pass_response, today, day, time, result, isSubmitted;
       return regeneratorRuntime.async(function SetAttendence$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
@@ -269,37 +344,79 @@ var _default = new _vuex["default"].Store({
               response = _context5.sent;
 
               if (!response.data) {
-                _context5.next = 8;
+                _context5.next = 21;
                 break;
               }
 
-              _context5.next = 10;
-              break;
+              _context5.next = 8;
+              return regeneratorRuntime.awrap((0, _api["default"])().post('/setpasses', {
+                date: params.group.date,
+                groupId: params.group.Id,
+                students: params.students
+              }));
 
             case 8:
+              pass_response = _context5.sent;
+
+              if (!(pass_response.status == 200 && pass_response.statusText === 'OK')) {
+                _context5.next = 19;
+                break;
+              }
+
+              today = new Date();
+              day = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+              time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+              _context5.next = 15;
+              return regeneratorRuntime.awrap((0, _api["default"])().post('/setattendence', {
+                date: params.group.date,
+                groupId: params.group.Id,
+                students: params.students
+              }));
+
+            case 15:
+              result = _context5.sent;
+              isSubmitted = result.data.status;
+              (0, _api["default"])().post('/addregister', {
+                teacherId: params.teacherId,
+                group: params.group,
+                submitDay: day,
+                submitTime: time,
+                isSubmitted: isSubmitted,
+                students: params.students
+              });
+
+              if (isSubmitted && (params.group.change || params.group.isOperator)) {
+                (0, _api["default"])().post('/sendpersonalmessage', params);
+              }
+
+            case 19:
+              _context5.next = 23;
+              break;
+
+            case 21:
               commit('RESET_GROUP');
               return _context5.abrupt("return", {
                 status: false,
                 text: 'Аттенданс уже заполнен'
               });
 
-            case 10:
+            case 23:
               commit('RESET_GROUP');
               return _context5.abrupt("return", {
                 status: true
               });
 
-            case 14:
-              _context5.prev = 14;
+            case 27:
+              _context5.prev = 27;
               _context5.t0 = _context5["catch"](1);
               commit('RESET_CURRENT_USER');
 
-            case 17:
+            case 30:
             case "end":
               return _context5.stop();
           }
         }
-      }, null, null, [[1, 14]]);
+      }, null, null, [[1, 27]]);
     },
     SearchTeacher: function SearchTeacher(_ref8, name) {
       var commit, response;
@@ -480,7 +597,7 @@ var _default = new _vuex["default"].Store({
         }
       }, null, null, [[1, 9]]);
     },
-    GetRegisterDetails: function GetRegisterDetails(_ref12, registerId) {
+    GetRegisterDetails: function GetRegisterDetails(_ref12, params) {
       var commit, response;
       return regeneratorRuntime.async(function GetRegisterDetails$(_context10) {
         while (1) {
@@ -490,7 +607,7 @@ var _default = new _vuex["default"].Store({
               _context10.prev = 1;
               _context10.next = 4;
               return regeneratorRuntime.awrap((0, _api["default"])().get('/getregisterdetails', {
-                registerId: registerId
+                params: params
               }));
 
             case 4:
