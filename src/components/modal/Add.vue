@@ -14,11 +14,23 @@
       </template>
 		<v-card class="py-9 px-5">
 			<v-card-title class="pb-11 headline align-center justify-center font-weight-bold text-lg-h6">Добавить ученика</v-card-title>
-				<v-text-field  class="pb-0" v-for="(student,index) in newStudents" :key="index" v-model="student.value"
-					:append-outer-icon="student.icon" @click:append-outer="remove(index)" label="ФИО ученика" color="#fbab17" outlined rounded clearable dense></v-text-field>
+				<v-autocomplete
+					class="pb-0" v-for="(student,index) in newStudents" :key="index"
+					v-model="student.value"
+					:items="student.Students"
+					item-text="FullName"
+					item-value="FullName"
+					@input="SetStudent(student)"
+					:append-outer-icon="student.icon" @click:append-outer="remove(index)"
+					:loading="student.isLoading"
+					:search-input.sync="student.search"
+					no-data-text="Нет Учеников"
+					dense clearable outlined rounded
+					label="ФИО Ученика" color="#fbab17">
+				</v-autocomplete>				
 				<v-btn class = "rounded-btn grey--text text--darken-2" @click="add" block rounded left><v-icon left>mdi-plus</v-icon>Добавить ученика</v-btn>
 			<v-card-actions class="pt-11 pb-0 align-center justify-center">
-				<v-btn class="orange--text" @click="dialog=false" rounded text>Отменить</v-btn>
+				<v-btn class="orange--text" @click="Cancel" rounded text>Отменить</v-btn>
 			</v-card-actions>
 			<v-card-actions>
 				<v-btn class="rounded-btn-orange white--text" height="48" @click="AddStudents" block rounded>Добавить</v-btn>
@@ -34,14 +46,17 @@ export default {
 	data(){
 		return {
 			dialog : false,
-			newStudents : [{value:'',icon:''}]
+			newStudents : [{value:null,icon:'',search:null,isLoading:false,Students:[]}],
 		}
 	},
 	methods: {
 		add(){
-			this.newStudents.push({ 
-				value: '',
-				icon: 'mdi-close'
+			this.newStudents.push({
+				value: null,
+				icon: 'mdi-close',
+				search: null,
+				isLoading:false,
+				Students:[]
 			});
 		},
 		remove(index){
@@ -49,8 +64,31 @@ export default {
 		},
 		async AddStudents(){
 			var response = await this.$store.dispatch('AddStudentGroup', {students: this.newStudents, group: this.$store.state.currentGroup});
-			if(response.status)
+			if(response.status){
+				this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
 				this.dialog = false;
+			}
+		},
+		Cancel(){
+			this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
+			this.dialog = false;
+		},
+		async SetStudent(student){
+			student.isLoading = false;
+		}
+	},
+	watch:{
+		newStudents: {
+			handler: function(newValues) {
+				newValues.map(async (value) =>{
+					if(value.value == null && this.dialog){
+						value.isLoading = true;
+						var response = await this.$store.dispatch('SearchStudent',value.search);
+						value.Students = response;
+					}
+				});
+			},
+			deep: true
 		}
 	}
 }

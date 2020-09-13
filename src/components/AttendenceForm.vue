@@ -7,6 +7,9 @@
 			<v-col>
 				<router-link class="pl-4 orange--text text-decoration-underline" :to="{path:`/teacher/${this.$store.state.currentTeacher.Id}`}">Изменить</router-link>
 			</v-col>
+			<v-col>
+				<InfoComment />
+			</v-col>
 		</v-row>
 		<v-row class="pb-4">		
 			<v-col cols = "12" lg="3" class="white currentTeacher">
@@ -15,7 +18,7 @@
 			</v-col>
 			<v-col v-if="currentGroup.change">
 				<span class="font-weight-bold grey--text text--darken-2">Заменяю</span>
-				<p>{{subTeacher.fullName}}</p>
+				<p>{{subTeacher.LastName + ' ' + subTeacher.FirstName}}</p>
 			</v-col>
 			<v-col>
 				<span class="font-weight-bold grey--text text--darken-2">Группа</span>
@@ -46,6 +49,7 @@
 						no-data-text = "Нет учеников"
 						hide-default-footer
 					>
+						
 						<template v-slot:[`item.index`]="{ item }">
 							<p>{{groupStudents.indexOf(item) + 1}}</p>
 						</template>
@@ -99,6 +103,7 @@
 			</v-col>
 		</v-row>
 		<InfoModal :dialog="dialog" :message="messageModal" path="journal"/>
+		<Check :checkdialog ="checkdialog" :code="code"/>
 	</v-container>
 </template>
 
@@ -106,12 +111,16 @@
 import AddStudent from '@/components/modal/Add'
 import InfoModal from '@/components/modal/Info'
 import validations from '@/utils/validations'
+import InfoComment from '@/components/modal/InfoComment'
+import Check from '@/components/modal/Check'
 
 export default {
     name: 'AttendenceForm',
 	components: {
 		AddStudent,
-		InfoModal
+		InfoModal,
+		InfoComment,
+		Check
 	},
     data (){
 		return {
@@ -162,6 +171,8 @@ export default {
 			],
 			isLoading: true	,
 			dialog: false,
+			checkdialog: false,
+			code:null,
 			messageModal: 'Успешно добавлен',
 			...validations
 		}
@@ -184,6 +195,9 @@ export default {
 		},
 		groupStudents(){
 			return this.$store.state.groupStudents;
+		},
+		equal(){
+			return this.$store.state.equal;
 		}
 	},
 	beforeCreate(){
@@ -196,6 +210,8 @@ export default {
 		var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
 		if(response.status)
 			this.isLoading = false;
+		if(this.currentGroup.change)
+			this.$store.dispatch('ResetEqual',false);
 	},
 	beforeMount(){
 		if(Object.entries(this.currentGroup).length == 0)
@@ -210,23 +226,35 @@ export default {
 	},
 	methods : {
 		async setAttendence(){
-			console.log(this.valid);
 			if(!this.valid)
 				this.$refs.form.validate();
 			else {
-				var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
-				if(response.status){
-					this.dialog = true;
-				} else if(!response.status && response.text){
-					this.messageModal = response.text;
-					this.dialog = true;
-				}	
-			} 
+				if(this.currentGroup.change && !this.equal){
+					var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
+					console.log(code);
+					if(code.status){
+						this.code = code.code;
+						this.checkdialog = true;
+					}
+				}else if(this.equal){
+					var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
+					if(response.status){
+						this.dialog = true;
+					} else if(!response.status && response.text){
+						this.messageModal = response.text;
+						this.dialog = true;
+					}	
+				}
+			}
 		}
 	}
   }
 </script>
 <style scoped>
+	.v-data-table-header{
+		border-radius: 10px;
+	}
+
 	.currentTeacher{
 		border-radius: 15px;
 	}

@@ -2,17 +2,10 @@
 	<v-container>
 		<v-row class="d-flex flex-row" align="center">
 			<v-col cols="12" lg="2">
-				<div class="font-weight-bold text-lg-h5">Attendance list</div>
-			</v-col>
-			<v-col>
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="{path:`/teacher/${this.$store.state.currentTeacher.Id}`}">Назад</router-link>
+				<div class="font-weight-bold text-lg-h5">Attendance list Statistics</div>
 			</v-col>
 		</v-row>
 		<v-row class="white" justify="start">		
-			<v-col cols = "12" lg = "4" class="currentTeacher">
-				<span class="font-weight-bold grey--text text--darken-2">Тренер</span>
-				<p>{{currentTeacher.LastName +' '+currentTeacher.FirstName + ' ' + currentTeacher.MiddleName}}</p>
-			</v-col>
 			<v-col cols="12" lg="6">
 				<DateModal />
 			</v-col>
@@ -23,7 +16,7 @@
 					class="elevation-1"
 					:headers="headers"
 					:items = "currentRegister"
-					item-key="Id"
+					item-key="GroupId"
 					:expanded.sync="expanded"
 					no-data-text = "Нет Записи"
 					@item-expanded="ShowMore"
@@ -51,13 +44,17 @@
 import DateModal from '@/components/modal/Date'
 
 export default {
-	name: 'JournalForm',
+	name: 'StatisticForm',
 	components: {
 		DateModal
 	},
 	data(){
 		return{
 			headers: [
+				{
+					text: 'Id',
+					value: 'GroupId'
+				},
 				{
 					text: 'Группа',
 					value: 'GroupName'
@@ -71,16 +68,8 @@ export default {
 					value: 'WeekDays'
 				},
 				{
-					text: 'Дата Урока',
-					value: 'LessonDate'
-				},
-				{
-					text: 'Дата Сабмита',
-					value: 'SubmitDay'
-				},
-				{
-					text: 'Время Сабмита',
-					value: 'SubmitTime'
+					text: 'Преподаватель',
+					value: 'teacher'
 				},
 				{
 					text: '',
@@ -97,25 +86,17 @@ export default {
 					value: 'FullName'
 				},
 				{
-					text: 'Присутвовал',
-					value: 'Pass'
-				},
-				{
 					text: 'Д.з',
-					value: 'homework'
+					value: 'Homework'
 				},
 				{
 					text: 'Срез',
-					value: 'test'
+					value: 'Test'
 				},
 				{
 					text: 'Активность',
-					value: 'lesson'
-				},
-				{
-					text: 'Комментарии',
-					value: 'Comment'
-				},
+					value: 'Lesson'
+				}
 			],
 			expanded: [],
 			expandedStudents:[],
@@ -124,9 +105,6 @@ export default {
 		}
 	},
 	computed : {
-		currentTeacher(){
-			return this.$store.state.currentTeacher;
-		},
 		currentRegister(){
 			return this.$store.state.currentRegister;
 		}
@@ -138,16 +116,12 @@ export default {
 		}
 	},
 	async mounted(){
-		await this.$store.dispatch('GetRegisterByTeacherId',{teacherId:this.currentTeacher.Id, dateFrom: new Date().toISOString().substr(0, 10),dateTo: new Date().toISOString().substr(0, 10)});
-	},
-	created(){
-		if(Object.entries(this.currentTeacher).length === 0)
-			this.$store.state.currentTeacher = JSON.parse(localStorage.currentTeacher);
+		await this.$store.dispatch('GetUniqueRegister');
 	},
 	methods: {
 		async ShowMore(value){
 			if(value.value)
-				this.expandedStudents = await this.$store.dispatch('GetRegisterDetails', {registerId: value.item.Id,dateFrom: this.dateFrom,dateTo: this.dateTo});
+				this.expandedStudents = await this.$store.dispatch('GetRegisterDetailsAVG', {groupId: value.item.GroupId});
 		},
 		highlightClickedRow(value){
 			const tr = value.target.parentNode;
@@ -158,9 +132,6 @@ export default {
 			date.setDate(date.getDate()+1);
 			return date.toISOString().substr(0, 10)
 		}
-	},
-	watch:{
-
 	}
 }
 </script>

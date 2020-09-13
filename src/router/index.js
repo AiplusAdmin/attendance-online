@@ -4,6 +4,7 @@ import Home from '@/views/Home.vue'
 import About from '@/views/About'
 import AttendenceList from '@/views/AttendenceList'
 import Journal from '@/views/Journal'
+import Statistic from '@/views/Statistic'
 
 Vue.use(VueRouter)
 
@@ -28,11 +29,17 @@ Vue.use(VueRouter)
 	path: '/journal',
 	name: 'Journal',
 	component: Journal
+  },
+  {
+	path: '/statistics',
+	name: 'Statistic',
+	component: Statistic
   }
 ]
 
 const router = new VueRouter({
-  routes
+	mode: 'history',
+	routes
 })
 
 export default router

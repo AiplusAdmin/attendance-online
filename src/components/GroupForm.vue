@@ -1,16 +1,37 @@
 <template>
 	<v-form v-model="valid" ref="form" class="myform px-0 py-6">
 		<v-container class="">
+			<v-row class="justify-end px-5">
+				<v-col cols="12" lg="4">
+					<v-checkbox v-model="params.change"  color="#fbab17" label="Замена"></v-checkbox>
+				</v-col>
+			</v-row>
+			<v-row class="px-5" v-show="params.change">
+				<v-col>
+					<v-autocomplete
+						:value="subTeacherName"
+						:items="subTeachers"
+						item-text="FullName"
+						item-value= "FullName"
+						@input="SetSubTeacher"
+						:loading="isLoading"
+						:search-input.sync="search"
+						no-data-text="Нет учителей"
+						dense clearable
+						label="ФИО Тренера" color="#fbab17">
+					</v-autocomplete>
+				</v-col>
+			</v-row>
 			<v-row class="px-5">
 				<v-col class="pa-0">
 					<v-select
 						v-model="officeName"
-						:items="offices"
+						:items="groupOffices"
 						item-text="Name"
 						label="Филиал"
 						color="#fbab17"
 						@input="getOfficeId"
-						solo rounded outlined flat dense cache-items
+						solo rounded outlined flat dense
 						:rules="[required('Филиал')]" required>
 					</v-select>
 				</v-col>
@@ -61,29 +82,7 @@
 				</v-col>
 			</v-row>
 			<v-divider></v-divider>
-			<v-row class="justify-end px-5">
-				<v-col cols="12" lg="4">
-					<v-checkbox v-model="params.change"  color="#fbab17" label="Замена"></v-checkbox>
-				</v-col>
-			</v-row>
-			<v-row class="px-5" v-show="params.change">
-				<v-col>
-					<v-autocomplete
-						:value="subTeacher"
-						:items="subTeachers"
-						item-text="fullName"
-						item-value="teacherId"
-						@input="SetSubTeacher"
-						:loading="isLoading"
-						:search-input.sync="search"
-						no-data-text="Нет учителей"
-						dense clearable
-						label="ФИО Тренера" color="#fbab17"
-					>
-					</v-autocomplete>
-				</v-col>
-			</v-row>
-			<v-row class="px-5">
+			<v-row class="px-5 pt-9">
 				<v-col>
 					<v-btn class="rounded-btn white--text" @click="getGroup" block rounded height="50">Журнал</v-btn>
 				</v-col>
@@ -118,6 +117,8 @@ export default {
 			},
 			officeName: "",
 			subTeachers:[],
+			groupOffices: [],
+			subTeacherName: null,
 			isLoading: false,
 			search: null,
 			dialog: false,
@@ -129,6 +130,8 @@ export default {
 		var user = JSON.parse(window.localStorage.currentUser);
 		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
 			this.$router.push('/');
+		} else {
+			this.groupOffices = this.offices;
 		}
 	},
 	created(){
@@ -147,6 +150,9 @@ export default {
 	computed : {
 		offices(){			
 			return this.$store.state.offices;
+		},
+		suboffices(){			
+			return this.$store.state.suboffices;
 		},
 		timesFrom(){
 			return this.$store.state.timesFrom;
@@ -181,33 +187,48 @@ export default {
 				}
 			});
 		},
-		async SetSubTeacher(subTeacherId){
-			if(subTeacherId == this.teacherId){
-				alert('Вы не можете сделать замену');
-				this.$store.state.subTeacher = {};
-			}
-			else{
-				var response = await this.$store.dispatch('GetTeacherByTeacherId',subTeacherId);
-				this.$store.state.subTeacher = response;
-				this.isLoading = false;
+		async SetSubTeacher(subTeacherFullName){
+			if(subTeacherFullName == undefined){
+				this.$store.dispatch('ResetSubTeacher');
+			} else {
+				var subTeacher = await this.$store.dispatch('GetTeacherByTeacherFullName',subTeacherFullName);
+				if(subTeacher.TeacherId == this.teacherId){
+					alert('Вы не можете сделать замену');
+					this.$store.dispatch('ResetSubTeacher');
+				}
+				else{
+					await this.$store.dispatch('GetSubTeacher',subTeacher.TeacherId);
+					this.isLoading = false;
+				}
 			}
 		}
 	},
 	watch:{
 		async search (val) {
-			this.isLoading = true
-			var response = await this.$store.dispatch('SearchTeacher','*'+val+'*');
+			this.isLoading = true;
+			var response = await this.$store.dispatch('SearchTeacher',val);
 			this.subTeachers = response;
 		},
 		params:{
 			handler: function(newValue){
 				localStorage.timeFrom = newValue.timeFrom;
 				localStorage.timeTo = newValue.timeTo;
+				if(!newValue.change){
+					this.$store.dispatch('ResetSubTeacher');
+					this.search = null;
+					this.isLoading = false;
+				}
 			},
 			deep: true
 		},
 		officeName: function(newOffice){
 			localStorage.officeName = newOffice;
+		},
+		subTeacher: function(){
+			if(this.subTeacher.Id)
+				this.groupOffices = this.suboffices;
+			else
+				this.groupOffices = this.offices;
 		}
 	}
 }

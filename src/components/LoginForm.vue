@@ -72,8 +72,12 @@ export default {
 			this.$refs.form.validate();
 		else {
 			var data = await this.$store.dispatch("LogIn", this.login);
-			if(data.status == 200)
-				this.$router.push({ path: `/teacher/${data.teacherId}` });
+			if(data.status == 200){
+				if(data.roleId == 2)
+					this.$router.push({ path: `/teacher/${data.teacherId}` });
+				else if(data.roleId == 3)
+					this.$router.push({ path: '/statistics'});
+			}
 			else if(data.status == 404)
 				alert(data.message);
 			else
