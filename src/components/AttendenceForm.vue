@@ -48,6 +48,7 @@
 						loading-text = "Загрузка... Пожалуйста подождите"
 						no-data-text = "Нет учеников"
 						hide-default-footer
+						disable-pagination
 					>
 						
 						<template v-slot:[`item.index`]="{ item }">
@@ -86,7 +87,16 @@
 							</v-text-field>
 						</template>
 						<template v-slot:[`item.comment`]="{ item }">
-							<v-text-field v-model="item.comment" :disabled="!item.attendence"></v-text-field>
+							<v-select
+								v-model="item.comment"
+								:items="comments"
+								item-text="value"
+								item-value="text"
+								:disabled="!item.attendence"
+								label="Комментарии"
+								multiple
+							>
+							</v-select>
 						</template>
 					</v-data-table>
 				</v-form>
@@ -198,6 +208,9 @@ export default {
 		},
 		equal(){
 			return this.$store.state.equal;
+		},
+		comments(){
+			return this.$store.state.comments;
 		}
 	},
 	beforeCreate(){
@@ -207,11 +220,15 @@ export default {
 		}
 	},
 	async mounted(){
-		var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
-		if(response.status)
+		if(!localStorage.groupStudents){
+			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
+			if(response.status)
+				this.isLoading = false;
+			if(this.currentGroup.change)
+				this.$store.dispatch('ResetEqual',false);
+		} else {
 			this.isLoading = false;
-		if(this.currentGroup.change)
-			this.$store.dispatch('ResetEqual',false);
+		}
 	},
 	beforeMount(){
 		if(Object.entries(this.currentGroup).length == 0)
@@ -222,7 +239,6 @@ export default {
 			this.$store.state.groupStudents = JSON.parse(localStorage.groupStudents);
 		if(Object.entries(this.subTeacher).length == 0)
 			this.$store.state.subTeacher = JSON.parse(localStorage.subTeacher);
-
 	},
 	methods : {
 		async setAttendence(){
@@ -246,6 +262,14 @@ export default {
 					}	
 				}
 			}
+		}
+	},
+	watch:{
+		groupStudents:{
+			handler: function(newValues) {
+				localStorage.groupStudents = JSON.stringify(newValues);
+			},
+			deep: true
 		}
 	}
   }
