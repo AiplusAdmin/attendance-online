@@ -132,6 +132,7 @@ export default {
 			this.$router.push('/');
 		} else {
 			this.groupOffices = this.offices;
+			localStorage.groupStudents = JSON.stringify([]);
 		}
 	},
 	created(){

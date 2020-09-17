@@ -220,7 +220,7 @@ export default {
 		}
 	},
 	async mounted(){
-		if(!localStorage.groupStudents){
+		if(JSON.parse(localStorage.groupStudents).length == 0){
 			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
 			if(response.status)
 				this.isLoading = false;

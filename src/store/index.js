@@ -341,7 +341,7 @@ export default new Vuex.Store({
 	},
 	async GetGroup({commit}, params){
 		try{
-			var teacherId = params.params.change ? params.subTeacher.teacherId:params.params.teacherId;
+			var teacherId = params.params.change ? params.subTeacher.Id:params.params.teacherId;
 			var response = await Api().post('/groups', {params:params.params,teacherId:teacherId});
 			if(response.data.status){
 				var group = response.data.group;
@@ -385,26 +385,31 @@ export default new Vuex.Store({
 			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date});
 			if(response.data){		
 				var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
-				
+				var today = new Date();
+				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
+				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 				if(pass_response.status == 200 && pass_response.statusText === 'OK'){
-					var today = new Date();
-					var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
-					var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id,students: params.students});
 					var isSubmitted = result.data.status;
 					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students});					
 					if(!isSubmitted || (params.group.change || params.group.isOperator)){
 						Api().post('/sendpersonalmessage',params);
 					}
+
+					commit('RESET_GROUP');
+					return {status: true};
+				} else {
+					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});					
+					Api().post('/sendpersonalmessage',params);
+					
+					commit('RESET_GROUP');
 					return {status: true};
 				}
 			} else {
 				commit('RESET_GROUP');
 				return {status: false, text: 'Аттенданс уже заполнен'};
 			}
-			commit('RESET_GROUP');
-
-			return {response};
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}
