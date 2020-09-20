@@ -72,16 +72,16 @@ export default {
 			this.$refs.form.validate();
 		else {
 			var data = await this.$store.dispatch("LogIn", this.login);
-			if(data.status == 200){
+			if(data){
 				if(data.roleId == 2)
 					this.$router.push({ path: `/teacher/${data.teacherId}` });
 				else if(data.roleId == 3)
 					this.$router.push({ path: '/statistics'});
+				else if(data.roleId == 4)
+					this.$router.push({ path: '/journals'});
 			}
-			else if(data.status == 404)
-				alert(data.message);
 			else
-				alert('Ошибка сервером');
+				alert(data.message);
 		} 
 	},
   },

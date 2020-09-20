@@ -174,9 +174,11 @@ export default {
 				this.$refs.form.validate();
 			else {
 				var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-
+				console.log(result);
 				if(result.status)
 					this.$router.push({path: '/group'});	
+				else if(result.logout)
+					this.$router.push('/');
 				else
 					this.dialog = true;
 			}

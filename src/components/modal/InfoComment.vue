@@ -4,7 +4,7 @@
       <template v-slot:activator="{ on, attrs }">
         <v-icon 
 			large
-			color="white"
+			color="#fbab17"
 			v-bind="attrs"
 			v-on="on">
 				mdi-information

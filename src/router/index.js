@@ -5,6 +5,7 @@ import About from '@/views/About'
 import AttendenceList from '@/views/AttendenceList'
 import Journal from '@/views/Journal'
 import Statistic from '@/views/Statistic'
+import AllJournal from '@/views/AllJournal'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ Vue.use(VueRouter)
 	path: '/statistics',
 	name: 'Statistic',
 	component: Statistic
+  },
+  {
+	path: '/journals',
+	name: 'AllJournal',
+	component: AllJournal
   }
 ]
 

@@ -50,12 +50,18 @@
 						hide-default-footer
 						disable-pagination
 					>
-						
+						<template v-slot:top>
+							<v-toolbar flat>
+								<v-toolbar-title>Срез не писали</v-toolbar-title>
+								<v-spacer></v-spacer>
+								<v-switch v-model="srez" class="mt-5" color="#fbab17"></v-switch>
+							</v-toolbar>
+						</template>
 						<template v-slot:[`item.index`]="{ item }">
 							<p>{{groupStudents.indexOf(item) + 1}}</p>
 						</template>
 						<template  v-slot:[`item.attendence`]="{ item }">
-							<v-checkbox v-model="item.attendence"></v-checkbox>
+							<v-checkbox v-model="item.attendence" color="#fbab17"></v-checkbox>
 						</template>
 						<template v-slot:[`item.homework`]="{ item }">
 							<v-select  
@@ -64,6 +70,7 @@
 								:items="homeworks"
 								item-text="text"
 								item-value="value"
+								color="#fbab17"
 								hide-selected
 								:rules="[requiredNumber('Д/з',item.attendence)]" required>
 							</v-select>
@@ -75,6 +82,7 @@
 								:items="tests"
 								item-text="text"
 								item-value="value"
+								color="#fbab17"
 								:rules="[requiredNumber('Срез',item.attendence)]" required>
 							</v-select>
 						</template>
@@ -82,7 +90,8 @@
 							<v-text-field v-model="item.lesson" 
 								type="number" 
 								:disabled="!item.attendence" 
-								min="0" max="100" 
+								min="0" max="100"
+								color="#fbab17"
 								:rules="[requiredNumber('Активность',item.attendence), numberBetween('Активность',item.attendence)]" required>
 							</v-text-field>
 						</template>
@@ -92,6 +101,7 @@
 								:items="comments"
 								item-text="value"
 								item-value="text"
+								color="#fbab17"
 								:disabled="!item.attendence"
 								label="Комментарии"
 								multiple
@@ -182,8 +192,9 @@ export default {
 			isLoading: true	,
 			dialog: false,
 			checkdialog: false,
+			srez: false,
 			code:null,
-			messageModal: 'Успешно добавлен',
+			messageModal: '',
 			...validations
 		}
 	},
@@ -224,6 +235,9 @@ export default {
 			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
 			if(response.status)
 				this.isLoading = false;
+			else if(response.logout)
+				this.$$router.push('/');
+
 			if(this.currentGroup.change)
 				this.$store.dispatch('ResetEqual',false);
 		} else {
@@ -247,14 +261,30 @@ export default {
 			else {
 				if(this.currentGroup.change && !this.equal){
 					var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
-					console.log(code);
 					if(code.status){
 						this.code = code.code;
 						this.checkdialog = true;
+					}else if(code.logout){
+						this.$router.push('/');
 					}
 				}else if(this.equal){
+					var total = 0;
+					this.groupStudents.map(function(student){
+						if(student.attendence){
+							if(student.homework >3 && student.homework <= 7)
+								student.aibaks+=1;
+							if(student.homework >7 && student.homework <= 10)
+								student.aibaks+=2;
+							if(student.lesson > 50 && student.lesson <= 100)
+								student.aibaks+=2;
+
+							console.log(student.aibaks);
+							total+=student.aibaks;
+						}
+					});
 					var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
 					if(response.status){
+						this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}`;
 						this.dialog = true;
 					} else if(!response.status && response.text){
 						this.messageModal = response.text;
@@ -270,6 +300,17 @@ export default {
 				localStorage.groupStudents = JSON.stringify(newValues);
 			},
 			deep: true
+		},
+		srez:function(val){
+			if(val){
+				this.groupStudents.map(function(student){
+					student.test = 12;
+				});
+			} else {
+				this.groupStudents.map(function(student){
+					student.test = null;
+				});
+			}
 		}
 	}
   }
