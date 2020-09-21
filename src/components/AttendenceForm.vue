@@ -57,14 +57,17 @@
 								<v-switch v-model="srez" class="mt-5" color="#fbab17"></v-switch>
 							</v-toolbar>
 						</template>
-						<template v-slot:[`item.index`]="{ item }">
+						<template v-slot:[`item.index`]="{ item }" >
 							<p>{{groupStudents.indexOf(item) + 1}}</p>
+						</template>
+						<template v-slot:[`item.name`]="{ item }" >
+							<p >{{item.name}}</p>
 						</template>
 						<template  v-slot:[`item.attendence`]="{ item }">
 							<v-checkbox v-model="item.attendence" color="#fbab17"></v-checkbox>
 						</template>
 						<template v-slot:[`item.homework`]="{ item }">
-							<v-select  
+							<v-select    v-show="item.attendence"
 								v-model="item.homework" 
 								:disabled="!item.attendence"
 								:items="homeworks"
@@ -76,7 +79,7 @@
 							</v-select>
 						</template>
 						<template v-slot:[`item.test`]="{ item }">
-							<v-select  
+							<v-select  v-show="item.attendence"
 								v-model="item.test" 
 								:disabled="!item.attendence"
 								:items="tests"
@@ -87,7 +90,7 @@
 							</v-select>
 						</template>
 						<template  v-slot:[`item.lesson`]="{ item }">
-							<v-text-field v-model="item.lesson" 
+							<v-text-field v-model="item.lesson" v-show="item.attendence"
 								type="number" 
 								:disabled="!item.attendence" 
 								min="0" max="100"
@@ -96,7 +99,7 @@
 							</v-text-field>
 						</template>
 						<template v-slot:[`item.comment`]="{ item }">
-							<v-select
+							<v-select v-show="item.attendence"
 								v-model="item.comment"
 								:items="comments"
 								item-text="value"
@@ -119,9 +122,25 @@
 		</v-row>
 		<v-row>
 			<v-col cols="12" lg="4" class="px-0">
-				<v-btn class="rounded-btn white--text"  height="50" @click="setAttendence" block rounded>Отправить</v-btn>
+				<v-btn class="rounded-btn white--text"  height="50" :loading="click" @click="setAttendence" block rounded>Отправить</v-btn>
 			</v-col>
 		</v-row>
+		<v-speed-dial
+			bottom
+			right
+			fixed
+		>
+			<template v-slot:activator>
+				<v-btn
+				color="orange"
+				dark
+				fab
+				@click="ScrollTop"
+				>
+					<v-icon>mdi-arrow-up-thick</v-icon>
+				</v-btn>
+			</template>
+		</v-speed-dial>
 		<InfoModal :dialog="dialog" :message="messageModal" path="journal"/>
 		<Check :checkdialog ="checkdialog" :code="code"/>
 	</v-container>
@@ -195,6 +214,7 @@ export default {
 			srez: false,
 			code:null,
 			messageModal: '',
+			click: false,
 			...validations
 		}
 	},
@@ -259,39 +279,47 @@ export default {
 			if(!this.valid)
 				this.$refs.form.validate();
 			else {
-				if(this.currentGroup.change && !this.equal){
-					var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
-					if(code.status){
-						this.code = code.code;
-						this.checkdialog = true;
-					}else if(code.logout){
-						this.$router.push('/');
-					}
-				}else if(this.equal){
-					var total = 0;
-					this.groupStudents.map(function(student){
-						if(student.attendence){
-							if(student.homework >3 && student.homework <= 7)
-								student.aibaks+=1;
-							if(student.homework >7 && student.homework <= 10)
-								student.aibaks+=2;
-							if(student.lesson > 50 && student.lesson <= 100)
-								student.aibaks+=2;
-
-							console.log(student.aibaks);
-							total+=student.aibaks;
+				if(!this.click){
+					this.click = true;
+					if(this.currentGroup.change && !this.equal){
+						var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
+						if(code.status){
+							this.code = code.code;
+							this.checkdialog = true;
+						}else if(code.logout){
+							this.$router.push('/');
 						}
-					});
-					var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
-					if(response.status){
-						this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}`;
-						this.dialog = true;
-					} else if(!response.status && response.text){
-						this.messageModal = response.text;
-						this.dialog = true;
-					}	
+					}else if(this.equal){
+						var total = 0;
+						this.groupStudents.map(function(student){
+							if(student.attendence){
+								if(student.homework >3 && student.homework <= 7)
+									student.aibaks+=1;
+								if(student.homework >7 && student.homework <= 10)
+									student.aibaks+=2;
+								if(student.lesson > 50 && student.lesson <= 100)
+									student.aibaks+=1;
+
+								total+=student.aibaks;
+							}
+						});
+						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
+						if(response.status){
+							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}`;
+							this.click = false;
+							this.dialog = true;
+						} else if(!response.status && response.text){
+							this.messageModal = response.text;
+							this.click = false;
+							this.dialog = true;
+						}	
+					}
 				}
+				
 			}
+		},
+		ScrollTop(){
+			window.scrollTo(0, 0); 
 		}
 	},
 	watch:{

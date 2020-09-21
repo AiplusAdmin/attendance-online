@@ -35,7 +35,7 @@
 					<v-btn class="orange--text" @click="Cancel" rounded text>Отменить</v-btn>
 				</v-card-actions>
 				<v-card-actions>
-					<v-btn class="rounded-btn-orange white--text" height="48" @click="AddStudents" block rounded>Добавить</v-btn>
+					<v-btn class="rounded-btn-orange white--text" :loading="click" :height="48" @click="AddStudents" block rounded>Добавить</v-btn>
 				</v-card-actions>
 			</v-form>
 		</v-card>
@@ -54,6 +54,7 @@ export default {
 			dialog : false,
 			newStudents : [{value:null,icon:'',search:null,isLoading:false}],
 			Students:[[]],
+			click: false,
 			...validations
 		}
 	},
@@ -72,14 +73,17 @@ export default {
 			this.Students.slice(index,1);
 		},
 		async AddStudents(){
-			console.log(this.valid);
 			if(!this.valid)
 				this.$refs.form.validate();
 			else {
-				var response = await this.$store.dispatch('AddStudentGroup', {students: this.newStudents, group: this.$store.state.currentGroup});
-				if(response.status){
-					this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
-					this.dialog = false;
+				if(!this.click){
+					this.click = true;
+					var response = await this.$store.dispatch('AddStudentGroup', {students: this.newStudents, group: this.$store.state.currentGroup});
+					if(response.status){
+						this.click = false;
+						this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
+						this.dialog = false;
+					}
 				}
 			}
 		},

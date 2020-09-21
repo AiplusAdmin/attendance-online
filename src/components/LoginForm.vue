@@ -36,7 +36,7 @@
 			</v-row>
 			<v-row class='d-flex justify-center'>
 				<v-col cols="12" lg="6" >
-					<v-btn class="rounded-btn grey--text text--darken-2 font-weight-bold" @click="loginUser" height="60" primary block>Войти</v-btn>
+					<v-btn class="rounded-btn grey--text text--darken-2 font-weight-bold" :loading="click" @click="loginUser" height="60" primary block>Войти</v-btn>
 				</v-col>
 			</v-row>
 		</v-container>
@@ -57,6 +57,7 @@ export default {
 			remember: false
 		},
 		showPassword: false,
+		click: false,
 		...validations
     }
   },
@@ -71,17 +72,23 @@ export default {
 		if(!this.valid)
 			this.$refs.form.validate();
 		else {
-			var data = await this.$store.dispatch("LogIn", this.login);
-			if(data){
+			if(!this.click){
+				this.click = true;
+				var data = await this.$store.dispatch("LogIn", this.login);
+				if(data){
+					this.click = false;
 				if(data.roleId == 2)
-					this.$router.push({ path: `/teacher/${data.teacherId}` });
-				else if(data.roleId == 3)
-					this.$router.push({ path: '/statistics'});
-				else if(data.roleId == 4)
-					this.$router.push({ path: '/journals'});
+						this.$router.push({ path: `/teacher/${data.teacherId}` });
+					else if(data.roleId == 3)
+						this.$router.push({ path: '/statistics'});
+					else if(data.roleId == 4)
+						this.$router.push({ path: '/journals'});
+				}
+				else
+					alert(data.message);
+			} else {
+				alert('Вы уже нажали кнопку подождите либо обновите страницу');
 			}
-			else
-				alert(data.message);
 		} 
 	},
   },

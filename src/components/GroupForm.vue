@@ -84,7 +84,7 @@
 			<v-divider></v-divider>
 			<v-row class="px-5 pt-9">
 				<v-col>
-					<v-btn class="rounded-btn white--text" @click="getGroup" block rounded height="50">Журнал</v-btn>
+					<v-btn class="rounded-btn white--text" :loading="click" @click="getGroup" block rounded height="50">Журнал</v-btn>
 				</v-col>
 			</v-row>
 			<InfoModal :dialog="dialog" message="Такой группы нет" path=""/>
@@ -122,6 +122,7 @@ export default {
 			isLoading: false,
 			search: null,
 			dialog: false,
+			click: false,
 			...validations
 		}
 	},
@@ -173,14 +174,22 @@ export default {
 			if(!this.valid)
 				this.$refs.form.validate();
 			else {
-				var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-				console.log(result);
-				if(result.status)
-					this.$router.push({path: '/group'});	
-				else if(result.logout)
-					this.$router.push('/');
-				else
-					this.dialog = true;
+				if(!this.click){
+					this.click = true;
+					var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+					if(result.status){
+						this.click = false;
+						this.$router.push({path: '/group'});
+					}	
+					else if(result.logout){
+						this.click = false;
+						this.$router.push('/');
+					}
+					else{
+						this.dialog = true;
+						this.click = false;
+					}
+				}
 			}
 		},
 		getOfficeId(){
