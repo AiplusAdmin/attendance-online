@@ -256,7 +256,7 @@ export default {
 			if(response.status)
 				this.isLoading = false;
 			else if(response.logout)
-				this.$$router.push('/');
+				this.$router.push('/');
 
 			if(this.currentGroup.change)
 				this.$store.dispatch('ResetEqual',false);

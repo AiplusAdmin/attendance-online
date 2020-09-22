@@ -358,6 +358,7 @@ export default new Vuex.Store({
 					var group = response.data.data;
 					group.date = params.params.date;
 					group.change = params.params.change;
+					group.officeId = params.params.officeId;
 					commit('SET_CURRENT_GROUP', group);
 					return {status: true};	
 				}
@@ -402,7 +403,7 @@ export default new Vuex.Store({
 	async SetAttendence({commit}, params){
 		try{
 			
-			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date});
+			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date,officeId:params.group.officeId});
 			if(response.data.status === 200){		
 				var today = new Date();
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
@@ -410,7 +411,7 @@ export default new Vuex.Store({
 				var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
 
 				if(pass_response.data.status == 200){
-					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id,students: params.students});
+					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id, students: params.students});
 					var isSubmitted = result.data.status==200?true:false;
 					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students});					
 					if(params.group.change || params.group.isOperator){
