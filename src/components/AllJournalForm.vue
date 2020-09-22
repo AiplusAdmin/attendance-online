@@ -40,6 +40,10 @@ export default {
 					value: 'Id'
 				},
 				{
+					text: 'Филиал',
+					value: 'Name'
+				},
+				{
 					text: 'Группа',
 					value: 'GroupName'
 				},
