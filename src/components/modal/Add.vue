@@ -79,7 +79,7 @@ export default {
 				if(!this.click){
 					this.click = true;
 					var response = await this.$store.dispatch('AddStudentGroup', {students: this.newStudents, group: this.$store.state.currentGroup});
-					if(response.status){
+					if(response.status == 200){
 						this.click = false;
 						this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
 						this.dialog = false;
@@ -102,7 +102,8 @@ export default {
 					if(value.value == null && this.dialog){
 						value.isLoading = true;
 						var response = await this.$store.dispatch('SearchStudent',value.search);
-						this.Students[index] = response;
+						if(response.status == 200)
+							this.Students[index] = response.data;
 					}
 				});
 			},

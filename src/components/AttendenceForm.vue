@@ -141,7 +141,7 @@
 				</v-btn>
 			</template>
 		</v-speed-dial>
-		<InfoModal :dialog="dialog" :message="messageModal" path="journal"/>
+		<InfoModal :dialog="dialog" :message="messageModal" :path="path"/>
 		<Check :checkdialog ="checkdialog" :code="code"/>
 	</v-container>
 </template>
@@ -214,6 +214,7 @@ export default {
 			srez: false,
 			code:null,
 			messageModal: '',
+			path: null,
 			click: false,
 			...validations
 		}
@@ -253,10 +254,13 @@ export default {
 	async mounted(){
 		if(JSON.parse(localStorage.groupStudents).length == 0){
 			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
-			if(response.status)
+			if(response.status == 200)
 				this.isLoading = false;
-			else if(response.logout)
-				this.$router.push('/');
+			else if(response.status==400 || response.status==401){
+				this.messageModal = 'Ваше время в системе истекло перезайдите';
+				this.path = '/';
+				this.dialog = true;
+			}
 
 			if(this.currentGroup.change)
 				this.$store.dispatch('ResetEqual',false);
@@ -283,39 +287,47 @@ export default {
 					this.click = true;
 					if(this.currentGroup.change && !this.equal){
 						var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
-						if(code.status){
-							this.code = code.code;
+						if(code.status == 200){
+							this.code = code.data;
 							this.checkdialog = true;
-						}else if(code.logout){
+						}else if(code.status == 400 || code.status == 401){
 							this.$router.push('/');
 						}
 					}else if(this.equal){
 						var total = 0;
 						this.groupStudents.map(function(student){
 							if(student.attendence){
-								if(student.homework >3 && student.homework <= 7)
-									student.aibaks+=1;
-								if(student.homework >7 && student.homework <= 10)
-									student.aibaks+=2;
-								if(student.lesson > 50 && student.lesson <= 100)
-									student.aibaks+=1;
-
-								total+=student.aibaks;
+								if(student.aibaks == 0){
+									if(student.homework >3 && student.homework <= 7)
+										student.aibaks+=1;
+									if(student.homework >7 && student.homework <= 10)
+										student.aibaks+=2;
+									if(student.lesson > 50 && student.lesson <= 100)
+										student.aibaks+=1;
+								}
 							}
+							total+=student.aibaks;
 						});
+						console.log(total);
 						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
-						if(response.status){
+						if(response.status == 200){
 							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}`;
+							this.path = '/journal';
 							this.click = false;
 							this.dialog = true;
-						} else if(!response.status && response.text){
+						} else if(response.status == 401 || response.status == 400){
 							this.messageModal = response.text;
+							this.path = '/';
 							this.click = false;
 							this.dialog = true;
-						}	
+						} else if(response.status == 410){
+							this.messageModal = response.text;
+							this.path = '/journal';
+							this.click = false;
+							this.dialog = true;
+						}
 					}
 				}
-				
 			}
 		},
 		ScrollTop(){

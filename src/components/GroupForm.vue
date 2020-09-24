@@ -87,7 +87,7 @@
 					<v-btn class="rounded-btn white--text" :loading="click" @click="getGroup" block rounded height="50">Журнал</v-btn>
 				</v-col>
 			</v-row>
-			<InfoModal :dialog="dialog" message="Такой группы нет" path=""/>
+			<InfoModal :dialog="dialog" :message="message" :path="path" />
 		</v-container>
 	</v-form>
 </template>
@@ -122,18 +122,21 @@ export default {
 			isLoading: false,
 			search: null,
 			dialog: false,
+			path:"",
+			message: "",
 			click: false,
 			...validations
 		}
 	},
 	async mounted(){
 		await this.$store.dispatch('GetTeacherById', this.teacherId);
+		
 		var user = JSON.parse(window.localStorage.currentUser);
+		
 		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
 			this.$router.push('/');
 		} else {
 			this.groupOffices = this.offices;
-			localStorage.groupStudents = JSON.stringify([]);
 		}
 	},
 	created(){
@@ -150,7 +153,7 @@ export default {
 		
 	},
 	computed : {
-		offices(){			
+		offices(){	
 			return this.$store.state.offices;
 		},
 		suboffices(){			
@@ -177,15 +180,21 @@ export default {
 				if(!this.click){
 					this.click = true;
 					var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-					if(result.status){
+					if(result.status == 200){
 						this.click = false;
 						this.$router.push({path: '/group'});
 					}	
-					else if(result.logout){
+					else if(result.status == 401 || result.status == 400){
 						this.click = false;
-						this.$router.push('/');
-					}
-					else{
+						this.message = "Ваше время в системе истекло перезайдите";
+						this.path = "/";
+						this.dialog = true;
+					}else if(result.status == 404){
+						this.message = "Такой группы нет";
+						this.dialog = true;
+						this.click = false;
+					}else if(result.stats == 410){
+						this.message = "Проблема с Hollyhope";
 						this.dialog = true;
 						this.click = false;
 					}
@@ -204,13 +213,17 @@ export default {
 				this.$store.dispatch('ResetSubTeacher');
 			} else {
 				var subTeacher = await this.$store.dispatch('GetTeacherByTeacherFullName',subTeacherFullName);
-				if(subTeacher.TeacherId == this.teacherId){
-					alert('Вы не можете сделать замену');
-					this.$store.dispatch('ResetSubTeacher');
-				}
-				else{
-					await this.$store.dispatch('GetSubTeacher',subTeacher.TeacherId);
-					this.isLoading = false;
+				if(subTeacher.status == 200){
+					if(subTeacher.data.TeacherId == this.teacherId){
+						alert('Вы не можете сделать замену');
+						this.$store.dispatch('ResetSubTeacher');
+					}
+					else{
+						await this.$store.dispatch('GetSubTeacher',subTeacher.data.TeacherId);
+						this.isLoading = false;
+					}
+				} else {
+					this.$router.push('/');
 				}
 			}
 		}
@@ -219,7 +232,10 @@ export default {
 		async search (val) {
 			this.isLoading = true;
 			var response = await this.$store.dispatch('SearchTeacher',val);
-			this.subTeachers = response;
+			if(response.status == 200)
+				this.subTeachers = response.data;
+			else 
+				this.$router.push('/') 
 		},
 		params:{
 			handler: function(newValue){

@@ -40,8 +40,9 @@ export default {
 		CloseModal(){
 			this.$parent.$parent.dialog = false;
 			this.dialog = !this.dialog;
-			if(this.path == 'journal')
-				this.$router.push({path:`/journal`});
+			console.log(this.path);
+			if(this.path)
+				this.$router.push(this.path);
 			
 		}
 	}

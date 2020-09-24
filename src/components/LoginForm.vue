@@ -73,22 +73,28 @@ export default {
 			this.$refs.form.validate();
 		else {
 			if(!this.click){
+				
 				this.click = true;
 				var data = await this.$store.dispatch("LogIn", this.login);
-				if(data){
+				
+				if(data.status == 200){
+					
 					this.click = false;
-				if(data.roleId == 2)
-						this.$router.push({ path: `/teacher/${data.teacherId}` });
-					else if(data.roleId == 3)
+					
+					if(data.data.roleId == 2)
+						this.$router.push({ path: `/teacher/${data.data.teacherId}` });
+					else if(data.data.roleId == 3)
 						this.$router.push({ path: '/statistics'});
-					else if(data.roleId == 4)
+					else if(data.data.roleId == 4)
 						this.$router.push({ path: '/journals'});
-				}
-				else
+
+				}else{
+
+					this.click = false;
 					alert(data.message);
-			} else {
-				alert('Вы уже нажали кнопку подождите либо обновите страницу');
-			}
+					
+				}
+			} 
 		} 
 	},
   },

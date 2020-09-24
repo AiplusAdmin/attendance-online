@@ -36,7 +36,8 @@
 							<v-data-table
 								:headers="expandheaders"
 								:items="expandedStudents"
-								hide-default-footer>
+								hide-default-footer
+								disable-pagination>
 							</v-data-table>
 						</td>
 					</template>
@@ -146,8 +147,14 @@ export default {
 	},
 	methods: {
 		async ShowMore(value){
-			if(value.value)
-				this.expandedStudents = await this.$store.dispatch('GetRegisterDetails', {registerId: value.item.Id,dateFrom: this.dateFrom,dateTo: this.dateTo});
+			if(value.value){
+				var response = await this.$store.dispatch('GetRegisterDetails', {registerId: value.item.Id,dateFrom: this.dateFrom,dateTo: this.dateTo});
+				if(response.status == 200){
+					this.expandedStudents = response.data;
+				} else {
+					this.$router.push('/');
+				}
+			}
 		},
 		highlightClickedRow(value){
 			const tr = value.target.parentNode;
