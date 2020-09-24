@@ -62,7 +62,7 @@ export default new Vuex.Store({
 				value: 10
 			},
 			{
-				text:'Не задовали',
+				text:'Не задавали',
 				value: 11
 			}
 		],
