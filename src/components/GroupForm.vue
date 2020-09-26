@@ -136,13 +136,14 @@ export default {
 		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
 			this.$router.push('/');
 		} else {
+			this.$store.dispatch('ResetGroup');
 			this.groupOffices = this.offices;
 		}
 	},
 	created(){
 		if(localStorage.officeName){
 			this.officeName = localStorage.officeName;
-			this.getOfficeId();
+			this.getOfficeId(this.officeName);
 		}
 		if(localStorage.timeFrom){
 			this.params.timeFrom = localStorage.timeFrom;
@@ -201,12 +202,14 @@ export default {
 				}
 			}
 		},
-		getOfficeId(){
-			this.offices.find(office => {
-				if(office.Name===this.officeName){
-					this.params.officeId=office.Id
+		getOfficeId(officeName){
+			var officeId = null;
+			this.offices.filter(function(office){
+				if(office.Name===officeName){
+					officeId=office.Id
 				}
 			});
+			this.params.officeId = officeId;
 		},
 		async SetSubTeacher(subTeacherFullName){
 			if(subTeacherFullName == undefined){

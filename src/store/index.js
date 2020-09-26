@@ -295,6 +295,12 @@ export default new Vuex.Store({
 			state.currentUser = {};
 			state.currentTeacher = {};
 			window.localStorage.currentUser = JSON.stringify({});
+			state.currentGroup = {};
+			window.localStorage.officeName = "";
+			window.localStorage.timeFrom = "";
+			window.localStorage.timeTo = "";
+			window.localStorage.groupStudents = JSON.stringify([]);
+			window.localStorage.currentGroup = JSON.stringify({});
 		},
 		RESET_SUBTEACHER(state){
 			state.subTeacher = {};
@@ -555,13 +561,18 @@ export default new Vuex.Store({
 	ResetEqual({commit},equal){
 		commit('RESET_EQUAL',equal);
 	},
+	ResetGroup({commit}){
+		commit('RESET_GROUP');
+		
+	},
 	async GetSubTeacher({commit},teacherId){
 		try{
 			var response = await Api().post('/teacher', {teacherId});
-			if(response.data.status == 400 || response.data.status == 401)
+			if(response.data.status == 200)
+				commit('SET_SUBTEACHER',response.data.data[0]);
+			else if(response.data.status == 400 || response.data.status == 401)
 				commit('RESET_CURRENT_USER');
 
-			return response.data;
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}
