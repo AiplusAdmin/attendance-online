@@ -295,6 +295,7 @@ export default new Vuex.Store({
 			state.currentUser = {};
 			state.currentTeacher = {};
 			window.localStorage.currentUser = JSON.stringify({});
+			window.localStorage.currentTeacher = JSON.stringify({});
 			state.currentGroup = {};
 			window.localStorage.officeName = "";
 			window.localStorage.timeFrom = "";

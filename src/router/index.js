@@ -16,10 +16,9 @@ Vue.use(VueRouter)
     component: Home
   },
   {
-    path: '/teacher/:teacherId',
+    path: '/teacher',
     name: 'About',
-	component: About,
-	props: true
+	component: About
   },
   {
 	path: '/group',

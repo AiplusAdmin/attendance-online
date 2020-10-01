@@ -5,7 +5,7 @@
 				<div class="font-weight-bold text-lg-h5">Attendance list</div>
 			</v-col>
 			<v-col>
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="{path:`/teacher/${this.$store.state.currentTeacher.Id}`}">Изменить</router-link>
+				<router-link class="pl-4 orange--text text-decoration-underline" :to="'/teacher'">Изменить</router-link>
 			</v-col>
 			<v-col>
 				<InfoComment />
@@ -39,7 +39,7 @@
 		<v-row>
 			<v-col class="pa-0" cols="12" lg="12">
 				<v-form v-model="valid"  ref="form">
-					<v-data-table
+					<v-data-table class='studentsTable'
 						:value = "groupStudents"
 						:headers = "headers"
 						:items = "groupStudents"
@@ -168,43 +168,36 @@ export default {
 				{
 					text : '№',
 					value : 'index',
-					class : "orange",
 					sortable: false
 				},
 				{
 					text : 'ФИО ребенка',
 					value : 'name',
-					class : "orange"
 				},
 				{
 					text : 'Присутствовал',
 					value : 'attendence',
-					class : "orange"
 				},
 				{ 
 					text : 'Д/з',
 					value: 'homework',
-					class : "orange",
 					sortable: false
 
 				},
 				{ 
 					text : 'Срез',
 					value: 'test',
-					class : "orange",
 					sortable: false
 				},
 				{
 					text : 'Активность',
 					value : 'lesson',
-					class : "orange",
 					sortable: false
 
 				},
 				{
 					text : 'Комментарии',
 					value : 'comment',
-					class : "orange",
 					sortable: false
 				}
 			],

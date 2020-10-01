@@ -62,10 +62,12 @@ export default {
     }
   },
   beforeCreate() {
-    var user = JSON.parse(window.localStorage.currentUser);
-    if (!(Object.keys(user).length === 0 && user.constructor === Object)) {
-		this.$router.push({ path: `/teacher/${user.teacherId}` });
-    }
+	if(window.localStorage.currentUser != undefined){
+		var user = JSON.parse(window.localStorage.currentUser);
+		if (!(Object.keys(user).length === 0 && user.constructor === Object)) {
+			this.$router.push('/teacher');
+		}
+	}
   },
   methods: {
     async loginUser() {
@@ -82,7 +84,7 @@ export default {
 					this.click = false;
 					
 					if(data.data.roleId == 2)
-						this.$router.push({ path: `/teacher/${data.data.teacherId}` });
+						this.$router.push('/teacher');
 					else if(data.data.roleId == 3)
 						this.$router.push({ path: '/statistics'});
 					else if(data.data.roleId == 4)

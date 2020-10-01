@@ -25,6 +25,7 @@
 						:append-outer-icon="student.icon" @click:append-outer="remove(index)"
 						:loading="student.isLoading"
 						:search-input.sync="student.search"
+						:menu-props="{overflowY:true}"
 						no-data-text="Нет Учеников"
 						dense clearable outlined rounded
 						label="ФИО Ученика" color="#fbab17"

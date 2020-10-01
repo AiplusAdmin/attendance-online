@@ -5,7 +5,7 @@
 				<div class="font-weight-bold text-lg-h5">Attendance list</div>
 			</v-col>
 			<v-col>
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="{path:`/teacher/${this.$store.state.currentTeacher.Id}`}">Назад</router-link>
+				<router-link class="pl-4 orange--text text-decoration-underline" :to="'/teacher'">Назад</router-link>
 			</v-col>
 		</v-row>
 		<v-row class="white" justify="start">		

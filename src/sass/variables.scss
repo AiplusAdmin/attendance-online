@@ -15,9 +15,18 @@ $headings: (
    )
 );
 
+.studentsTable{
+	thead {
+		background-image: linear-gradient(to right,rgb(251, 171, 23) 0%,rgb(250, 191, 82) 100%);
+	}
+}
+
+
+
 body{
 	font-family: $body-font-family;
 }
+
 
 
 

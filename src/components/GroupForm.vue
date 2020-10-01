@@ -98,9 +98,6 @@ import validations from '@/utils/validations'
 
 export default {
 	name: 'GroupForm',
-	props: {
-		teacherId : String
-	},
 	components: {
 		InfoModal
 	},
@@ -108,34 +105,37 @@ export default {
 		return {
 			valid: true,
 			params : {
-				teacherId : this.teacherId,
-				officeId: '',
+				teacherId : null,
+				officeId: null,
 				date : new Date().toISOString().substr(0, 10),
-				timeFrom : '',
-				timeTo : '',
+				timeFrom : null,
+				timeTo : null,
 				change: false
 			},
-			officeName: "",
+			officeName: null,
 			subTeachers:[],
 			groupOffices: [],
 			subTeacherName: null,
 			isLoading: false,
 			search: null,
 			dialog: false,
-			path:"",
-			message: "",
+			path : null,
+			message : null,
 			click: false,
 			...validations
 		}
 	},
 	async mounted(){
-		await this.$store.dispatch('GetTeacherById', this.teacherId);
 		
 		var user = JSON.parse(window.localStorage.currentUser);
 		
 		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
-			this.$router.push('/');
+			this.$router.push({path:'/'});
 		} else {
+			var currentTeacher = JSON.parse(window.localStorage.currentTeacher);
+			if(currentTeacher == undefined || (Object.keys(currentTeacher).length === 0 && currentTeacher.constructor === Object))
+				await this.$store.dispatch('GetTeacherById', user.teacherId);
+			this.params.teacherId = user.teacherId;
 			this.$store.dispatch('ResetGroup');
 			this.groupOffices = this.offices;
 		}
@@ -180,24 +180,31 @@ export default {
 			else {
 				if(!this.click){
 					this.click = true;
-					var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-					if(result.status == 200){
-						this.click = false;
-						this.$router.push({path: '/group'});
-					}	
-					else if(result.status == 401 || result.status == 400){
-						this.click = false;
-						this.message = "Ваше время в системе истекло перезайдите";
-						this.path = "/";
-						this.dialog = true;
-					}else if(result.status == 404){
-						this.message = "Такой группы нет";
-						this.dialog = true;
-						this.click = false;
-					}else if(result.stats == 410){
-						this.message = "Проблема с Hollyhope";
-						this.dialog = true;
-						this.click = false;
+					if(this.params.teacherId == undefined || this.params.teacherId == null){
+							this.click = false;
+							this.message = "Обновите либо попробуйте перезайти в систему";
+							this.dialog = true;
+					}else{
+						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+
+						if(result.status == 200){
+							this.click = false;
+							this.$router.push({path: '/group'});
+						}	
+						else if(result.status == 401 || result.status == 400){
+							this.click = false;
+							this.message = "Ваше время в системе истекло перезайдите";
+							this.path = "/";
+							this.dialog = true;
+						}else if(result.status == 404){
+							this.message = "Такой группы нет";
+							this.dialog = true;
+							this.click = false;
+						}else if(result.stats == 410){
+							this.message = "Проблема с Hollyhope";
+							this.dialog = true;
+							this.click = false;
+						}
 					}
 				}
 			}
