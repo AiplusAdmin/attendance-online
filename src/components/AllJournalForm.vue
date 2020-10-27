@@ -15,7 +15,7 @@
 				<v-data-table
 					class="elevation-1 studentsTable"
 					:headers="headers"
-					:items = "adminRegisters"
+					:items = "filteredDesserts"
 					no-data-text = "Нет Записи"
 				>
 					<template v-slot:top>
@@ -118,7 +118,14 @@ export default {
 			return this.headers.filter(function(header){
 				return header.filterable;
 			});
-		}
+		},
+		filteredDesserts() {
+			return this.adminRegisters.filter(d => {
+				return Object.keys(this.filters).every(f => {
+					return this.filters[f].length < 1 || this.filters[f].includes(d[f])
+			});
+		});
+    }
 	},
 	beforeCreate(){
 		var user = JSON.parse(window.localStorage.currentUser);
