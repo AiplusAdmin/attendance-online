@@ -16,9 +16,24 @@
 import LoginForm from '@/components/LoginForm'
 
 export default {
-  name: 'Home',
-  components: {
-	LoginForm
-  }
+	name: 'Home',
+	components: {
+		LoginForm
+	},
+	mounted() {
+		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
+		var group = window.localStorage.currentGroup?JSON.parse(window.localStorage.currentGroup):{};
+		if (!(Object.keys(user).length === 0 && user.constructor === Object)) {
+			if(user.roleId == 2){
+				if (!(Object.keys(group).length === 0 && group.constructor === Object))
+					this.$router.push('/group');
+				else 
+					this.$router.push('/teacher');
+			}else if(user.roleId == 3)
+				this.$router.push({ path: '/statistics'});
+			else if(user.roleId == 4)
+				this.$router.push({ path: '/journals'});
+		}
+	}
 }
 </script>

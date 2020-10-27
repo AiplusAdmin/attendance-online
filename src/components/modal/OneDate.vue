@@ -14,22 +14,27 @@
 					<template v-slot:activator="{ on, attrs }">
 						<v-text-field
 							v-model="date"
-							label="От"
-							prepend-icon="mdi-calendar-multiple"
+							label="Дата"
+							color="#fbab17"
 							readonly
 							v-bind="attrs"
 							v-on="on"
-						></v-text-field>
+						>
+							<template v-slot:prepend>
+								<v-icon color="#fbab17">mdi-calendar-multiple</v-icon>
+							</template>
+						</v-text-field>
 					</template>
 					<v-date-picker
 						v-model="date"
 						type="date"
 						locale="ru"
+						color="#fbab17"
 						first-day-of-week="1"
 						no-title>
 						<v-spacer></v-spacer>
-						<v-btn text color="primary" @click="menu = false">ОТМЕНИТЬ</v-btn>
-						<v-btn text color="primary" @click="GetRegister">ОК</v-btn>
+						<v-btn text color="orange" @click="menu = false">ОТМЕНИТЬ</v-btn>
+						<v-btn text color="orange" @click="GetRegister">ОК</v-btn>
 					</v-date-picker>
 				</v-menu>
 			</v-col>

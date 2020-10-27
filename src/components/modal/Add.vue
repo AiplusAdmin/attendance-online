@@ -1,17 +1,17 @@
 <template>
   <v-row class="d-flex justify-end">
     <v-dialog  v-model="dialog" persistent max-width="400">
-      <template  v-slot:activator="{ on, attrs }">
-        <v-btn
-			class = "rounded-btn px-5 py-6"
-			v-bind="attrs"
-			v-on="on"
-			rounded
-        >
-			<v-icon class = "grey--text text--darken-2" left>mdi-plus</v-icon>
-			<span class="pl-4 grey--text text--darken-2">ДОБАВИТЬ УЧЕНИКА</span>
-        </v-btn>
-      </template>
+		<template  v-slot:activator="{ on, attrs }">
+			<v-btn
+				color="orange mr-1"
+				dark
+				fab
+				v-bind="attrs"
+				v-on="on"
+				>
+					<v-icon>mdi-account-multiple-plus-outline</v-icon>
+			</v-btn>
+		</template>
 		<v-card class="py-9 px-5">
 			<v-form v-model="valid" ref="form"> 
 				<v-card-title class="pb-11 headline align-center justify-center font-weight-bold text-lg-h6">Добавить ученика</v-card-title>

@@ -1,17 +1,25 @@
 <template>
 	<v-container>
-		<v-row class="d-flex flex-row" align="center">
-			<v-col cols="12" lg="2">
-				<div class="font-weight-bold text-lg-h5">Attendance list</div>
-			</v-col>
-			<v-col>
+		<v-row>
+			<v-col class = "pa-0" cols="12" lg="2">
 				<router-link class="pl-4 orange--text text-decoration-underline" :to="'/teacher'">Назад</router-link>
 			</v-col>
 		</v-row>
-		<v-row class="white" justify="start">		
+		<v-row class="d-flex flex-row" align="center">
+			<v-col cols="12" lg="2">
+				<div class="font-weight-bold grey--text text--darken-3 text-h5">Журнал</div>
+			</v-col>
+		</v-row>
+		<v-row class="white journal-round" justify="start">		
 			<v-col cols = "12" lg = "4" class="currentTeacher">
-				<span class="font-weight-bold grey--text text--darken-2">Тренер</span>
-				<p>{{currentTeacher.LastName +' '+currentTeacher.FirstName + ' ' + currentTeacher.MiddleName}}</p>
+				<v-list class="pa-0 listnone">
+					<v-subheader class="pa-0 text-subtitle-2 text-uppercase font-weight-bold grey--text text--darken-2">Учитель</v-subheader>
+					<v-list-item dense inactive class="pa-0 teacher-rounded">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="currentUser.lastname + ' ' + currentUser.firstname"></v-list-item-title>
+						</v-list-item-content>
+					</v-list-item>
+				</v-list>
 			</v-col>
 			<v-col cols="12" lg="6">
 				<DateModal />
@@ -19,8 +27,8 @@
 		</v-row>
 		<v-row>
 			<v-col class = "px-0" cols="12" lg="12">
-				<v-data-table
-					class="elevation-1"
+				<v-data-table 
+					class="studentsTable elevation-1"
 					:headers="headers"
 					:items = "currentRegister"
 					item-key="Id"
@@ -91,31 +99,39 @@ export default {
 			expandheaders: [
 				{
 					text: 'ID',
-					value: 'ClientId'
+					value: 'ClientId',
+					sortable: false
+
 				},
 				{
 					text: 'ФИО студента',
-					value: 'FullName'
+					value: 'FullName',
+					sortable: false
 				},
 				{
 					text: 'Присутвовал',
-					value: 'Pass'
+					value: 'Pass',
+					sortable: false
 				},
 				{
 					text: 'Д.з',
-					value: 'homework'
+					value: 'homework',
+					sortable: false
 				},
 				{
 					text: 'Срез',
-					value: 'test'
+					value: 'test',
+					sortable: false
 				},
 				{
 					text: 'Активность',
-					value: 'lesson'
+					value: 'lesson',
+					sortable: false
 				},
 				{
 					text: 'Комментарии',
-					value: 'Comment'
+					value: 'Comment',
+					sortable: false
 				},
 			],
 			expanded: [],
@@ -130,12 +146,9 @@ export default {
 		},
 		currentRegister(){
 			return this.$store.state.currentRegister;
-		}
-	},
-	beforeCreate(){
-		var user = JSON.parse(window.localStorage.currentUser);
-		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
-			this.$router.push('/');
+		},
+		currentUser(){
+			return this.$store.state.currentUser;
 		}
 	},
 	async mounted(){
@@ -173,5 +186,7 @@ export default {
 </script>
 
 <style scoped>
-
+	.journal-round{
+		border-radius: 12px;
+	}
 </style>

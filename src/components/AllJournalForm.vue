@@ -13,11 +13,25 @@
 		<v-row>
 			<v-col class = "px-0" cols="12" lg="12">
 				<v-data-table
-					class="elevation-1"
+					class="elevation-1 studentsTable"
 					:headers="headers"
 					:items = "adminRegisters"
 					no-data-text = "Нет Записи"
 				>
+					<template v-slot:top>
+						<v-row class="align-center justify-space-around px-2">
+							<v-col class="pt-6 pb-0" v-for="header in filterHeaders" :key="header.text">
+								<v-select 
+									rounded outlined flat multiple clearable dense
+									color="#fbab17"
+									:label="header.text"
+									:items="columnValueList(header.value)" 
+									item-color='#fbab17'
+									v-model="filters[header.value]">
+								</v-select>
+							</v-col>
+						</v-row>
+					</template>
 				</v-data-table>
 			</v-col>
 		</v-row>
@@ -41,15 +55,23 @@ export default {
 				},
 				{
 					text: 'Филиал',
-					value: 'Name'
+					value: 'Name',
+					filterable: true
+				},
+				{
+					text: 'Отделение',
+					value: 'Branch',
+					filterable: true
 				},
 				{
 					text: 'Группа',
-					value: 'GroupName'
+					value: 'GroupName',
+					filterable: true
 				},
 				{
 					text: 'Время',
-					value: 'Time'
+					value: 'Time',
+					filterable: true
 				},
 				{
 					text: 'Дни обучения',
@@ -69,7 +91,8 @@ export default {
 				},
 				{
 					text: 'Преподаватель',
-					value: 'FullName'
+					value: 'FullName',
+					filterable: true
 				},
 				{
 					text: 'Кол. Учеников',
@@ -77,12 +100,24 @@ export default {
 				},
 			
 			],
+			filters: {
+				Name: [],
+				GroupName: [],
+				Time: [],
+				FullName: [],
+				Branch: []
+			},
 			date: null
 		}
 	},
 	computed : {
 		adminRegisters(){
 			return this.$store.state.adminRegisters;
+		},
+		filterHeaders:function(){
+			return this.headers.filter(function(header){
+				return header.filterable;
+			});
 		}
 	},
 	beforeCreate(){
@@ -93,6 +128,11 @@ export default {
 	},
 	async mounted(){
 		await this.$store.dispatch('GetRegisterToAdmin',{date: new Date().toISOString().substr(0, 10)});
+	},
+	methods:{
+		columnValueList(val) {
+			return this.adminRegisters.map(d => d[val]);
+		}
 	}
 }
 </script>

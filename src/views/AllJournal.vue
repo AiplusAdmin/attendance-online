@@ -24,9 +24,13 @@ export default {
 	components: {
 		AllJournalForm
 	},
-	computed: {
-		currentTeacher(){
-			return this.$store.state.currentTeacher;
+	mounted() {
+		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
+		
+		if (user == undefined || (Object.keys(user).length === 0 && user.constructor === Object)) {
+			this.$router.push({path:'/'});
+		} else {
+			this.$store.state.currentUser = user;
 		}
 	},
 	methods: {

@@ -176,7 +176,9 @@ export default new Vuex.Store({
 			text: 'Превосходит уровень группы (Возможно нужно поменять группу).'
 		}
 	],
-	tests : [{
+	tests : 
+	[
+			{
 				text:'0',
 				value: 0
 			},
@@ -237,6 +239,13 @@ export default new Vuex.Store({
 			state.currentUser = user;
 			window.localStorage.currentUser = JSON.stringify(user);
 		},
+		UPDATE_CURRENT_USER(state,fio){
+			var user = JSON.parse(window.localStorage.currentUser);
+			user.firstname = fio[1]?fio[1]:user.firstname;
+			user.lastname = fio[0]?fio[0]:user.lastname;
+			state.currentUser = user;
+			window.localStorage.currentUser = JSON.stringify(user);
+		},
 		SET_CURRENT_GROUP(state,group){
 			state.currentGroup = group;
 			window.localStorage.currentGroup = JSON.stringify(group);
@@ -285,21 +294,30 @@ export default new Vuex.Store({
 		},
 		RESET_GROUP(state){
 			state.currentGroup = {};
+			state.subTeacher = {};
 			window.localStorage.officeName = "";
 			window.localStorage.timeFrom = "";
 			window.localStorage.timeTo = "";
 			window.localStorage.groupStudents = JSON.stringify([]);
 			window.localStorage.currentGroup = JSON.stringify({});
+			window.localStorage.subTeacher = JSON.stringify({});
 		},
 		RESET_CURRENT_USER(state){
 			state.currentUser = {};
+			window.localStorage.currentUser = JSON.stringify({});
+		},
+		RESET_LOGOUT(state){
+			state.currentUser = {};
 			state.currentTeacher = {};
+			state.subTeacher = {};
 			window.localStorage.currentUser = JSON.stringify({});
 			window.localStorage.currentTeacher = JSON.stringify({});
+			window.localStorage.subTeacher = JSON.stringify({});
 			state.currentGroup = {};
 			window.localStorage.officeName = "";
 			window.localStorage.timeFrom = "";
 			window.localStorage.timeTo = "";
+			window.localStorage.change = false;
 			window.localStorage.groupStudents = JSON.stringify([]);
 			window.localStorage.currentGroup = JSON.stringify({});
 		},
@@ -319,7 +337,7 @@ export default new Vuex.Store({
 		commit('SET_TIMES_TO',timeFrom);
 	},
 	LogOut({commit}){
-		commit('RESET_CURRENT_USER');
+		commit('RESET_LOGOUT');
 	},
 	async LogIn({commit},login){
 		try{
@@ -395,6 +413,7 @@ export default new Vuex.Store({
 	},
 	async SetAttendence({commit}, params){
 		try{
+			var isDelete =  params.students.some((student)=> student.delete);
 			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date,officeId:params.group.officeId});
 			if(response.data.status == 200){		
 				var today = new Date();
@@ -406,7 +425,7 @@ export default new Vuex.Store({
 					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id, students: params.students});
 					var isSubmitted = result.data.status==200?true:false;
 					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students});					
-					if(params.group.change || params.group.isOperator){
+					if(params.group.change || params.group.isOperator || isDelete){
 						Api().post('/sendmessagetelegram',params);
 					}
 
@@ -414,7 +433,9 @@ export default new Vuex.Store({
 					return {status: 200};
 				} else {
 					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});					
-					//Api().post('/sendmessagetelegram',params);
+					if(params.group.change || params.group.isOperator || isDelete){
+						Api().post('/sendmessagetelegram',params);
+					}
 					commit('RESET_GROUP');
 					return {status: 500};
 				}
@@ -468,7 +489,7 @@ export default new Vuex.Store({
 						commit('ADD_STUDENT_GROUP',{attendence: true, clientid: result.data.data, name: student.value, status: true, aibaks: 0});
 						commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: true});
 					}
-				}else if(response.data.status == 404){
+				}else if(result.data.status == 404){
 					commit('ADD_STUDENT_GROUP',{attendence: true, clientid: -1, name: student.value, status: true});
 					commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: true});
 				} else if(result.data.status == 401 || result.data.status == 400){
@@ -574,6 +595,18 @@ export default new Vuex.Store({
 			else if(response.data.status == 400 || response.data.status == 401)
 				commit('RESET_CURRENT_USER');
 
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async EditPersonal({commit},params){
+		try{
+			var response = await Api().post('editpersonal',params);
+		
+			if(response.data.status == 200)
+				commit('UPDATE_CURRENT_USER',response.data.data);
+	
+			return response.data;
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}

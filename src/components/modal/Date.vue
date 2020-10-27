@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-row>
-			<v-col cols="12" lg="6">
+			<v-col cols="6" lg="6">
 				<v-menu
 					ref="menuFrom"
 					v-model="menuFrom"
@@ -15,6 +15,7 @@
 						<v-text-field
 							v-model="dateFrom"
 							label="От"
+							color="#fbab17"
 							prepend-icon="mdi-calendar-multiple"
 							readonly
 							v-bind="attrs"
@@ -25,15 +26,16 @@
 						v-model="dateFrom"
 						type="date"
 						locale="ru"
+						color="#fbab17"
 						first-day-of-week="1"
 						no-title>
 						<v-spacer></v-spacer>
-						<v-btn text color="primary" @click="menuFrom = false">ОТМЕНИТЬ</v-btn>
-						<v-btn text color="primary" @click="GetRegister">ОК</v-btn>
+						<v-btn text color="orange" @click="menuFrom = false">ОТМЕНИТЬ</v-btn>
+						<v-btn text color="orange" @click="GetRegister">ОК</v-btn>
 					</v-date-picker>
 				</v-menu>
 			</v-col>
-			<v-col cols="12" lg="6">
+			<v-col cols="6" lg="6">
 				<v-menu
 					ref="menuTo"
 					v-model="menuTo"
@@ -47,6 +49,7 @@
 						<v-text-field
 							v-model="dateTo"
 							label="До"
+							color="#fbab17"
 							prepend-icon="mdi-calendar-multiple"
 							readonly
 							v-bind="attrs"
@@ -56,12 +59,13 @@
 					<v-date-picker
 						v-model="dateTo"
 						type="date"
+						color="#fbab17"
 						locale="ru"
 						first-day-of-week="1"
 						no-title>
 						<v-spacer></v-spacer>
-						<v-btn text color="primary" @click="menuTo = false">ОТМЕНИТЬ</v-btn>
-						<v-btn text color="primary" @click="GetRegister">ОК</v-btn>
+						<v-btn text color="orange" @click="menuTo = false">ОТМЕНИТЬ</v-btn>
+						<v-btn text color="orange" @click="GetRegister">ОК</v-btn>
 					</v-date-picker>
 				</v-menu>
 			</v-col>

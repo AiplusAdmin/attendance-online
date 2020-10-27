@@ -55,10 +55,10 @@
 			</v-row>
 			<v-divider></v-divider>
 			<v-row class="px-5" align="center" justify="center">
-				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" lg="4" >
+				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" sm="3" >
 					<span>Время занятии </span> 
 				</v-col>
-				<v-col cols="12" lg="3">	
+				<v-col cols="5" sm="4">	
 					<v-select v-model="params.timeFrom"
 							@change="changeTimeFrom" 
 							:items="timesFrom"
@@ -68,10 +68,10 @@
 							:rules="[required('Начала время')]" required>
 					</v-select>
 				</v-col>
-				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" lg="1">
-					<span> - </span>
+				<v-col class="grey--text text--darken-2" cols="1">
+					<span>-</span> 
 				</v-col>
-				<v-col cols="12" lg="3">	
+				<v-col cols="5" sm="4">	
 					<v-select v-model="params.timeTo"
 							:items="timesTo"
 							label="00:00"
@@ -84,7 +84,7 @@
 			<v-divider></v-divider>
 			<v-row class="px-5 pt-9">
 				<v-col>
-					<v-btn class="rounded-btn white--text" :loading="click" @click="getGroup" block rounded height="50">Журнал</v-btn>
+					<v-btn class="rounded-btn white--text" :loading="click" @click="getGroup" block rounded height="50">Attendance list</v-btn>
 				</v-col>
 			</v-row>
 			<InfoModal :dialog="dialog" :message="message" :path="path" />
@@ -126,19 +126,22 @@ export default {
 		}
 	},
 	async mounted(){
-		
-		var user = JSON.parse(window.localStorage.currentUser);
-		
-		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
-			this.$router.push({path:'/'});
-		} else {
-			var currentTeacher = JSON.parse(window.localStorage.currentTeacher);
-			if(currentTeacher == undefined || (Object.keys(currentTeacher).length === 0 && currentTeacher.constructor === Object))
+		var currentTeacher = localStorage.currentTeacher?JSON.parse(localStorage.currentTeacher):{};
+		if((Object.keys(currentTeacher).length === 0 && currentTeacher.constructor === Object)){
+
+			var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
+			
+			if (Object.keys(user).length === 0 && user.constructor === Object) 
+				this.$router.push({path:'/'});
+			else{
 				await this.$store.dispatch('GetTeacherById', user.teacherId);
-			this.params.teacherId = user.teacherId;
-			this.$store.dispatch('ResetGroup');
-			this.groupOffices = this.offices;
-		}
+			}
+		}else 
+			this.$store.state.offices = currentTeacher.Offices;
+						
+		this.groupOffices = this.$store.state.offices;
+		this.$store.dispatch('ResetGroup');
+			
 	},
 	created(){
 		if(localStorage.officeName){
@@ -151,11 +154,16 @@ export default {
 		}
 		if(localStorage.timeTo)
 			this.params.timeTo = localStorage.timeTo;
-		
+		if(localStorage.currentUser)
+			this.$store.state.currentUser = JSON.parse(localStorage.currentUser);
+
 	},
 	computed : {
 		offices(){	
 			return this.$store.state.offices;
+		},
+		currentUser(){
+			return this.$store.state.currentUser;
 		},
 		suboffices(){			
 			return this.$store.state.suboffices;
@@ -180,6 +188,8 @@ export default {
 			else {
 				if(!this.click){
 					this.click = true;
+					
+					this.params.teacherId = this.currentUser.teacherId;
 					if(this.params.teacherId == undefined || this.params.teacherId == null){
 							this.click = false;
 							this.message = "Обновите либо попробуйте перезайти в систему";
@@ -187,7 +197,11 @@ export default {
 					}else{
 						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
 
-						if(result.status == 200){
+						if(result == undefined){
+							this.message = "Проблемы с системой Hollyhope";
+							this.dialog = true;
+							this.click = false;
+						}else if(result.status == 200){
 							this.click = false;
 							this.$router.push({path: '/group'});
 						}	
@@ -230,6 +244,7 @@ export default {
 					}
 					else{
 						await this.$store.dispatch('GetSubTeacher',subTeacher.data.TeacherId);
+						localStorage.subTeacher = JSON.stringify(this.subTeacher);
 						this.isLoading = false;
 					}
 				} else {

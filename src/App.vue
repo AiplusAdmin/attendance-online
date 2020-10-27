@@ -4,11 +4,11 @@
 		<v-main>
 			<router-view/>
 		</v-main>
-		<v-footer class='justify-center' color="grey darken-2" >
+		<v-footer class='justify-center' color="grey darken-1" >
 			<v-row > 
 				<v-col class="text-center"  cols="12">
 					<span class="orange--text font-weight-bold">AIPLUS. </span>
-					<span class="grey--text text--darken-1 font-weight-bold">ATTENDANCE . 2020</span>
+					<span class="white--text font-weight-bold">ATTENDANCE. 2020 г.</span>
 				</v-col>
 			</v-row>
 		</v-footer>

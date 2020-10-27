@@ -109,12 +109,6 @@ export default {
 			return this.$store.state.currentRegister;
 		}
 	},
-	beforeCreate(){
-		var user = JSON.parse(window.localStorage.currentUser);
-		if ((Object.keys(user).length === 0 && user.constructor === Object)) {
-			this.$router.push('/');
-		}
-	},
 	async mounted(){
 		await this.$store.dispatch('GetUniqueRegister');
 	},
