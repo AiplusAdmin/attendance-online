@@ -318,7 +318,7 @@
 													item-value="text"
 													color="#fbab17"
 													item-color='#fbab17'
-													hide-selected
+													clearable
 													placeholder="Комментарии"
 													multiple>
 												</v-select>
