@@ -11,7 +11,7 @@ export default new Vuex.Store({
 	subTeacher: {},
 	currentGroup : {},
 	groupStudents: [],
-	timesFrom : ['08:00','08:45','09:15','09:30','10:15','10:45','11:00','11:45','12:15','12:30','12:45','13:30','13:45','14:30','15:00','15:15','16:00','16:45','17:30','18:15','19:00','19:45'],
+	timesFrom : ['08:00','08:45','09:15','09:30','10:15','10:45','11:00','11:45','12:15','12:30','12:45','13:00','13:30','13:45','14:30','15:00','15:15','16:00','16:45','17:30','18:15','19:00','19:45'],
 	timesTo : ['00:00'],
 	offices : [],
 	equal: true,
@@ -278,11 +278,16 @@ export default new Vuex.Store({
 			var mm = parseInt(seconds/60);
 			var ss = seconds%60==0 ? '00' : seconds%60;
 			var halfLesson = mm<10? '0'+mm+':'+ss:mm+':'+ss;
-			seconds+=45;
+			seconds+=15;
+			mm = parseInt(seconds/60);
+			ss = seconds%60==0 ? '00' : seconds%60;
+			var hourLesson = mm<10? '0'+mm+':'+ss:mm+':'+ss;			
+			seconds+=30;
 			mm = parseInt(seconds/60);
 			ss = seconds%60==0 ? '00' : seconds%60;
 			var fullLesson = mm<10? '0'+mm+':'+ss:mm+':'+ss;
 			state.timesTo.push(halfLesson);
+			state.timesTo.push(hourLesson);
 			state.timesTo.push(fullLesson);
 		},
 		SET_GROUP_DETAILS(state,params){
