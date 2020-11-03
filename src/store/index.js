@@ -418,30 +418,22 @@ export default new Vuex.Store({
 	},
 	async SetAttendence({commit}, params){
 		try{
-			var isDelete =  params.students.some((student)=> student.delete);
 			var response = await Api().post('/registeramount',{groupId:params.group.Id,lessonDate: params.group.date,officeId:params.group.officeId});
 			if(response.data.status == 200){		
 				var today = new Date();
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
 				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-				var pass_response = await Api().post('/setpasses',{date: params.group.date, groupId: params.group.Id, students: params.students});
+	
+				var pass_response = await Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});
 
 				if(pass_response.data.status == 200){
-					var result = await Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id, students: params.students});
-					var isSubmitted = result.data.status==200?true:false;
-					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: isSubmitted, students: params.students});					
-					if(params.group.change || params.group.isOperator || isDelete){
-						Api().post('/sendmessagetelegram',params);
-					}
+					Api().post('/sendmessagetelegram',params);
 
+					Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id, students: params.students, register:pass_response.data.data});
+									
 					commit('RESET_GROUP');
 					return {status: 200};
 				} else {
-					Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});					
-					if(params.group.change || params.group.isOperator || isDelete){
-						Api().post('/sendmessagetelegram',params);
-					}
-					commit('RESET_GROUP');
 					return {status: 500};
 				}
 			} else if(response.data.status == 401 || response.data.status == 400){
@@ -495,7 +487,7 @@ export default new Vuex.Store({
 						commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: true});
 					}
 				}else if(result.data.status == 404){
-					commit('ADD_STUDENT_GROUP',{attendence: true, clientid: -1, name: student.value, status: true});
+					commit('ADD_STUDENT_GROUP',{attendence: true, clientid: -1, name: student.value, status: true,aibaks: 0});
 					commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: true});
 				} else if(result.data.status == 401 || result.data.status == 400){
 					status = result.data.status;

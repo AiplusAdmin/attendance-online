@@ -529,7 +529,12 @@ export default {
 							this.path = '/journal';
 							this.click = false;
 							this.dialog = true;
-						} else if(response.status == 401 || response.status == 400){
+						} else if(response.status == 500){
+							this.messageModal = `Обновите и попробуйте еще раз либо перезайдите`;
+							this.path = null;
+							this.click = false;
+							this.dialog = true;
+						}else if(response.status == 401 || response.status == 400){
 							this.messageModal = response.text;
 							this.path = '/';
 							this.click = false;

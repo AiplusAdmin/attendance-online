@@ -69,6 +69,11 @@ export default {
 					filterable: true
 				},
 				{
+					text: 'Предмет',
+					value: 'Subject',
+					filterable: true
+				},
+				{
 					text: 'Время',
 					value: 'Time',
 					filterable: true
@@ -94,8 +99,12 @@ export default {
 					value: 'FullName',
 					filterable: true
 				},
-				{
+				{	
 					text: 'Кол. Учеников',
+					value: 'Passed'
+				},
+				{
+					text: 'Общ. Кол. Учеников',
 					value: 'All'
 				},
 			
@@ -103,6 +112,7 @@ export default {
 			filters: {
 				Name: [],
 				GroupName: [],
+				Subject: [],
 				Time: [],
 				FullName: [],
 				Branch: []
