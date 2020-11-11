@@ -20,7 +20,6 @@
 						v-model="student.value"
 						:items="Students[index]"
 						item-text="FullName"
-						item-value="FullName"
 						@input="SetStudent(student)"
 						:append-outer-icon="student.icon" @click:append-outer="remove(index)"
 						:loading="student.isLoading"
@@ -28,8 +27,9 @@
 						:menu-props="{overflowY:true}"
 						no-data-text="Нет Учеников"
 						dense clearable outlined rounded
+						return-object
 						label="ФИО Ученика" color="#fbab17"
-						:rules="[required('Новый ученик')]" required>
+						:rules="[requiredObject('Новый ученик')]" required>
 					</v-autocomplete>				
 					<v-btn class = "rounded-btn grey--text text--darken-2" @click="add" block rounded left><v-icon left>mdi-plus</v-icon>Добавить ученика</v-btn>
 				<v-card-actions class="pt-11 pb-0 align-center justify-center">
@@ -102,7 +102,7 @@ export default {
 				newValues.map(async (value,index) =>{
 					if(value.value == null && this.dialog){
 						value.isLoading = true;
-						var response = await this.$store.dispatch('SearchStudent',value.search);
+						var response = await this.$store.dispatch('SearchStudent',{value:value.search,group: this.$store.state.currentGroup.name});
 						if(response.status == 200)
 							this.Students[index] = response.data;
 					}

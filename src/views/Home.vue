@@ -27,8 +27,8 @@ export default {
 			if(user.roleId == 2){
 				if (!(Object.keys(group).length === 0 && group.constructor === Object))
 					this.$router.push('/group');
-				else 
-					this.$router.push('/teacher');
+				else
+					this.$router.push({path:`teacher/${user.teacherId}`});
 			}else if(user.roleId == 3)
 				this.$router.push({ path: '/statistics'});
 			else if(user.roleId == 4)

@@ -1,11 +1,16 @@
 <template>
 	<v-container fluid>
 		<v-row class="d-flex justify-space-around align-center">
-			<v-col cols="12" xl="2" lg="2">
-				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115"></v-img>
+			<v-col class="align-center" cols="7" sm="8" >
+				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115" ></v-img>
 			</v-col>
-			<v-col class="d-flex justify-end align-center" cols="12" xl="4" lg="4">
-				<a class="pl-4 orange--text text-decoration-underline" @click="LogOut" >выйти</a>
+			<v-col class="pt-4" cols="3" sm="1" lg="2">
+				<Edit />
+			</v-col>
+			<v-col  class="align-center" cols="2" sm="1" >
+				<v-btn icon class="pl-4 orange--text" @click="LogOut">
+					<v-icon>mdi-export</v-icon>
+				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row>

@@ -2,6 +2,10 @@ var required = (propertyType) => {
 	return v => v && v.length > 0 || `Заполните объязательное поле ${propertyType}`;
 }
 
+var requiredObject = (propertyType) => {
+	return v => v && !(Object.keys(v).length === 0 && v.constructor === Object) || `Заполните объязательное поле ${propertyType}`;
+}
+
 var requiredNumber = (propertyType,ok) => {
 	if(!ok) return true;
 	return v => !isNaN(v) || `Заполните объязательное поле ${propertyType}`;
@@ -32,4 +36,5 @@ export default {
 	emailFormat,
 	numberBetween,
 	requiredNumber,
+	requiredObject
 }

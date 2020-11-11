@@ -2,7 +2,7 @@
 	<v-container>
 		<v-row class="d-flex flex-row primary" align="center">
 			<v-col>
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="'/teacher'" v-text="'Изменить'"><v-icon color="#fbab17">mdi-chevron-left</v-icon></router-link>
+				<router-link class="pl-4 orange--text text-decoration-underline" :to="`/teacher/${currentTeacher.Id}`" v-text="'Изменить'"><v-icon color="#fbab17">mdi-chevron-left</v-icon></router-link>
 			</v-col>
 			<v-spacer></v-spacer>
 			<v-col>
@@ -63,6 +63,39 @@
 							</v-list-item-content>
 							<v-list-item-content>
 								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="currentGroup.time"></v-list-item-title>
+							</v-list-item-content>
+						</v-list-item>
+						<v-list-item inactive>
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Предмет</v-list-item-title>
+							</v-list-item-content>
+							<v-list-item-content>
+								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="currentGroup.subject"></v-list-item-title>
+							</v-list-item-content>
+						</v-list-item>
+						<v-list-item inactive>
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Отделение</v-list-item-title>
+							</v-list-item-content>
+							<v-list-item-content>
+								<v-list-item-title v-if="currentGroup.branch == 'РО'" class="grey--text text--darken-1 text-right" v-text="'Русское'"></v-list-item-title>
+								<v-list-item-title v-else class="grey--text text--darken-1 text-right" v-text="'Русское'"></v-list-item-title>
+							</v-list-item-content>
+						</v-list-item>
+						<v-list-item inactive>
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень среза</v-list-item-title>
+							</v-list-item-content>
+							<v-list-item-content>
+								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="currentGroup.level"></v-list-item-title>
+							</v-list-item-content>
+						</v-list-item>
+						<v-list-item inactive>
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Ученики</v-list-item-title>
+							</v-list-item-content>
+							<v-list-item-content>
+								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="groupStudents.length"></v-list-item-title>
 							</v-list-item-content>
 						</v-list-item>
 					</v-list-item-group>
@@ -353,6 +386,7 @@
 		</v-speed-dial>
 		<InfoModal :dialog="dialog" :message="messageModal" :path="path"/>
 		<Check :checkdialog ="checkdialog" :code="code"/>
+		<Loading :overlay="overlay"/>
 	</v-container>
 </template>
 
@@ -362,6 +396,7 @@ import InfoModal from '@/components/modal/Info'
 import validations from '@/utils/validations'
 import InfoComment from '@/components/modal/InfoComment'
 import Check from '@/components/modal/Check'
+import Loading from '@/components/modal/Loading'
 
 export default {
     name: 'AttendenceForm',
@@ -369,7 +404,8 @@ export default {
 		AddStudent,
 		InfoModal,
 		InfoComment,
-		Check
+		Check,
+		Loading
 	},
     data (){
 		return {
@@ -420,7 +456,8 @@ export default {
 			path: null,
 			click: false,
 			isMobile: false,
-			...validations
+			...validations,
+			overlay: false,
 		}
 	},
 	computed : {
@@ -523,7 +560,9 @@ export default {
 							}
 						});
 						console.log(total);
+						this.overlay = true;
 						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
+						this.overlay = false;
 						if(response.status == 200){
 							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}`;
 							this.path = '/journal';

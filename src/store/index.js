@@ -13,6 +13,7 @@ export default new Vuex.Store({
 	groupStudents: [],
 	timesFrom : ['08:00','08:45','09:15','09:30','10:15','10:45','11:00','11:45','12:15','12:30','12:45','13:00','13:30','13:45','14:30','15:00','15:15','16:00','16:45','17:30','18:15','19:00','19:45'],
 	timesTo : ['00:00'],
+	srezLevel: ['A','B','C','Нет'],	
 	offices : [],
 	equal: true,
 	suboffices : [],
@@ -250,6 +251,11 @@ export default new Vuex.Store({
 			state.currentGroup = group;
 			window.localStorage.currentGroup = JSON.stringify(group);
 		},
+		SET_EXTRA_CURRENT_GROUP(state,extra){
+			state.currentGroup.roomId = extra.room.Id;
+			state.currentGroup.level = extra.level;
+			window.localStorage.currentGroup = JSON.stringify(state.currentGroup);
+		},
 		SET_GROUP_STUDENTS(state,students){
 			state.groupStudents = students;
 			window.localStorage.groupStudents = JSON.stringify(students);
@@ -292,7 +298,7 @@ export default new Vuex.Store({
 		},
 		SET_GROUP_DETAILS(state,params){
 			state.currentGroup.isStudentAdd = params.isStudentAdd;
-			state.currentGroup.isOperator = state.currentGroup.isOperator?true:params.isOperator;
+			state.currentGroup.isOperator = params.isOperator;
 		},
 		ADD_STUDENT_GROUP(state, student){
 			state.groupStudents.push(student);
@@ -379,15 +385,23 @@ export default new Vuex.Store({
 					var group = response.data.data;
 					group.date = params.params.date;
 					group.change = params.params.change;
-					group.officeId = params.params.officeId;
+					group.officeId = params.params.office.Id;
 					commit('SET_CURRENT_GROUP', group);
-					return {status: 200};	
+					return {status: 200,groupId: group.Id};	
 				}
 			} else if(response.data.status === 401 || response.data.status == 400){
 				commit('RESET_CURRENT_USER');
 				return {status: response.data.status};
 			} 
 		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	SetExtraFieldsGroup({commit},params){
+		try{
+			commit('SET_EXTRA_CURRENT_GROUP', params.params);
+			return {status: 200};
+		}catch(err){
 			commit('RESET_CURRENT_USER');
 		}
 	},
@@ -424,13 +438,10 @@ export default new Vuex.Store({
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
 				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 	
-				var pass_response = await Api().post('/addregister',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});
+				var pass_response = await Api().post('/setattendence',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});
 
 				if(pass_response.data.status == 200){
-					Api().post('/sendmessagetelegram',params);
-
-					Api().post('/setattendence',{date: params.group.date,groupId: params.group.Id, students: params.students, register:pass_response.data.data});
-									
+					Api().post('/sendmessagetelegram',params);									
 					commit('RESET_GROUP');
 					return {status: 200};
 				} else {
@@ -460,9 +471,9 @@ export default new Vuex.Store({
 			commit('RESET_CURRENT_USER');
 		}
 	},
-	async SearchStudent({commit}, name){
+	async SearchStudent({commit}, params){
 		try{
-			var response = await Api().get('/searchstudent', {params: {value: name}});
+			var response = await Api().get('/searchstudent',{params});
 
 			if(response.data.status == 401 || response.data.status == 400)
 				commit('RESET_CURRENT_USER');
@@ -474,29 +485,19 @@ export default new Vuex.Store({
 	},
 	AddStudentGroup({commit},params){
 		try{
-			var status = 200;
-			params.students.map(async function(student){
-				var result = await Api().post('/student',{student});
-				if(result.data.status == 200){
-					var response = await Api().post('/addtogroup',{group: params.group, clientId: result.data.data});
-					if(response.data.status == 200){
-						commit('ADD_STUDENT_GROUP',{attendence: true, clientid: result.data.data, name: student.value, status: false, aibaks: 0});
-						commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: false});
-					} else {
-						commit('ADD_STUDENT_GROUP',{attendence: true, clientid: result.data.data, name: student.value, status: true, aibaks: 0});
-						commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: true});
-					}
-				}else if(result.data.status == 404){
-					commit('ADD_STUDENT_GROUP',{attendence: true, clientid: -1, name: student.value, status: true,aibaks: 0});
-					commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: true});
-				} else if(result.data.status == 401 || result.data.status == 400){
-					status = result.data.status;
-					commit('RESET_CURRENT_USER');
-				} else{
-					status = result.data.status;
-				}		
+			var arr = params.students.map(async function(student){
+				var response = await Api().post('/addtogroup',{group: params.group, clientId: student.value.ClientId});
+				if(response.data.status == 200){
+					commit('ADD_STUDENT_GROUP',{attendence: true, clientid: student.value.ClientId, name: student.value.FullName, status: false, aibaks: 0});
+					return true;
+				} else {
+					commit('ADD_STUDENT_GROUP',{attendence: true, clientid: student.value.ClientId, name: student.value.FullName, status: true, aibaks: 0});
+					return false;					
+				}	
 			});
-			return {status: status};	
+			var isOperator = arr.every(elem => elem == true);
+			commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: isOperator});
+			return {status: 200};	
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}
@@ -604,6 +605,27 @@ export default new Vuex.Store({
 				commit('UPDATE_CURRENT_USER',response.data.data);
 	
 			return response.data;
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetOfficeRooms({commit},params){
+		try{
+			var response = await Api().get('/getofficerooms', {params});
+			if(response.data.status == 200)
+				return response.data.data;
+			else if(response.data.status == 400 || response.data.status == 401)
+				commit('RESET_CURRENT_USER');
+
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetLastLessonRoom({commit},params){
+		try{
+			var response = await Api().get('/lastlessonroom', {params});
+
+				return {status: response.data.status,data: response.data.data};
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}

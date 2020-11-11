@@ -8,7 +8,9 @@
 				<Edit />
 			</v-col>
 			<v-col  class="align-center" cols="2" sm="1" >
-				<a class="orange--text text-decoration-underline" @click="LogOut" >выйти</a>
+				<v-btn icon class="pl-4 orange--text" @click="LogOut">
+					<v-icon>mdi-export</v-icon>
+				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row class="d-flex justify-center align-end">
@@ -28,7 +30,7 @@
 		</v-row>
 		<v-row class="d-flex justify-center">
 			<v-col class = "px-0" cols="12" xl="5" lg="4" md="5" sm="7">
-				<GroupForm />
+				<GroupForm :teacherId="teacherId"/>
 			</v-col>
 		</v-row>
   </v-container>

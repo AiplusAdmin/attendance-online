@@ -7,8 +7,10 @@
 			<v-col class="d-flex justify-end align-center" cols="3" xl="3" lg="3" md="3" sm="3">
 				<h4 class="grey--text text--darken-2">{{currentUser.lastname +' '+currentUser.firstname}}</h4>
 			</v-col>
-			<v-col cols="3" xl="1" lg="1" md="1" sm="1">
-				<a class="pl-4 orange--text text-decoration-underline" @click="LogOut" >выйти</a>
+			<v-col  class="align-center" cols="2" sm="1" >
+				<v-btn icon class="pl-4 orange--text" @click="LogOut">
+					<v-icon>mdi-export</v-icon>
+				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row>

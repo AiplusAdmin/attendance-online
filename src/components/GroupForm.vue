@@ -12,12 +12,12 @@
 						:value="subTeacherName"
 						:items="subTeachers"
 						item-text="FullName"
-						item-value= "FullName"
 						@input="SetSubTeacher"
 						:loading="isLoading"
 						:search-input.sync="search"
 						no-data-text="Нет учителей"
 						dense clearable
+						return-object
 						label="ФИО Тренера" color="#fbab17">
 					</v-autocomplete>
 				</v-col>
@@ -25,14 +25,15 @@
 			<v-row class="px-5">
 				<v-col class="pa-0">
 					<v-select
-						v-model="officeName"
+						v-model="params.office"
 						:items="groupOffices"
 						item-text="Name"
 						label="Филиал"
 						color="#fbab17"
-						@input="getOfficeId"
+						@input="GetOfficeRooms"
 						solo rounded outlined flat dense
-						:rules="[required('Филиал')]" required>
+						return-object
+						:rules="[requiredObject('Филиал')]" required>
 					</v-select>
 				</v-col>
 			</v-row>
@@ -82,39 +83,86 @@
 				</v-col>
 			</v-row>
 			<v-divider></v-divider>
+			<!--<v-row class="px-5 pt-6">
+				<v-col class="pa-0">
+					<v-select
+						label="Тема урока"
+						color="#fbab17"
+						solo rounded outlined flat dense
+						>
+					</v-select>
+				</v-col>
+			</v-row>-->
+			<v-row class="px-5 pt-6">
+				<v-col class="pa-0">
+					<v-select
+						v-model="extraparams.level"
+						:items="srezLevel"
+						label="Уровень среза"
+						color="#fbab17"
+						solo rounded outlined flat dense
+						>
+					</v-select>
+				</v-col>
+			</v-row>
+			<v-row class="px-5">
+				<v-col class="pa-0">
+					<v-select
+						v-model="extraparams.room"
+						:items="groupRooms"
+						item-text="Room"
+						label="Кабинет"
+						color="#fbab17"
+						return-object
+						solo rounded outlined flat dense
+						>
+					</v-select>
+				</v-col>
+			</v-row>
+			<v-divider></v-divider>
 			<v-row class="px-5 pt-9">
 				<v-col>
 					<v-btn class="rounded-btn white--text" :loading="click" @click="getGroup" block rounded height="50">Attendance list</v-btn>
 				</v-col>
 			</v-row>
 			<InfoModal :dialog="dialog" :message="message" :path="path" />
+			<Loading :overlay="overlay"/>
 		</v-container>
 	</v-form>
 </template>
 
 <script>
 import InfoModal from '@/components/modal/Info'
+import Loading from '@/components/modal/Loading'
 import validations from '@/utils/validations'
 
 export default {
 	name: 'GroupForm',
 	components: {
-		InfoModal
+		InfoModal,
+		Loading
+	},
+	props: {
+		teacherId : String
 	},
 	data () {
 		return {
 			valid: true,
 			params : {
-				teacherId : null,
-				officeId: null,
+				teacherId : this.teacherId,
+				office: null,
 				date : new Date().toISOString().substr(0, 10),
 				timeFrom : null,
 				timeTo : null,
 				change: false
 			},
-			officeName: null,
+			extraparams:{
+				room: null,
+				level: null
+			},
 			subTeachers:[],
 			groupOffices: [],
+			groupRooms:[],
 			subTeacherName: null,
 			isLoading: false,
 			search: null,
@@ -122,31 +170,22 @@ export default {
 			path : null,
 			message : null,
 			click: false,
+			overlay: false,
 			...validations
 		}
 	},
 	async mounted(){
-		var currentTeacher = localStorage.currentTeacher?JSON.parse(localStorage.currentTeacher):{};
-		if((Object.keys(currentTeacher).length === 0 && currentTeacher.constructor === Object)){
-
-			var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
-			
-			if (Object.keys(user).length === 0 && user.constructor === Object) 
-				this.$router.push({path:'/'});
-			else{
-				await this.$store.dispatch('GetTeacherById', user.teacherId);
-			}
-		}else 
-			this.$store.state.offices = currentTeacher.Offices;
-						
+		
+		await this.$store.dispatch('GetTeacherById', this.teacherId);				
 		this.groupOffices = this.$store.state.offices;
 		this.$store.dispatch('ResetGroup');
 			
 	},
 	created(){
-		if(localStorage.officeName){
-			this.officeName = localStorage.officeName;
-			this.getOfficeId(this.officeName);
+		var officeName = window.localStorage.officeName?JSON.parse(window.localStorage.officeName):{};
+		if(!(Object.keys(officeName).length === 0 && officeName.constructor === Object)){
+			this.params.office = officeName;
+			this.GetOfficeRooms(officeName);
 		}
 		if(localStorage.timeFrom){
 			this.params.timeFrom = localStorage.timeFrom;
@@ -176,10 +215,14 @@ export default {
 		},
 		subTeacher(){
 			return this.$store.state.subTeacher;
+		},
+		srezLevel(){
+			return this.$store.state.srezLevel;
 		}
 	},
 	methods : {
 		changeTimeFrom(){
+			this.params.timeTo = null;
 			this.$store.dispatch('changeTimesTo',this.params.timeFrom);
 		},
 		async getGroup(){
@@ -195,62 +238,32 @@ export default {
 							this.message = "Обновите либо попробуйте перезайти в систему";
 							this.dialog = true;
 					}else{
-						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+						var result = await this.$store.dispatch('SetExtraFieldsGroup', { params: this.extraparams});
 
-						if(result == undefined){
-							this.message = "Проблемы с системой Hollyhope";
-							this.dialog = true;
-							this.click = false;
-						}else if(result.status == 200){
+						if(result.status == 200){
 							this.click = false;
 							this.$router.push({path: '/group'});
-						}	
-						else if(result.status == 401 || result.status == 400){
-							this.click = false;
-							this.message = "Ваше время в системе истекло перезайдите";
-							this.path = "/";
-							this.dialog = true;
-						}else if(result.status == 404){
-							this.message = "Такой группы нет";
-							this.dialog = true;
-							this.click = false;
-						}else if(result.stats == 410){
-							this.message = "Проблема с Hollyhope";
-							this.dialog = true;
-							this.click = false;
 						}
 					}
 				}
 			}
 		},
-		getOfficeId(officeName){
-			var officeId = null;
-			this.offices.filter(function(office){
-				if(office.Name===officeName){
-					officeId=office.Id
-				}
-			});
-			this.params.officeId = officeId;
-		},
 		async SetSubTeacher(subTeacherFullName){
 			if(subTeacherFullName == undefined){
 				this.$store.dispatch('ResetSubTeacher');
 			} else {
-				var subTeacher = await this.$store.dispatch('GetTeacherByTeacherFullName',subTeacherFullName);
-				if(subTeacher.status == 200){
-					if(subTeacher.data.TeacherId == this.teacherId){
+				if(subTeacherFullName.TeacherId == this.teacherId){
 						alert('Вы не можете сделать замену');
 						this.$store.dispatch('ResetSubTeacher');
-					}
-					else{
-						await this.$store.dispatch('GetSubTeacher',subTeacher.data.TeacherId);
+				}else{
+						await this.$store.dispatch('GetSubTeacher',subTeacherFullName.TeacherId);
 						localStorage.subTeacher = JSON.stringify(this.subTeacher);
 						this.isLoading = false;
-					}
-				} else {
-					this.$router.push('/');
 				}
 			}
+		},
+		async GetOfficeRooms(Office){
+			this.groupRooms = await this.$store.dispatch('GetOfficeRooms',{officeId:Office.Id});
 		}
 	},
 	watch:{
@@ -263,9 +276,46 @@ export default {
 				this.$router.push('/') 
 		},
 		params:{
-			handler: function(newValue){
-				localStorage.timeFrom = newValue.timeFrom;
-				localStorage.timeTo = newValue.timeTo;
+			handler: async function(newValue){
+				if(newValue.timeFrom){
+					localStorage.timeFrom = newValue.timeFrom;
+				}
+				if(newValue.timeTo){
+					localStorage.timeTo = newValue.timeTo;
+				}
+				if(newValue.office){
+					localStorage.officeName = JSON.stringify(newValue.office);
+				}
+				if(newValue.timeFrom != null && newValue.timeTo != null && newValue.date != null && newValue.office != null && newValue.teacherId != null){
+					this.overlay = true;
+					var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+					this.overlay = false;
+					console.log(result);
+					
+					if(result == undefined){
+						this.message = "Проблемы с системой Hollyhope";
+						this.dialog = true;
+					}else if(result.status == 401 || result.status == 400){
+						this.message = "Ваше время в системе истекло перезайдите";
+						this.path = "/";
+						this.dialog = true;
+					}else if(result.status == 404){
+						this.message = "Такой группы нет";
+						this.dialog = true;
+					}else if(result.stats == 410){
+						this.message = "Проблема с Hollyhope";
+						this.dialog = true;
+					}else if(result.status == 200){
+						if(!this.extraparams.room){
+							var response = await this.$store.dispatch('GetLastLessonRoom', { groupId: result.groupId});
+							console.log(response);
+							if(response.status == 200){
+								this.extraparams.room = response.data.room;
+								this.extraparams.level = response.data.level;
+							}
+						}
+					}
+				}
 				if(!newValue.change){
 					this.$store.dispatch('ResetSubTeacher');
 					this.search = null;
@@ -273,9 +323,6 @@ export default {
 				}
 			},
 			deep: true
-		},
-		officeName: function(newOffice){
-			localStorage.officeName = newOffice;
 		},
 		subTeacher: function(){
 			if(this.subTeacher.Id)

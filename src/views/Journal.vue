@@ -4,11 +4,13 @@
 			<v-col  cols="6" xl="7" lg="7" md="7" sm="7">
 				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115"></v-img>
 			</v-col>
-			<v-col class="d-flex justify-end align-center" cols="3" xl="3" lg="3" md="3" sm="3">
+			<v-col class="d-flex justify-end align-center" cols="4" xl="3" lg="3" md="3" sm="3">
 				<h4 class="grey--text text--darken-2">{{currentUser.lastname +' '+currentUser.firstname}}</h4>
 			</v-col>
-			<v-col cols="3" xl="1" lg="1" md="1" sm="1">
-				<a class="pl-4 orange--text text-decoration-underline" @click="LogOut" >выйти</a>
+			<v-col cols="2" xl="1" lg="1" md="1" sm="1">
+				<v-btn icon class="orange--text" @click="LogOut">
+					<v-icon>mdi-export</v-icon>
+				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row>

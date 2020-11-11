@@ -82,7 +82,7 @@ export default {
 						if(groupStudents.length > 0 && !(Object.keys(currentGroup).length === 0 && currentGroup.constructor === Object))
 							this.$router.push('/group');
 						else
-							this.$router.push('/teacher');
+							this.$router.push({path:`teacher/${data.data.teacherId}`});
 					}
 					else if(data.data.roleId == 3)
 						this.$router.push({ path: '/statistics'});
