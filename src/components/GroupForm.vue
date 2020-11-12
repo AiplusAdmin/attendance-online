@@ -101,6 +101,7 @@
 						label="Уровень среза"
 						color="#fbab17"
 						solo rounded outlined flat dense
+						:rules="[required('Уровень среза')]" required>
 						>
 					</v-select>
 				</v-col>
@@ -115,6 +116,7 @@
 						color="#fbab17"
 						return-object
 						solo rounded outlined flat dense
+						:rules="[requiredObject('Кабинет')]" required>
 						>
 					</v-select>
 				</v-col>
@@ -287,31 +289,33 @@ export default {
 					localStorage.officeName = JSON.stringify(newValue.office);
 				}
 				if(newValue.timeFrom != null && newValue.timeTo != null && newValue.date != null && newValue.office != null && newValue.teacherId != null){
-					this.overlay = true;
-					var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-					this.overlay = false;
-					console.log(result);
-					
-					if(result == undefined){
-						this.message = "Проблемы с системой Hollyhope";
-						this.dialog = true;
-					}else if(result.status == 401 || result.status == 400){
-						this.message = "Ваше время в системе истекло перезайдите";
-						this.path = "/";
-						this.dialog = true;
-					}else if(result.status == 404){
-						this.message = "Такой группы нет";
-						this.dialog = true;
-					}else if(result.stats == 410){
-						this.message = "Проблема с Hollyhope";
-						this.dialog = true;
-					}else if(result.status == 200){
-						if(!this.extraparams.room){
-							var response = await this.$store.dispatch('GetLastLessonRoom', { groupId: result.groupId});
-							console.log(response);
-							if(response.status == 200){
-								this.extraparams.room = response.data.room;
-								this.extraparams.level = response.data.level;
+					if((newValue.change == true && !(Object.keys(this.subTeacher).length === 0 && this.subTeacher.constructor === Object)) || newValue.change == false){
+						this.overlay = true;
+						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+						this.overlay = false;
+						console.log(result);
+						
+						if(result == undefined){
+							this.message = "Проблемы с системой Hollyhope";
+							this.dialog = true;
+						}else if(result.status == 401 || result.status == 400){
+							this.message = "Ваше время в системе истекло перезайдите";
+							this.path = "/";
+							this.dialog = true;
+						}else if(result.status == 404){
+							this.message = "Такой группы нет";
+							this.dialog = true;
+						}else if(result.stats == 410){
+							this.message = "Проблема с Hollyhope";
+							this.dialog = true;
+						}else if(result.status == 200){
+							if(!this.extraparams.room){
+								var response = await this.$store.dispatch('GetLastLessonRoom', { groupId: result.groupId});
+								console.log(response);
+								if(response.status == 200){
+									this.extraparams.room = response.data.room;
+									this.extraparams.level = response.data.level;
+								}
 							}
 						}
 					}
