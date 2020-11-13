@@ -30,7 +30,6 @@
 						item-text="Name"
 						label="Филиал"
 						color="#fbab17"
-						@input="GetOfficeRooms"
 						solo rounded outlined flat dense
 						return-object
 						:rules="[requiredObject('Филиал')]" required>
@@ -92,7 +91,7 @@
 						>
 					</v-select>
 				</v-col>
-			</v-row>-->
+			</v-row>
 			<v-row class="px-5 pt-6">
 				<v-col class="pa-0">
 					<v-select
@@ -120,7 +119,7 @@
 						>
 					</v-select>
 				</v-col>
-			</v-row>
+			</v-row>-->
 			<v-divider></v-divider>
 			<v-row class="px-5 pt-9">
 				<v-col>
@@ -158,13 +157,8 @@ export default {
 				timeTo : null,
 				change: false
 			},
-			extraparams:{
-				room: null,
-				level: null
-			},
 			subTeachers:[],
 			groupOffices: [],
-			groupRooms:[],
 			subTeacherName: null,
 			isLoading: false,
 			search: null,
@@ -187,7 +181,6 @@ export default {
 		var officeName = window.localStorage.officeName?JSON.parse(window.localStorage.officeName):{};
 		if(!(Object.keys(officeName).length === 0 && officeName.constructor === Object)){
 			this.params.office = officeName;
-			this.GetOfficeRooms(officeName);
 		}
 		if(localStorage.timeFrom){
 			this.params.timeFrom = localStorage.timeFrom;
@@ -217,9 +210,6 @@ export default {
 		},
 		subTeacher(){
 			return this.$store.state.subTeacher;
-		},
-		srezLevel(){
-			return this.$store.state.srezLevel;
 		}
 	},
 	methods : {
@@ -240,9 +230,23 @@ export default {
 							this.message = "Обновите либо попробуйте перезайти в систему";
 							this.dialog = true;
 					}else{
-						var result = await this.$store.dispatch('SetExtraFieldsGroup', { params: this.extraparams});
-
-						if(result.status == 200){
+						this.overlay = true;
+						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
+						this.overlay = false;
+						if(result == undefined){
+							this.message = "Проблемы с системой Hollyhope";
+							this.dialog = true;
+						}else if(result.status == 401 || result.status == 400){
+							this.message = "Ваше время в системе истекло перезайдите";
+							this.path = "/";
+							this.dialog = true;
+						}else if(result.status == 404){
+							this.message = "Такой группы нет";
+							this.dialog = true;
+						}else if(result.stats == 410){
+							this.message = "Проблема с Hollyhope";
+							this.dialog = true;
+						}else if(result.status == 200){
 							this.click = false;
 							this.$router.push({path: '/group'});
 						}
@@ -263,9 +267,6 @@ export default {
 						this.isLoading = false;
 				}
 			}
-		},
-		async GetOfficeRooms(Office){
-			this.groupRooms = await this.$store.dispatch('GetOfficeRooms',{officeId:Office.Id});
 		}
 	},
 	watch:{
@@ -287,38 +288,6 @@ export default {
 				}
 				if(newValue.office){
 					localStorage.officeName = JSON.stringify(newValue.office);
-				}
-				if(newValue.timeFrom != null && newValue.timeTo != null && newValue.date != null && newValue.office != null && newValue.teacherId != null){
-					if((newValue.change == true && !(Object.keys(this.subTeacher).length === 0 && this.subTeacher.constructor === Object)) || newValue.change == false){
-						this.overlay = true;
-						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-						this.overlay = false;
-						console.log(result);
-						
-						if(result == undefined){
-							this.message = "Проблемы с системой Hollyhope";
-							this.dialog = true;
-						}else if(result.status == 401 || result.status == 400){
-							this.message = "Ваше время в системе истекло перезайдите";
-							this.path = "/";
-							this.dialog = true;
-						}else if(result.status == 404){
-							this.message = "Такой группы нет";
-							this.dialog = true;
-						}else if(result.stats == 410){
-							this.message = "Проблема с Hollyhope";
-							this.dialog = true;
-						}else if(result.status == 200){
-							if(!this.extraparams.room){
-								var response = await this.$store.dispatch('GetLastLessonRoom', { groupId: result.groupId});
-								console.log(response);
-								if(response.status == 200){
-									this.extraparams.room = response.data.room;
-									this.extraparams.level = response.data.level;
-								}
-							}
-						}
-					}
 				}
 				if(!newValue.change){
 					this.$store.dispatch('ResetSubTeacher');

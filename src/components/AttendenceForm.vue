@@ -79,15 +79,7 @@
 							</v-list-item-content>
 							<v-list-item-content>
 								<v-list-item-title v-if="currentGroup.branch == 'РО'" class="grey--text text--darken-1 text-right" v-text="'Русское'"></v-list-item-title>
-								<v-list-item-title v-else class="grey--text text--darken-1 text-right" v-text="'Русское'"></v-list-item-title>
-							</v-list-item-content>
-						</v-list-item>
-						<v-list-item inactive>
-							<v-list-item-content>
-								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень среза</v-list-item-title>
-							</v-list-item-content>
-							<v-list-item-content>
-								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="currentGroup.level"></v-list-item-title>
+								<v-list-item-title v-else class="grey--text text--darken-1 text-right" v-text="'Казахское'"></v-list-item-title>
 							</v-list-item-content>
 						</v-list-item>
 						<v-list-item inactive>
@@ -98,6 +90,50 @@
 								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="groupStudents.length"></v-list-item-title>
 							</v-list-item-content>
 						</v-list-item>
+						<v-row>
+						<v-list-item inactive>
+							<v-col cols="8" class="py-0">
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень среза</v-list-item-title>
+							</v-list-item-content>
+							</v-col>
+							<v-col cols="4" class="py-0">
+							<v-list-item-content>
+									<v-select
+										v-model="extraparams.level"
+										:items="srezLevel"
+										color="#fbab17"
+										flat dense
+										:rules="[required('Уровень среза')]" required>
+										>
+									</v-select>
+							</v-list-item-content>
+							</v-col>
+						</v-list-item>
+						</v-row>
+						<v-row>
+						<v-list-item inactive>
+							<v-col cols="8" class="py-0">
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Кабинет</v-list-item-title>
+							</v-list-item-content>
+							</v-col>
+							<v-col cols="4" class="py-0">
+							<v-list-item-content>
+								<v-select
+									v-model="extraparams.room"
+									:items="groupRooms"
+									item-text="Room"
+									color="#fbab17"
+									return-object
+									flat dense
+									:rules="[requiredObject('Кабинет')]" required>
+									>
+								</v-select>
+							</v-list-item-content>
+							</v-col>
+						</v-list-item>
+						</v-row>
 					</v-list-item-group>
 				</v-list>
 			</v-col>
@@ -447,6 +483,11 @@ export default {
 					sortable: false
 				}
 			],
+			extraparams:{
+				room: null,
+				level: null
+			},
+			groupRooms:[],
 			isLoading: true	,
 			dialog: false,
 			checkdialog: false,
@@ -484,6 +525,9 @@ export default {
 		},
 		comments(){
 			return this.$store.state.comments;
+		},
+		srezLevel(){
+			return this.$store.state.srezLevel;
 		}
 	},
 	beforeCreate(){
@@ -498,11 +542,18 @@ export default {
 	},
 	async mounted(){
 		this.onResize();
+		this.GetOfficeRooms(this.currentGroup);
 		if(!localStorage.groupStudents || JSON.parse(localStorage.groupStudents).length == 0){
 			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
 			if(response.status == 200){
 				this.SortStudent();
 				this.isLoading = false;
+				var res = await this.$store.dispatch('GetLastLessonRoom', { groupId: this.currentGroup.Id});
+				console.log(res);
+				if(res.status == 200){
+					this.extraparams.room = res.data.room;
+					this.extraparams.level = res.data.level;
+				}
 			}
 			else if(response.status==400 || response.status==401){
 				this.messageModal = 'Ваше время в системе истекло перезайдите';
@@ -515,6 +566,12 @@ export default {
 		} else {
 			this.SortStudent();
 			this.isLoading = false;
+			var r = await this.$store.dispatch('GetLastLessonRoom', { groupId: this.currentGroup.Id});
+			console.log(r);
+			if(r.status == 200){
+				this.extraparams.room = r.data.room;
+				this.extraparams.level = r.data.level;
+			}
 		}
 	},
 	created(){
@@ -590,6 +647,9 @@ export default {
 		},
 		ScrollTop(){
 			window.scrollTo(0, 0); 
+		},
+		async GetOfficeRooms(group){
+			this.groupRooms = await this.$store.dispatch('GetOfficeRooms',{officeId:group.officeId});
 		},
 		onResize(){
 			switch (this.$vuetify.breakpoint.name) {
