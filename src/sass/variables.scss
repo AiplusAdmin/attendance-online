@@ -21,6 +21,20 @@ $headings: (
 	}
 }
 
+.loyalty_good{
+	background: rgba($color: #64995b, $alpha: 1.0);
+	border-radius: 10px 10px 0px 0px;
+}
+
+.loyalty_bad{
+	background: rgba($color: #FF0000, $alpha: 1.0);
+	border-radius: 10px 10px 0px 0px;
+}
+
+.loyalty_norm{
+	background: rgba($color: #FF9933, $alpha: 1.0);
+	border-radius: 10px 10px 0px 0px;
+}
 
 
 body{

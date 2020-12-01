@@ -231,21 +231,35 @@
 						<v-switch v-model="srez" class="mt-5" color="#fbab17"></v-switch>
 					</v-toolbar>
 					<v-card  class="rounded-card my-4 mx-2" elevation="5" v-for="(student,index) in groupStudents" :key="index">
-						<v-list shaped flat :class="student.delete?'grey lighten-2':'white'">
-							<v-subheader>
+						<v-list class = "pa-0" shaped flat :class="student.delete?'grey lighten-2':'white'">
+							<v-subheader :class="student.loyalty==0?'loyalty_bad':student.loyalty==2?'loyalty_good':student.loyalty==1?'loyalty_norm':''">
 								<v-list-item class="px-0"
 										:key="`name-${student.clientid}`"
 										inactive
-										
 									>
 										<v-list-item-content>
-											<v-list-item-title class="grey--text text--darken-3 font-weight-bold text-subtitle-1">{{student.name}}</v-list-item-title>
+											<v-list-item-title :class="student.loyalty != undefined?'white--text font-weight-bold text-subtitle-1':'grey--text text--darken-3 font-weight-bold text-subtitle-1'">{{student.name}}</v-list-item-title>
 										</v-list-item-content>
 										<v-list-item-action>
-												<v-icon @click="RemoveStudent(index)" color="#fbab17">{{student.icon}}</v-icon>
+												<v-icon @click="RemoveStudent(index)" :color="student.loyalty != undefined?'#ffffff':'#fbab17'">{{student.icon}}</v-icon>
 										</v-list-item-action>
 								</v-list-item>
 							</v-subheader>
+							<v-list-item-group>
+								<v-list-item>
+									<v-list-item-content>
+										<v-list-item-subtitle>
+										<v-chip-group mandatory>
+												<v-chip v-for="dynamic in student.dynamics" :key="dynamic.Value">
+													{{ dynamic.Name}}
+													<v-icon>{{dynamic.progress}}</v-icon>
+													{{ dynamic.Value}}
+												</v-chip>
+											</v-chip-group>
+										</v-list-item-subtitle>
+									</v-list-item-content>
+								</v-list-item>
+							</v-list-item-group>
 							<v-divider></v-divider>
 								<v-list-item-group>
 									<v-list-item
@@ -302,7 +316,7 @@
 														color="#fbab17"
 														item-color="#fbab17"
 														hide-selected
-														:rules="[requiredNumber('Д/з',student.homework)]" required>
+														:rules="[requiredNumber('Д/з',student.attendence)]" required>
 													</v-select>
 												</v-list-item-action>
 											</v-col>
@@ -331,7 +345,7 @@
 														color="#fbab17"
 														item-color='#fbab17'
 														hide-selected
-														:rules="[requiredNumber('Д/з',student.test)]" required>
+														:rules="[requiredNumber('Д/з',student.attendence)]" required>
 													</v-select>
 												</v-list-item-action>
 											</v-col>
@@ -359,7 +373,7 @@
 														min="0" max="100"
 														color="#fbab17"
 														item-color='#fbab17'
-														:rules="[requiredNumber('Активность',student.lesson), numberBetween('Активность',student.lesson)]" required>
+														:rules="[requiredNumber('Активность',student.attendence), numberBetween('Активность',student.attendence)]" required>
 													</v-text-field>
 												</v-list-item-action>
 											</v-col>
@@ -617,11 +631,12 @@ export default {
 							}
 						});
 						console.log(total);
+						this.$store.dispatch('SetExtraFieldsGroup',{params: this.extraparams});
 						this.overlay = true;
 						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
 						this.overlay = false;
 						if(response.status == 200){
-							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}`;
+							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;
 							this.path = '/journal';
 							this.click = false;
 							this.dialog = true;

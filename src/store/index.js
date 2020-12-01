@@ -234,6 +234,8 @@ export default new Vuex.Store({
 	],
 	currentRegister: [],
 	adminRegisters: []
+
+
 },
   mutations: {
 		SET_CURRENT_USER(state,user){
@@ -386,6 +388,8 @@ export default new Vuex.Store({
 					group.date = params.params.date;
 					group.change = params.params.change;
 					group.officeId = params.params.office.Id;
+					group.teacherId = params.params.teacherId;
+					group.subteacherId = params.params.change ? params.subTeacher.Id:null;
 					commit('SET_CURRENT_GROUP', group);
 					return {status: 200,groupId: group.Id};	
 				}
@@ -438,7 +442,7 @@ export default new Vuex.Store({
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
 				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 	
-				var pass_response = await Api().post('/setattendence',{teacherId: params.teacherId, group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});
+				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});
 
 				if(pass_response.data.status == 200){
 					Api().post('/sendmessagetelegram',params);									

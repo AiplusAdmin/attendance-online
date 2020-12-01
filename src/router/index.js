@@ -9,7 +9,7 @@ import AllJournal from '@/views/AllJournal'
 
 Vue.use(VueRouter)
 
-  const routes = [
+const routes = [
   {
     path: '/',
     name: 'Home',

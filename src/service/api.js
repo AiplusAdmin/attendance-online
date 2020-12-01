@@ -3,7 +3,7 @@ import axios from 'axios';
 export default () => {
 	var currentUser = JSON.parse(window.localStorage.currentUser);
 	return axios.create({
-		baseURL: 'http://localhost:3003',
+		baseURL: 'http://localhost:3001',
 		withCredentials: false,
 		headers: {
 			Accept: "application/json",
