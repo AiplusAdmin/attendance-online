@@ -1,10 +1,10 @@
 <template>
 	<v-container fluid>
 		<v-row class="d-flex justify-space-around align-center">
-			<v-col  cols="5" xl="7" lg="7" md="7" sm="7">
+			<v-col  cols="6" xl="7" lg="7" md="7" sm="7">
 				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115"></v-img>
 			</v-col>
-			<v-col class="d-flex justify-end align-center" cols="4" xl="3" lg="3" md="3" sm="3">
+			<v-col class="d-flex justify-end align-center" cols="3" xl="3" lg="3" md="3" sm="3">
 				<h4 class="grey--text text--darken-2">{{currentUser.lastname +' '+currentUser.firstname}}</h4>
 			</v-col>
 			<v-col  class="align-center" cols="2" sm="1" >
@@ -14,19 +14,19 @@
 			</v-col>
 		</v-row>
 		<v-row>
-			<v-col class="px-0">
-				<AttendenceForm />
+			<v-col class="px-0" cols="12" lg="12">
+				<PersonalTestForm />
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-import AttendenceForm from '@/components/AttendenceForm'
+import PersonalTestForm from '@/components/PersonalTestForm'
 export default {
 	name: 'AttendenceList',
 	components: {
-		AttendenceForm
+		PersonalTestForm
 	},
 	mounted() {
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};

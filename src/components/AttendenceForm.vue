@@ -90,14 +90,13 @@
 								<v-list-item-title class="grey--text text--darken-1 text-right" v-text="groupStudents.length"></v-list-item-title>
 							</v-list-item-content>
 						</v-list-item>
-						<v-row>
 						<v-list-item inactive>
-							<v-col cols="8" class="py-0">
+							<v-col cols="9" class="pa-0">
 							<v-list-item-content>
 								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень среза</v-list-item-title>
 							</v-list-item-content>
 							</v-col>
-							<v-col cols="4" class="py-0">
+							<v-col cols="3" class="pa-0">
 							<v-list-item-content>
 									<v-select
 										v-model="extraparams.level"
@@ -110,15 +109,13 @@
 							</v-list-item-content>
 							</v-col>
 						</v-list-item>
-						</v-row>
-						<v-row>
 						<v-list-item inactive>
-							<v-col cols="8" class="py-0">
+							<v-col cols="9" class="pa-0">
 							<v-list-item-content>
 								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Кабинет</v-list-item-title>
 							</v-list-item-content>
 							</v-col>
-							<v-col cols="4" class="py-0">
+							<v-col cols="3" class="pa-0">
 							<v-list-item-content>
 								<v-select
 									v-model="extraparams.room"
@@ -133,7 +130,49 @@
 							</v-list-item-content>
 							</v-col>
 						</v-list-item>
-						</v-row>
+					<!--	<v-list-item inactive v-if="currentGroup.symbol == 'E' && (currentGroup.klass == '5' || currentGroup.klass == '7' || currentGroup.klass == '6' || currentGroup.klass == '4')">
+							<v-col cols="9" class="pa-0">
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень</v-list-item-title>
+							</v-list-item-content>
+							</v-col>
+							<v-col cols="3" class="pa-0">
+							<v-list-item-content>
+								<v-select
+									v-model="engLevel"
+									:items="levels"
+									item-text="Name"
+									color="#fbab17"
+									@change="SelectEngLevel"
+									return-object
+									flat dense
+									:rules="[requiredObject('Уровень')]" required>
+									>
+								</v-select>
+							</v-list-item-content>
+							</v-col>
+						</v-list-item>
+						<v-list-item inactive v-if="currentGroup.klass == '5' || currentGroup.klass == '7' || currentGroup.klass == '6' || currentGroup.klass == '4'">
+							<v-col cols="9" class="pa-0">
+							<v-list-item-content>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Тема</v-list-item-title>
+							</v-list-item-content>
+							</v-col>
+							<v-col cols="3" class="pa-0">
+							<v-list-item-content>
+								<v-select
+									v-model="topic"
+									:items="topics"
+									item-text="Name"
+									color="#fbab17"
+									return-object
+									flat dense
+									:rules="[requiredObject('Тема')]" required>
+									>
+								</v-select>
+							</v-list-item-content>
+							</v-col>
+						</v-list-item>-->
 					</v-list-item-group>
 				</v-list>
 			</v-col>
@@ -249,11 +288,11 @@
 								<v-list-item>
 									<v-list-item-content>
 										<v-list-item-subtitle>
-										<v-chip-group mandatory>
-												<v-chip v-for="dynamic in student.dynamics" :key="dynamic.Value">
+											<v-chip-group active-class="">
+												<v-chip :class="dynamic.class+' chis pa-4 text-subtitle-1'"  large text-color="black"  v-for="dynamic in student.dynamics" :key="dynamic.Value">
 													{{ dynamic.Name}}
-													<v-icon>{{dynamic.progress}}</v-icon>
-													{{ dynamic.Value}}
+												<!--	<v-icon :color="dynamic.iconcolor" large>{{dynamic.progress}}</v-icon>
+													{{ dynamic.Value}}-->
 												</v-chip>
 											</v-chip-group>
 										</v-list-item-subtitle>
@@ -420,6 +459,33 @@
 				<v-divider color="black"></v-divider>
 			</v-col>
 		</v-row>
+		<!--<v-row v-if="currentGroup.symbol == 'M'">
+			<v-col class="py-0 px-2">
+				<v-select
+					v-model="homework.level"
+					:items="homeWorkLevels"
+					color="#fbab17"
+					item-color='#fbab17'
+					background-color='white'
+					clearable
+					placeholder="Уровень домашки"
+					multiple rounded outlined flat dense hide-details>
+				</v-select>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col class="py-0">
+				<v-textarea
+					class="pt-0"
+					v-model="homework.text"
+					label="Домашнее задание"
+					color="#fbab17"
+					background-color="white"
+					rows="3"
+					clearable counter
+				></v-textarea>
+			</v-col>
+		</v-row>-->
 		<v-row>
 			<v-col cols="12" lg="4" class="px-0">
 				<v-btn class="rounded-btn white--text"  height="50" :loading="click" @click="setAttendence" block rounded>Отправить</v-btn>
@@ -502,7 +568,7 @@ export default {
 				level: null
 			},
 			groupRooms:[],
-			isLoading: true	,
+			isLoading: true,
 			dialog: false,
 			checkdialog: false,
 			srez: false,
@@ -513,6 +579,12 @@ export default {
 			isMobile: false,
 			...validations,
 			overlay: false,
+			engLevel: null,
+			topic: null,
+			homework: {
+				level: null,
+				text: null
+			}
 		}
 	},
 	computed : {
@@ -542,7 +614,16 @@ export default {
 		},
 		srezLevel(){
 			return this.$store.state.srezLevel;
-		}
+		},
+	/*	levels(){
+			return this.$store.state.levels;
+		},
+		topics(){
+			return this.$store.state.topics;
+		},
+		homeWorkLevels(){
+			return this.$store.state.homeWorkLevels;
+		}*/
 	},
 	beforeCreate(){
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
@@ -556,9 +637,12 @@ export default {
 	},
 	async mounted(){
 		this.onResize();
+		this.$store.dispatch('SetLevels');
 		this.GetOfficeRooms(this.currentGroup);
+	//	this.SelectEngLevel();
+
 		if(!localStorage.groupStudents || JSON.parse(localStorage.groupStudents).length == 0){
-			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date});
+			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date,teacherId: this.currentTeacher.Id});
 			if(response.status == 200){
 				this.SortStudent();
 				this.isLoading = false;
@@ -586,10 +670,10 @@ export default {
 				this.extraparams.room = r.data.room;
 				this.extraparams.level = r.data.level;
 			}
+			
 		}
 	},
 	created(){
-		console.log(localStorage.currentGroup);
 		if(localStorage.currentGroup)
 			this.$store.state.currentGroup = JSON.parse(localStorage.currentGroup);
 		if(localStorage.currentTeacher)
@@ -633,7 +717,7 @@ export default {
 						console.log(total);
 						this.$store.dispatch('SetExtraFieldsGroup',{params: this.extraparams});
 						this.overlay = true;
-						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName});
+						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName,Aibucks: total});
 						this.overlay = false;
 						if(response.status == 200){
 							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;
@@ -700,6 +784,10 @@ export default {
 
 				return 0;
 			});
+		},
+		SelectEngLevel(){
+			var level = this.engLevel ? this.engLevel.Id: null;
+			this.$store.dispatch('GetTopics',{klass: this.currentGroup.klass,branch: this.currentGroup.branch,subject: this.currentGroup.subject, level: level});
 		}
 	},
 	watch:{
@@ -740,5 +828,10 @@ export default {
 	.teacher-rounded{
 		border:rgba(196, 197, 197) solid 1px;
 		border-radius: 10px;
+	}
+	
+	.chis{
+		border: solid 3px;
+		border-radius: 120px;
 	}
 </style>

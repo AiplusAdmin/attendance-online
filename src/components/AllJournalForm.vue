@@ -16,7 +16,12 @@
 					class="elevation-1 studentsTable"
 					:headers="headers"
 					:items = "filteredDesserts"
+					item-key="Id"
+					:expanded.sync="expanded"
+					@item-expanded="ShowMore"
 					no-data-text = "Нет Записи"
+					show-expand
+					single-expand
 				>
 					<template v-slot:top>
 						<v-row class="align-center justify-space-around px-2">
@@ -31,6 +36,16 @@
 								</v-select>
 							</v-col>
 						</v-row>
+					</template>
+					<template v-slot:expanded-item="{headers}">
+						<td class="px-0" :colspan="headers.length">
+							<v-data-table
+								:headers="expandheaders"
+								:items="expandedStudents"
+								hide-default-footer
+								disable-pagination>
+							</v-data-table>
+						</td>
 					</template>
 				</v-data-table>
 			</v-col>
@@ -99,6 +114,16 @@ export default {
 					value: 'FullName',
 					filterable: true
 				},
+				{
+					text: 'Кабинет',
+					value: 'Room',
+					filterable: true
+				},
+				{
+					text: 'Уровень среза',
+					value: 'LevelTest',
+					filterable: true
+				},
 				{	
 					text: 'Кол. Учеников',
 					value: 'Passed'
@@ -107,7 +132,10 @@ export default {
 					text: 'Общ. Кол. Учеников',
 					value: 'All'
 				},
-			
+				{
+					text: '',
+					value: 'data-table-expand'
+				}
 			],
 			filters: {
 				Name: [],
@@ -115,8 +143,50 @@ export default {
 				Subject: [],
 				Time: [],
 				FullName: [],
-				Branch: []
+				Branch: [],
+				LevelTest: [],
+				Room: []
 			},
+			expandheaders: [
+				{
+					text: 'ID',
+					value: 'ClientId',
+					sortable: false
+
+				},
+				{
+					text: 'ФИО студента',
+					value: 'FullName',
+					sortable: false
+				},
+				{
+					text: 'Присутвовал',
+					value: 'Pass',
+					sortable: false
+				},
+				{
+					text: 'Д.з',
+					value: 'homework',
+					sortable: false
+				},
+				{
+					text: 'Срез',
+					value: 'test',
+					sortable: false
+				},
+				{
+					text: 'Активность',
+					value: 'lesson',
+					sortable: false
+				},
+				{
+					text: 'Комментарии',
+					value: 'Comment',
+					sortable: false
+				},
+			],
+			expanded: [],
+			expandedStudents:[],
 			date: null
 		}
 	},
@@ -149,6 +219,16 @@ export default {
 	methods:{
 		columnValueList(val) {
 			return this.adminRegisters.map(d => d[val]);
+		},
+		async ShowMore(value){
+			if(value.value){
+				var response = await this.$store.dispatch('GetRegisterDetails', {registerId: value.item.Id});
+				if(response.status == 200){
+					this.expandedStudents = response.data;
+				} else {
+					this.$router.push('/');
+				}
+			}
 		}
 	}
 }

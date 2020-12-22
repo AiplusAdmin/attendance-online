@@ -234,16 +234,20 @@ export default {
 						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
 						this.overlay = false;
 						if(result == undefined){
+							this.click = false;
 							this.message = "Проблемы с системой Hollyhope";
 							this.dialog = true;
 						}else if(result.status == 401 || result.status == 400){
+							this.click = false;
 							this.message = "Ваше время в системе истекло перезайдите";
 							this.path = "/";
 							this.dialog = true;
 						}else if(result.status == 404){
+							this.click = false;
 							this.message = "Такой группы нет";
 							this.dialog = true;
 						}else if(result.stats == 410){
+							this.click = false;
 							this.message = "Проблема с Hollyhope";
 							this.dialog = true;
 						}else if(result.status == 200){

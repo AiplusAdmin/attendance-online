@@ -31,6 +31,17 @@
 		<v-row class="d-flex justify-center">
 			<v-col class = "px-0" cols="12" xl="5" lg="4" md="5" sm="7">
 				<GroupForm :teacherId="teacherId"/>
+				<!--<v-tabs color="basil" grow>
+					<v-tab>АTTENDANCE</v-tab>
+					<v-tab>TESTS</v-tab>
+					<v-tab-item>
+					
+					</v-tab-item>
+					<v-tab-item>
+						<TestCategoryForm :teacherId="teacherId"/>
+					</v-tab-item>
+				</v-tabs>-->
+				
 			</v-col>
 		</v-row>
   </v-container>

@@ -233,9 +233,14 @@ export default new Vuex.Store({
 			}
 	],
 	currentRegister: [],
-	adminRegisters: []
-
-
+	adminRegisters: [],
+	personalTest:{},
+	testSubjects: [],
+	testStudents:[],
+	levels: [],
+	topics: [],
+	newStudents : [{value:null,icon:''}],
+	homeWorkLevels: ['A','B','C']
 },
   mutations: {
 		SET_CURRENT_USER(state,user){
@@ -302,6 +307,21 @@ export default new Vuex.Store({
 			state.currentGroup.isStudentAdd = params.isStudentAdd;
 			state.currentGroup.isOperator = params.isOperator;
 		},
+		SET_LEVELS(state,levels){
+			state.levels = levels
+		},
+		SET_PERSONAL_TEST(state, personalTest){
+			state.personalTest = personalTest;
+		},
+		SET_TEST_SUBJECTS(state,testSubjects){
+			state.testSubjects = testSubjects;
+		},
+		SET_TEST_STUDENTS(state,students){
+			state.testStudents = state.testStudents.concat(students); 
+		},
+		SET_TOPICS(state,topics){
+			state.topics = topics;
+		},
 		ADD_STUDENT_GROUP(state, student){
 			state.groupStudents.push(student);
 		},
@@ -343,6 +363,12 @@ export default new Vuex.Store({
 			state.equal = equal;
 		},
 		RESET(){
+		},
+		REMOVE_NEW_STUDENT(state,index){
+			state.newStudents.splice(index, 1);
+		},
+		RESET_NEW_STUDENTS(state){
+			state.newStudents =  [{value:null,icon:''}];
 		}
   },
   actions: {
@@ -442,7 +468,7 @@ export default new Vuex.Store({
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
 				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 	
-				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students});
+				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students,Aibucks: params.Aibucks});
 
 				if(pass_response.data.status == 200){
 					Api().post('/sendmessagetelegram',params);									
@@ -482,7 +508,7 @@ export default new Vuex.Store({
 			if(response.data.status == 401 || response.data.status == 400)
 				commit('RESET_CURRENT_USER');
 				
-			return response.data;
+			return response.data.data;
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}
@@ -633,6 +659,85 @@ export default new Vuex.Store({
 		}catch{
 			commit('RESET_CURRENT_USER');
 		}
+	},
+	async GetTestCategories({commit}){
+		try{
+			var response = await Api().get('/testcategories');
+			return response.data.data;
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}		
+	},
+	async GetTests({commit},params){
+		try{
+			var response = await Api().get('/tests', {params});
+
+				return response.data.data;
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetPersonalTest({commit},params){
+		try{
+			var response = await Api().get('/gettestsubjects',{params:{testId: params.params.test.Id}});
+
+			if(response.data.status == 200)
+				commit('SET_TEST_SUBJECTS',response.data.data);
+				
+			commit('SET_PERSONAL_TEST',params.params);
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async SearchStudentTest({commit}, params){
+		try{
+			var response = await Api().get('/searchstudenttest',{params});
+
+			if(response.data.status == 401 || response.data.status == 400)
+				commit('RESET_CURRENT_USER');
+				
+			return response.data;
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	AddStudentTest({commit},params){
+		try{
+			commit('SET_TEST_STUDENTS',params.students);
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async SetPersonalTests({commit},params){
+		try{
+			var response = await Api().post('/setpersonaltests',{students:params.students,personalTest: params.personalTest,teacherId:params.teacherId});
+			return response;
+		}catch{
+			commit('RESET_CURRENT_USER');
+
+		}
+	},
+	async SetLevels({commit}){
+		try{
+			var response = await Api().get('/levels');
+			commit('SET_LEVELS',response.data.data);
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetTopics({commit},params){
+		try{
+			var response = await Api().get('/gettopics',{params});
+			commit('SET_TOPICS',response.data.data);
+		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	RemoveNewStudent({commit},index){
+		commit('REMOVE_NEW_STUDENT',index);
+	},
+	ResetNewStudents({commit}){
+		commit('RESET_NEW_STUDENTS');
 	}
   },
   modules: {

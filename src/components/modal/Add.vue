@@ -14,23 +14,8 @@
 		</template>
 		<v-card class="py-9 px-5">
 			<v-form v-model="valid" ref="form"> 
-				<v-card-title class="pb-11 headline align-center justify-center font-weight-bold text-lg-h6">Добавить ученика</v-card-title>
-					<v-autocomplete
-						class="pb-0" v-for="(student,index) in newStudents" :key="index"
-						v-model="student.value"
-						:items="Students[index]"
-						item-text="FullName"
-						@input="SetStudent(student)"
-						:append-outer-icon="student.icon" @click:append-outer="remove(index)"
-						:loading="student.isLoading"
-						:search-input.sync="student.search"
-						:menu-props="{overflowY:true}"
-						no-data-text="Нет Учеников"
-						dense clearable outlined rounded
-						return-object
-						label="ФИО Ученика" color="#fbab17"
-						:rules="[requiredObject('Новый ученик')]" required>
-					</v-autocomplete>				
+				<v-card-title class=" pb-11 headline align-center justify-center font-weight-bold text-lg-h6">Добавить ученика</v-card-title>
+					<autocomplete class="pb-4" v-for="(newStudent,index) in newStudents" :key="index" :newStudent="newStudent" :index="index"/> 
 					<v-btn class = "rounded-btn grey--text text--darken-2" @click="add" block rounded left><v-icon left>mdi-plus</v-icon>Добавить ученика</v-btn>
 				<v-card-actions class="pt-11 pb-0 align-center justify-center">
 					<v-btn class="orange--text" @click="Cancel" rounded text>Отменить</v-btn>
@@ -46,17 +31,23 @@
 
 <script>
 import validations from '@/utils/validations'
-
+import autocomplete from '@/components/modal/autocomplete'
 export default {
 	name: 'Add',
+	components:{
+		autocomplete
+	},
 	data(){
 		return {
 			valid: true,
 			dialog : false,
-			newStudents : [{value:null,icon:'',search:null,isLoading:false}],
-			Students:[[]],
 			click: false,
 			...validations
+		}
+	},
+	computed:{
+		newStudents(){
+			return this.$store.state.newStudents;
 		}
 	},
 	methods: {
@@ -64,14 +55,7 @@ export default {
 			this.newStudents.push({
 				value: null,
 				icon: 'mdi-close',
-				search: null,
-				isLoading:false
 			});
-			this.Students.push([]);
-		},
-		remove(index){
-			this.newStudents.splice(index, 1);
-			this.Students.slice(index,1);
 		},
 		async AddStudents(){
 			if(!this.valid)
@@ -82,33 +66,15 @@ export default {
 					var response = await this.$store.dispatch('AddStudentGroup', {students: this.newStudents, group: this.$store.state.currentGroup});
 					if(response.status == 200){
 						this.click = false;
-						this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
+						this.newStudents = [{value:null,icon:''}];
 						this.dialog = false;
 					}
 				}
 			}
 		},
 		Cancel(){
-			this.newStudents = [{value:null,icon:'',search:null,isLoading:false,Students:[]}];
+			this.$store.dispatch('ResetNewStudents');
 			this.dialog = false;
-		},
-		async SetStudent(student){
-			student.isLoading = false;
-		}
-	},
-	watch:{
-		newStudents: {
-			handler: function(newValues) {
-				newValues.map(async (value,index) =>{
-					if(value.value == null && this.dialog){
-						value.isLoading = true;
-						var response = await this.$store.dispatch('SearchStudent',{value:value.search,group: this.$store.state.currentGroup.name});
-						if(response.status == 200)
-							this.Students[index] = response.data;
-					}
-				});
-			},
-			deep: true
 		}
 	}
 }

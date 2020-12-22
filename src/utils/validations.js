@@ -29,6 +29,9 @@ var numberBetween = (propertyType, ok) => {
 	return  v => v && v >= 0 && v <= 100 || `${propertyType} должна быть между 0 и 100`;
 }
 
+var numberBetweenTest = (propertyType, max) => {
+	return  v => v && v >= 0 && v <= max || `${propertyType} должна быть между 0 и ${max}`;
+}
 export default {
 	required,
 	minLength,
@@ -36,5 +39,6 @@ export default {
 	emailFormat,
 	numberBetween,
 	requiredNumber,
-	requiredObject
+	requiredObject,
+	numberBetweenTest
 }

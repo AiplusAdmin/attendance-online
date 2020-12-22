@@ -36,6 +36,21 @@ $headings: (
 	border-radius: 10px 10px 0px 0px;
 }
 
+.group_good{
+	background: rgba($color: #c1f0c1, $alpha: 1.0) !important;
+	border-color: #64995b !important;
+
+}
+
+.group_norm{
+	background: rgba($color: #FFD966, $alpha: 1.0) !important;
+	border-color: #FF9933 !important;
+}
+
+.group_bad{
+	background: rgba($color: #ffb3b3, $alpha: 1.0) !important;
+	border-color: #FF0000 !important;
+}
 
 body{
 	font-family: $body-font-family;

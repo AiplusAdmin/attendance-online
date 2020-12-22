@@ -6,7 +6,7 @@ import AttendenceList from '@/views/AttendenceList'
 import Journal from '@/views/Journal'
 import Statistic from '@/views/Statistic'
 import AllJournal from '@/views/AllJournal'
-
+import PersonalTest from '@/views/PersonalTest'
 Vue.use(VueRouter)
 
 const routes = [
@@ -40,6 +40,11 @@ const routes = [
 	path: '/journals',
 	name: 'AllJournal',
 	component: AllJournal
+  },
+  {
+	path: '/tests',
+	name: 'PersonalTest',
+	component: PersonalTest
   }
 ]
 
