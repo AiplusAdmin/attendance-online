@@ -29,7 +29,7 @@
 				<v-data-table 
 					class="studentsTable elevation-1"
 					:headers="personalHeaders"
-					:items = "personalItems"
+					:items = "filteredDesserts"
 					no-data-text = "Нет Записи"
 				>
 					<template v-slot:top>
@@ -66,7 +66,7 @@ export default {
 			dateFrom: null,
 			dateTo: null,
 			filters: {
-				student: [],
+				Student: [],
 			}
 		}
 	},
@@ -74,7 +74,6 @@ export default {
 		currentTeacher(){
 			return this.$store.state.currentTeacher;
 		},
-		
 		currentUser(){
 			return this.$store.state.currentUser;
 		},
@@ -85,12 +84,12 @@ export default {
 			return this.$store.state.personalItems;
 		},
 		filterHeaders:function(){
-			return this.personalHeaders.filter(function(header){
+			return this.$store.state.personalHeaders.filter(function(header){
 				return header.filterable;
 			});
 		},
 		filteredDesserts() {
-			return this.personalItems.filter(d => {
+			return this.$store.state.personalItems.filter(d => {
 				return Object.keys(this.filters).every(f => {
 					return this.filters[f].length < 1 || this.filters[f].includes(d[f])
 				});
@@ -98,6 +97,8 @@ export default {
 		}
 	},
 	async mounted(){
+		console.log(this.personalHeaders);
+		console.log(this.personalItems);
 
 	},
 	created(){
@@ -105,10 +106,9 @@ export default {
 			this.$store.state.currentTeacher = JSON.parse(localStorage.currentTeacher);
 	},
 	methods: {
-		
-	},
-	watch:{
-
+		columnValueList(val) {
+			return this.personalItems.map(d => d[val]);
+		}
 	}
 }
 </script>
