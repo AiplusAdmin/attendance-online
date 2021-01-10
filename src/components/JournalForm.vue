@@ -1,10 +1,5 @@
 <template>
 	<v-container>
-		<v-row>
-			<v-col class = "pa-0" cols="12" lg="2">
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="`/teacher/${currentTeacher.Id}`">Назад</router-link>
-			</v-col>
-		</v-row>
 		<v-row class="d-flex flex-row" align="center">
 			<v-col cols="12" lg="2">
 				<div class="font-weight-bold grey--text text--darken-3 text-h5">Журнал</div>

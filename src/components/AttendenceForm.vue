@@ -39,7 +39,8 @@
 		<v-divider></v-divider>
 		<v-row>
 			<v-col class="px-0 py-0" cols = "12">
-				<v-list subheader flat class="primary">
+				<v-form v-model="validExtra"  ref="formExtra">
+					<v-list subheader flat class="primary">
 					<v-list-item-group>
 						<v-list-item inactive>
 							<v-list-item-content class="pb-0">
@@ -174,7 +175,8 @@
 							</v-col>
 						</v-list-item>-->
 					</v-list-item-group>
-				</v-list>
+					</v-list>
+				</v-form>
 			</v-col>
 		</v-row>
 		<v-divider></v-divider>
@@ -203,6 +205,16 @@
 								<v-spacer></v-spacer>
 								<v-switch v-model="srez" class="mt-5" color="#fbab17"></v-switch>
 							</v-toolbar>
+							<v-toolbar flat>
+								<v-toolbar-title>Воскресный тест</v-toolbar-title>
+								<v-spacer></v-spacer>
+								<v-switch v-model="foskres" class="mt-5" color="#fbab17"></v-switch>
+							</v-toolbar>
+							<v-toolbar flat>
+								<v-toolbar-title>Кол. хар.</v-toolbar-title>
+								<v-spacer></v-spacer>
+								<v-switch v-model="kolhar" class="mt-5" color="#fbab17"></v-switch>
+							</v-toolbar>
 						</template>
 						<template v-slot:[`item.index`]="{ item }" >
 							<p>{{groupStudents.indexOf(item) + 1}}</p>
@@ -225,6 +237,24 @@
 								item-color='#fbab17'
 								:rules="[requiredNumber('Д/з',item.attendence)]" required>
 							</v-select>
+						</template>
+						<template  v-slot:[`item.kolhar`]="{ item }">
+							<v-text-field v-model="item.kolhar" v-show="item.attendence && kolhar"
+								type="number" 
+								:disabled="!item.attendence" 
+								min="0" max="100"
+								color="#fbab17"
+								:rules="[requiredNumber('Кол. хар',item.attendence && kolhar), numberBetween('кол. хар',item.attendence && kolhar)]" required>
+							</v-text-field>
+						</template>
+						<template  v-slot:[`item.foskres`]="{ item }">
+							<v-text-field v-model="item.foskres" v-show="item.attendence && foskres"
+								type="number" 
+								:disabled="!item.attendence" 
+								min="0" max="100"
+								color="#fbab17"
+								:rules="[requiredNumber('воскрес',item.attendence && foskres), numberBetween('воскрес',item.attendence && foskres)]" required>
+							</v-text-field>
 						</template>
 						<template v-slot:[`item.test`]="{ item }">
 							<v-select  v-show="item.attendence"
@@ -269,6 +299,16 @@
 						<v-spacer></v-spacer>
 						<v-switch v-model="srez" class="mt-5" color="#fbab17"></v-switch>
 					</v-toolbar>
+					<v-toolbar flat>
+						<v-toolbar-title>Воскресный тест</v-toolbar-title>
+							<v-spacer></v-spacer>
+							<v-switch v-model="foskres" class="mt-5" color="#fbab17"></v-switch>
+					</v-toolbar>
+					<v-toolbar flat>
+						<v-toolbar-title>Колличественные характеристики</v-toolbar-title>
+						<v-spacer></v-spacer>
+						<v-switch v-model="kolhar" class="mt-5" color="#fbab17"></v-switch>
+					</v-toolbar>
 					<v-card  class="rounded-card my-4 mx-2" elevation="5" v-for="(student,index) in groupStudents" :key="index">
 						<v-list class = "pa-0" shaped flat :class="student.delete?'grey lighten-2':'white'">
 							<v-subheader :class="student.loyalty==0?'loyalty_bad':student.loyalty==2?'loyalty_good':student.loyalty==1?'loyalty_norm':''">
@@ -291,8 +331,8 @@
 											<v-chip-group active-class="">
 												<v-chip :class="dynamic.class+' chis pa-4 text-subtitle-1'"  large text-color="black"  v-for="dynamic in student.dynamics" :key="dynamic.Value">
 													{{ dynamic.Name}}
-												<!--	<v-icon :color="dynamic.iconcolor" large>{{dynamic.progress}}</v-icon>
-													{{ dynamic.Value}}-->
+													<v-icon :color="dynamic.iconcolor" large>{{dynamic.progress}}</v-icon>
+													{{ dynamic.Value}}
 												</v-chip>
 											</v-chip-group>
 										</v-list-item-subtitle>
@@ -332,6 +372,58 @@
 												></v-checkbox>
 											</v-list-item-action>
 										</template>
+									</v-list-item>
+									<v-list-item
+										v-show="student.attendence && kolhar"
+										:key="`kolhar-${student.clientid}`"
+										:value="student.homework"
+										class="pr-0"
+										inactive>
+										<v-row class="align-center">
+											<v-col cols='7' class="py-0">
+												<v-list-item-content>
+													<v-list-item-title class="grey--text text--darken-3">Колличественные характеристики</v-list-item-title>
+												</v-list-item-content>
+											</v-col>
+											<v-col cols='3' class="pa-0">
+												<v-list-item-action>
+													<v-text-field 
+														v-model="student.kolhar"
+														type="number" 
+														min="0" max="60"
+														color="#fbab17"
+														item-color='#fbab17'
+														:rules="[requiredNumber('Кол. хар.',student.attendence && kolhar), numberBetween('Кол. хар.',student.attendence && kolhar)]" required>
+													</v-text-field>
+												</v-list-item-action>
+											</v-col>
+										</v-row>
+									</v-list-item>
+									<v-list-item
+										v-show="student.attendence && foskres"
+										:key="`foskres-${student.clientid}`"
+										:value="student.homework"
+										class="pr-0"
+										inactive>
+										<v-row class="align-center">
+											<v-col cols='9' class="py-0">
+												<v-list-item-content>
+													<v-list-item-title class="grey--text text--darken-3">Воскресный тест</v-list-item-title>
+												</v-list-item-content>
+											</v-col>
+											<v-col cols='3' class="pa-0">
+												<v-list-item-action>
+													<v-text-field 
+														v-model="student.foskres"
+														type="number" 
+														min="0" max="100"
+														color="#fbab17"
+														item-color='#fbab17'
+														:rules="[requiredNumber('Воскрес. тест',student.attendence && foskres), numberBetween('Воскрес. тест',student.attendence && foskres)]" required>
+													</v-text-field>
+												</v-list-item-action>
+											</v-col>
+										</v-row>
 									</v-list-item>
 									<v-list-item
 										v-show="student.attendence"
@@ -459,7 +551,7 @@
 				<v-divider color="black"></v-divider>
 			</v-col>
 		</v-row>
-		<!--<v-row v-if="currentGroup.symbol == 'M'">
+		<v-row v-if="currentGroup.symbol == 'M'">
 			<v-col class="py-0 px-2">
 				<v-select
 					v-model="homework.level"
@@ -485,7 +577,7 @@
 					clearable counter
 				></v-textarea>
 			</v-col>
-		</v-row>-->
+		</v-row>
 		<v-row>
 			<v-col cols="12" lg="4" class="px-0">
 				<v-btn class="rounded-btn white--text"  height="50" :loading="click" @click="setAttendence" block rounded>Отправить</v-btn>
@@ -503,6 +595,12 @@
 		<InfoModal :dialog="dialog" :message="messageModal" :path="path"/>
 		<Check :checkdialog ="checkdialog" :code="code"/>
 		<Loading :overlay="overlay"/>
+		<v-snackbar
+			v-model="snackbar"
+			:timeout="timeout"
+			top>
+			{{snackbarMessage}}
+		</v-snackbar>
 	</v-container>
 </template>
 
@@ -526,6 +624,7 @@ export default {
     data (){
 		return {
 			valid: true,
+			validExtra: true,
 			headers : [
 				{
 					text : '№',
@@ -572,6 +671,8 @@ export default {
 			dialog: false,
 			checkdialog: false,
 			srez: false,
+			foskres: false,
+			kolhar: false,
 			code:null,
 			messageModal: '',
 			path: null,
@@ -584,7 +685,10 @@ export default {
 			homework: {
 				level: null,
 				text: null
-			}
+			},
+			snackbar:false,
+			timeout: 5000,
+			snackbarMessage: null
 		}
 	},
 	computed : {
@@ -615,7 +719,7 @@ export default {
 		srezLevel(){
 			return this.$store.state.srezLevel;
 		},
-	/*	levels(){
+		levels(){
 			return this.$store.state.levels;
 		},
 		topics(){
@@ -623,7 +727,7 @@ export default {
 		},
 		homeWorkLevels(){
 			return this.$store.state.homeWorkLevels;
-		}*/
+		}
 	},
 	beforeCreate(){
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
@@ -639,7 +743,7 @@ export default {
 		this.onResize();
 		this.$store.dispatch('SetLevels');
 		this.GetOfficeRooms(this.currentGroup);
-	//	this.SelectEngLevel();
+		this.SelectEngLevel();
 
 		if(!localStorage.groupStudents || JSON.parse(localStorage.groupStudents).length == 0){
 			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date,teacherId: this.currentTeacher.Id});
@@ -674,6 +778,7 @@ export default {
 		}
 	},
 	created(){
+		console.log(localStorage.currentGroup);
 		if(localStorage.currentGroup)
 			this.$store.state.currentGroup = JSON.parse(localStorage.currentGroup);
 		if(localStorage.currentTeacher)
@@ -686,13 +791,19 @@ export default {
 	methods : {
 		async setAttendence(){
 			console.log(this.valid);
-			if(!this.valid)
+			if(!this.valid){
 				this.$refs.form.validate();
-			else {
+			}
+			if(!this.validExtra){
+				this.$refs.formExtra.validate();
+			}
+			if(this.valid){
 				if(!this.click){
 					this.click = true;
 					if(this.currentGroup.change && !this.equal){
 						var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
+						this.snackbarMessage = `Ваш код ${code.data}`;
+						this.snackbar = true;
 						if(code.status == 200){
 							this.code = code.data;
 							this.checkdialog = true;
@@ -717,7 +828,7 @@ export default {
 						console.log(total);
 						this.$store.dispatch('SetExtraFieldsGroup',{params: this.extraparams});
 						this.overlay = true;
-						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName,Aibucks: total});
+						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName,Aibucks: total,topic: this.topic, homework: this.homework,foskres: this.foskres, kolhar: this.kolhar});
 						this.overlay = false;
 						if(response.status == 200){
 							this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;

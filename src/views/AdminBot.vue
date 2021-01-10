@@ -1,49 +1,32 @@
 <template>
 	<v-container fluid>
 		<v-row class="d-flex justify-space-around align-center">
-			<v-col  cols="6" xl="7" lg="7" md="7" sm="7">
+			<v-col  cols="5" xl="7" lg="7" md="7" sm="7">
 				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115"></v-img>
 			</v-col>
 			<v-col class="d-flex justify-end align-center" cols="4" xl="3" lg="3" md="3" sm="3">
 				<h4 class="grey--text text--darken-2">{{currentUser.lastname +' '+currentUser.firstname}}</h4>
 			</v-col>
-			<v-col cols="2" xl="1" lg="1" md="1" sm="1">
-				<v-btn icon class="orange--text" @click="LogOut">
+			<v-col  class="align-center" cols="2" sm="1" >
+				<v-btn icon class="pl-4 orange--text" @click="LogOut">
 					<v-icon>mdi-export</v-icon>
 				</v-btn>
 			</v-col>
 		</v-row>
 		<v-row>
-			<v-col cols="12" lg="2">
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="`/teacher/${currentTeacher.Id}`">Назад</router-link>
-			</v-col>
-		</v-row>
-		<v-row>
-			<v-col cols="12" lg="12">
-				<v-tabs color="basil">
-					<v-tab>Журнал</v-tab>
-					<v-tab>Персональные тесты</v-tab>
-					<v-tab-item>
-						<JournalForm />
-					</v-tab-item>
-					<v-tab-item>
-						<PersonalTestJournal />
-					</v-tab-item>
-				</v-tabs>
+			<v-col class="px-0">
+				<AdminBotForm />
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-import JournalForm from '@/components/JournalForm'
-import PersonalTestJournal from '@/components/PersonalTestJournal'
-
+import AdminBotForm from '@/components/AdminBotForm'
 export default {
-	name: 'Journal',
+	name: 'AttendenceList',
 	components: {
-		JournalForm,
-		PersonalTestJournal
+		AdminBotForm
 	},
 	mounted() {
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
@@ -57,9 +40,6 @@ export default {
 	computed: {
 		currentUser(){
 			return this.$store.state.currentUser;
-		},
-		currentTeacher(){
-			return this.$store.state.currentTeacher;
 		}
 	},
 	methods: {
@@ -70,7 +50,3 @@ export default {
 	}
 }
 </script>
-
-<style scoped>
-
-</style>

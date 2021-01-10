@@ -125,6 +125,15 @@ export default {
 					filterable: true
 				},
 				{	
+					text: 'Айбаксы',
+					value: 'Aibucks'
+				},
+				{	
+					text: 'Заменяемый Препод',
+					value: 'SubFullName'
+				},
+
+				{	
 					text: 'Кол. Учеников',
 					value: 'Passed'
 				},
@@ -203,9 +212,9 @@ export default {
 			return this.adminRegisters.filter(d => {
 				return Object.keys(this.filters).every(f => {
 					return this.filters[f].length < 1 || this.filters[f].includes(d[f])
+				});
 			});
-		});
-    }
+		}
 	},
 	beforeCreate(){
 		var user = JSON.parse(window.localStorage.currentUser);

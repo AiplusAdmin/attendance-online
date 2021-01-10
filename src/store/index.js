@@ -240,7 +240,9 @@ export default new Vuex.Store({
 	levels: [],
 	topics: [],
 	newStudents : [{value:null,icon:''}],
-	homeWorkLevels: ['A','B','C']
+	homeWorkLevels: ['A','B','C'],
+	personalHeaders: [],
+	personalItems: []
 },
   mutations: {
 		SET_CURRENT_USER(state,user){
@@ -321,6 +323,10 @@ export default new Vuex.Store({
 		},
 		SET_TOPICS(state,topics){
 			state.topics = topics;
+		},
+		SET_PERSONAL_TEST_DETAILS(state,details){
+			state.personalHeaders = details.headers;
+			state.personalItems = details.items;
 		},
 		ADD_STUDENT_GROUP(state, student){
 			state.groupStudents.push(student);
@@ -468,7 +474,7 @@ export default new Vuex.Store({
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
 				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 	
-				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students,Aibucks: params.Aibucks});
+				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students,Aibucks: params.Aibucks,topic: params.topic,homework: params.homework,foskres: params.foskres, kolhar: params.kolhar});
 
 				if(pass_response.data.status == 200){
 					Api().post('/sendmessagetelegram',params);									
@@ -738,6 +744,71 @@ export default new Vuex.Store({
 	},
 	ResetNewStudents({commit}){
 		commit('RESET_NEW_STUDENTS');
+	},
+	async GetPersonalTestTeacherId({commit},params){
+		try{
+			var response = await Api().get('/getpersonaltestteacher',{params});
+			commit('SET_PERSONAL_TEST_DETAILS',response.data.data);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async TelegramOnline({commit},params){
+		try{
+			await Api().post('/telegram/online',{params});
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}	
+	},
+	async TelegramIntensiv({commit},params){
+		try{
+			await Api().post('/telegram/intensiv',{params});
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}	
+	},
+	async TelegramAttendance({commit},params){
+		try{
+			await Api().post('/telegram/attendance',{params});
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}	
+	},
+	async TelegramAttendancePersonal({commit},params){
+		try{
+			await Api().post('/telegram/personal/attendance',{params});
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}	
+	},
+	async TelegramPersonalTest({commit},params){
+		try{
+			await Api().post('/telegram/personal/tests',{params});
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}	
+	},
+	async TelegramNotification({commit},params){
+		try{
+			await Api().post('/telegram/notification',{params});
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}	
+	},
+	async TelegramUpload({commit},formData){
+		try{
+			await Api().post('/telegram/upload',formData);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetOffices({commit}){
+		try{
+			var response = await Api().get('/schools');
+			return response.data.data;
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
 	}
   },
   modules: {

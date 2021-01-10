@@ -1,3 +1,4 @@
+
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
@@ -7,6 +8,7 @@ import Journal from '@/views/Journal'
 import Statistic from '@/views/Statistic'
 import AllJournal from '@/views/AllJournal'
 import PersonalTest from '@/views/PersonalTest'
+import AdminBot from '@/views/AdminBot'
 Vue.use(VueRouter)
 
 const routes = [
@@ -45,6 +47,11 @@ const routes = [
 	path: '/tests',
 	name: 'PersonalTest',
 	component: PersonalTest
+  },
+  {
+	path: '/telegram',
+	name: 'AdminBot',
+	component: AdminBot
   }
 ]
 
