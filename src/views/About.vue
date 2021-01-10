@@ -30,17 +30,7 @@
 		</v-row>
 		<v-row class="d-flex justify-center">
 			<v-col class = "px-0" cols="12" xl="5" lg="4" md="5" sm="7">
-				<v-tabs color="basil" grow>
-					<v-tab>АTTENDANCE</v-tab>
-					<v-tab>TESTS</v-tab>
-					<v-tab-item>
-						<GroupForm :teacherId="teacherId"/>
-					</v-tab-item>
-					<v-tab-item>
-						<TestCategoryForm :teacherId="teacherId"/>
-					</v-tab-item>
-				</v-tabs>
-				
+						<GroupForm :teacherId="teacherId"/>				
 			</v-col>
 		</v-row>
   </v-container>
@@ -49,7 +39,6 @@
 <script>
 import GroupForm from '@/components/GroupForm'
 import Edit from '@/components/modal/Edit'
-import TestCategoryForm from '@/components/TestCategoryForm'
 
 export default {
 	props: {
@@ -57,8 +46,7 @@ export default {
 	},
 	components: {
 		GroupForm,
-		Edit,
-		TestCategoryForm
+		Edit
 	},
 	mounted() {
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
