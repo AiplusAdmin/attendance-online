@@ -16,6 +16,15 @@
           <span class="headline orange--text">Комментарии</span>
         </v-card-title>
         <v-card-text>
+			<p><span class="text-h6 font-weight-bold grey--text text--darken-3">Блоки:</span></p>
+			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">A. Поведение.</span><br/>
+			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">B. Учебный процесс.</span><br/>
+			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">C. Домашнее задание.</span><br/>
+			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">E. Психологические характеристики ученика.</span><br/>
+			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">D. Общее состояние ученика во время урока.</span><br/><br/>
+			
+			<v-divider class="my-4"></v-divider>
+			
 			<p v-for="comment in comments" :key="comment.value">
 				<span class="font-weight-bold grey--text text--darken-3">{{comment.value}}</span> : <span class="grey--text text--darken-2">{{comment.text}}</span>
 			</p> 

@@ -331,8 +331,8 @@
 											<v-chip-group active-class="">
 												<v-chip :class="dynamic.class+' chis pa-4 text-subtitle-1'"  large text-color="black"  v-for="dynamic in student.dynamics" :key="dynamic.Value">
 													{{ dynamic.Name}}
-													<v-icon :color="dynamic.iconcolor" large>{{dynamic.progress}}</v-icon>
-													{{ dynamic.Value}}
+													<!--<v-icon :color="dynamic.iconcolor" large>{{dynamic.progress}}</v-icon>
+													{{ dynamic.Value}}-->
 												</v-chip>
 											</v-chip-group>
 										</v-list-item-subtitle>
@@ -551,7 +551,7 @@
 				<v-divider color="black"></v-divider>
 			</v-col>
 		</v-row>
-		<v-row v-if="currentGroup.symbol == 'M'">
+	<!--	<v-row v-if="currentGroup.symbol == 'M'">
 			<v-col class="py-0 px-2">
 				<v-select
 					v-model="homework.level"
@@ -577,13 +577,14 @@
 					clearable counter
 				></v-textarea>
 			</v-col>
-		</v-row>
+		</v-row>-->
 		<v-row>
 			<v-col cols="12" lg="4" class="px-0">
 				<v-btn class="rounded-btn white--text"  height="50" :loading="click" @click="setAttendence" block rounded>Отправить</v-btn>
 			</v-col>
 		</v-row>
 		<v-speed-dial
+			class="mr-1"
 			bottom
 			right
 			fixed
@@ -682,10 +683,10 @@ export default {
 			overlay: false,
 			engLevel: null,
 			topic: null,
-			homework: {
+		/*	homework: {
 				level: null,
 				text: null
-			},
+			},*/
 			snackbar:false,
 			timeout: 5000,
 			snackbarMessage: null
@@ -804,6 +805,7 @@ export default {
 						var code = await this.$store.dispatch('GetCode',{Id: this.subTeacher.Id});
 						this.snackbarMessage = `Ваш код ${code.data}`;
 						this.snackbar = true;
+						this.click = false;
 						if(code.status == 200){
 							this.code = code.data;
 							this.checkdialog = true;

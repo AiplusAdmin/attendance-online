@@ -196,7 +196,8 @@ export default {
 			],
 			expanded: [],
 			expandedStudents:[],
-			date: null
+			dateFrom: null,
+			dateTo: null
 		}
 	},
 	computed : {
@@ -227,7 +228,12 @@ export default {
 	},
 	methods:{
 		columnValueList(val) {
-			return this.adminRegisters.map(d => d[val]);
+			var s = this.adminRegisters.map(d => d[val]);
+			if(val == 'FullName'){
+				return s.sort();
+			} else {
+				return s;
+			}
 		},
 		async ShowMore(value){
 			if(value.value){
