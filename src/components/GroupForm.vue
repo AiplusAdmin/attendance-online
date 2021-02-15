@@ -1,146 +1,65 @@
 <template>
-	<v-form v-model="valid" ref="form" class="myform px-0 py-6">
-		<v-container class="">
-			<v-row class="justify-end px-5">
-				<v-col cols="12" lg="4">
-					<v-checkbox v-model="params.change"  color="#fbab17" label="Замена"></v-checkbox>
-				</v-col>
-			</v-row>
-			<v-row class="px-5" v-show="params.change">
-				<v-col>
-					<v-autocomplete
-						:value="subTeacherName"
-						:items="subTeachers"
-						item-text="FullName"
-						@input="SetSubTeacher"
-						:loading="isLoading"
-						:search-input.sync="search"
-						no-data-text="Нет учителей"
-						dense clearable
-						return-object
-						label="ФИО Тренера" color="#fbab17">
-					</v-autocomplete>
-				</v-col>
-			</v-row>
-			<v-row class="px-5">
-				<v-col class="pa-0">
-					<v-select
-						v-model="params.office"
-						:items="groupOffices"
-						item-text="Name"
-						label="Филиал"
-						color="#fbab17"
-						solo rounded outlined flat dense
-						return-object
-						:rules="[requiredObject('Филиал')]" required>
-					</v-select>
-				</v-col>
-			</v-row>
-			<v-row class="px-5 font-weight-bold grey--text text--darken-2">
-				<v-col>
-					Дата занятии
-				</v-col>
-			</v-row>
-			<v-divider></v-divider>
-			<v-row class="px-5">
-				<v-col class="pa-0">
-					<v-date-picker v-model="params.date" 
-						color="#fbab17" 
-						locale="ru" 
-						first-day-of-week="1"
-						no-title full-width
-						:rules="[required('Дата')]" required>
-					</v-date-picker><br/>
-				</v-col>
-			</v-row>
-			<v-divider></v-divider>
-			<v-row class="px-5" align="center" justify="center">
-				<v-col class="font-weight-bold grey--text text--darken-2" cols="12" sm="3" >
-					<span>Время занятии </span> 
-				</v-col>
-				<v-col cols="5" sm="4">	
-					<v-select v-model="params.timeFrom"
-							@change="changeTimeFrom" 
-							:items="timesFrom"
-							label="00:00"
-							color="#fbab17"
-							solo rounded outlined flat dense hide-details hide-selected
-							:rules="[required('Начала время')]" required>
-					</v-select>
-				</v-col>
-				<v-col class="grey--text text--darken-2" cols="1">
-					<span>-</span> 
-				</v-col>
-				<v-col cols="5" sm="4">	
-					<v-select v-model="params.timeTo"
-							:items="timesTo"
-							label="00:00"
-							color="#fbab17"
-							solo rounded outlined flat dense hide-details hide-selected
-							:rules="[required('Конец время')]" required>
-					</v-select>
-				</v-col>
-			</v-row>
-			<v-divider></v-divider>
-			<!--<v-row class="px-5 pt-6">
-				<v-col class="pa-0">
-					<v-select
-						label="Тема урока"
-						color="#fbab17"
-						solo rounded outlined flat dense
-						>
-					</v-select>
-				</v-col>
-			</v-row>
-			<v-row class="px-5 pt-6">
-				<v-col class="pa-0">
-					<v-select
-						v-model="extraparams.level"
-						:items="srezLevel"
-						label="Уровень среза"
-						color="#fbab17"
-						solo rounded outlined flat dense
-						:rules="[required('Уровень среза')]" required>
-						>
-					</v-select>
-				</v-col>
-			</v-row>
-			<v-row class="px-5">
-				<v-col class="pa-0">
-					<v-select
-						v-model="extraparams.room"
-						:items="groupRooms"
-						item-text="Room"
-						label="Кабинет"
-						color="#fbab17"
-						return-object
-						solo rounded outlined flat dense
-						:rules="[requiredObject('Кабинет')]" required>
-						>
-					</v-select>
-				</v-col>
-			</v-row>-->
-			<v-divider></v-divider>
-			<v-row class="px-5 pt-9">
-				<v-col>
-					<v-btn class="rounded-btn white--text" :loading="click" @click="getGroup" block rounded height="50">Attendance list</v-btn>
-				</v-col>
-			</v-row>
-			<InfoModal :dialog="dialog" :message="message" :path="path" />
-			<Loading :overlay="overlay"/>
-		</v-container>
-	</v-form>
+	<v-container class="">
+		<v-row>
+			<v-col cols="12" class="pa-0">
+				<v-list class="pb-0">
+					<v-list-group
+						v-for="office in offices" :key="office.Id"
+						:value="false"
+						v-model="office.value"
+						:class="office.value ? 'mb-1 myform_active': ' mb-1 myform'"
+						color="grey darken-1"
+						@click="getGroup(office)"
+					>
+						<template v-slot:activator>
+							<v-list-item two-line class="pl-0">
+								<v-list-item-title class=" font-weight-bold grey--text text--darken-3 text-subtitle-1 text-uppercase">{{office.Name}}</v-list-item-title>
+							</v-list-item>
+						</template>
+						<div v-if="groups.length > 0">
+							<v-list class='myform_bakc'>
+								<v-list-item
+									class="px-0 mb-1 mt-1 divider mx-3 white"
+									v-for="group in groups" :key="group.Id"
+									@click="SetGroup(office,group)"
+									two-line
+								>
+									<v-col cols="8" class="pl-4">
+										<v-list-item-title class="font-weight-bold  grey--text text--darken-2 text-subtitle-1" v-text="group.name"></v-list-item-title>
+									</v-col>
+									<v-col cols="4" class="ml-3">
+										<v-list-item-title class="text-subtitle-2" v-text="group.time"></v-list-item-title>
+									</v-col>
+								</v-list-item>
+							</v-list>
+						</div>
+						<div v-else>
+							<v-list class="pa-0">
+								<v-list-item >
+									<v-list-item-title class="text-h6" v-text="'Нет групп'"></v-list-item-title>
+								</v-list-item>
+							</v-list>
+						</div>
+					</v-list-group>
+				</v-list>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" class="px-0">
+				<v-btn class="rounded-btn white--text mt-9" to="/change" block rounded height="50">Замена</v-btn>
+			</v-col>
+		</v-row>
+		<Loading :overlay="overlay"/>
+
+	</v-container>
 </template>
 
 <script>
-import InfoModal from '@/components/modal/Info'
 import Loading from '@/components/modal/Loading'
-import validations from '@/utils/validations'
 
 export default {
 	name: 'GroupForm',
 	components: {
-		InfoModal,
 		Loading
 	},
 	props: {
@@ -148,174 +67,66 @@ export default {
 	},
 	data () {
 		return {
-			valid: true,
-			params : {
-				teacherId : this.teacherId,
-				office: null,
-				date : new Date().toISOString().substr(0, 10),
-				timeFrom : null,
-				timeTo : null,
-				change: false
-			},
-			subTeachers:[],
-			groupOffices: [],
-			subTeacherName: null,
 			isLoading: false,
-			search: null,
-			dialog: false,
-			path : null,
-			message : null,
-			click: false,
 			overlay: false,
-			...validations
+			groups: [],
 		}
 	},
 	async mounted(){
-		
 		await this.$store.dispatch('GetTeacherById', this.teacherId);				
-		this.groupOffices = this.$store.state.offices;
 		this.$store.dispatch('ResetGroup');
-			
-	},
-	created(){
-		var officeName = window.localStorage.officeName?JSON.parse(window.localStorage.officeName):{};
-		if(!(Object.keys(officeName).length === 0 && officeName.constructor === Object)){
-			this.params.office = officeName;
-		}
-		if(localStorage.timeFrom){
-			this.params.timeFrom = localStorage.timeFrom;
-			this.changeTimeFrom();
-		}
-		if(localStorage.timeTo)
-			this.params.timeTo = localStorage.timeTo;
-		if(localStorage.currentUser)
-			this.$store.state.currentUser = JSON.parse(localStorage.currentUser);
-
 	},
 	computed : {
 		offices(){	
+			this.$store.state.offices.map(el => el.value = false);
+
 			return this.$store.state.offices;
 		},
 		currentUser(){
 			return this.$store.state.currentUser;
-		},
-		suboffices(){			
-			return this.$store.state.suboffices;
-		},
-		timesFrom(){
-			return this.$store.state.timesFrom;
-		},
-		timesTo(){
-			return this.$store.state.timesTo;
-		},
-		subTeacher(){
-			return this.$store.state.subTeacher;
-		}
+		}	
 	},
 	methods : {
-		changeTimeFrom(){
-			this.params.timeTo = null;
-			this.$store.dispatch('changeTimesTo',this.params.timeFrom);
-		},
-		async getGroup(){
-			if(!this.valid)
-				this.$refs.form.validate();
-			else {
-				if(!this.click){
-					this.click = true;
-					
-					this.params.teacherId = this.currentUser.teacherId;
-					if(this.params.teacherId == undefined || this.params.teacherId == null){
-							this.click = false;
-							this.message = "Обновите либо попробуйте перезайти в систему";
-							this.dialog = true;
-					}else{
-						this.overlay = true;
-						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-						this.overlay = false;
-						if(result == undefined){
-							this.click = false;
-							this.message = "Проблемы с системой Hollyhope";
-							this.dialog = true;
-						}else if(result.status == 401 || result.status == 400){
-							this.click = false;
-							this.message = "Ваше время в системе истекло перезайдите";
-							this.path = "/";
-							this.dialog = true;
-						}else if(result.status == 404){
-							this.click = false;
-							this.message = "Такой группы нет";
-							this.dialog = true;
-						}else if(result.stats == 410){
-							this.click = false;
-							this.message = "Проблема с Hollyhope";
-							this.dialog = true;
-						}else if(result.status == 200){
-							this.click = false;
-							this.$router.push({path: '/group'});
-						}
-					}
-				}
+		async getGroup(office){
+			if(!office.value){
+				this.overlay = true;
+				var response = await this.$store.dispatch('GetOfficeGroups', { office: office, teacherId: this.teacherId});
+				this.groups = response.data.data;
+				this.overlay = false;
 			}
 		},
-		async SetSubTeacher(subTeacherFullName){
-			if(subTeacherFullName == undefined){
-				this.$store.dispatch('ResetSubTeacher');
-			} else {
-				if(subTeacherFullName.TeacherId == this.teacherId){
-						alert('Вы не можете сделать замену');
-						this.$store.dispatch('ResetSubTeacher');
-				}else{
-						await this.$store.dispatch('GetSubTeacher',subTeacherFullName.TeacherId);
-						localStorage.subTeacher = JSON.stringify(this.subTeacher);
-						this.isLoading = false;
-				}
-			}
-		}
-	},
-	watch:{
-		async search (val) {
-			this.isLoading = true;
-			var response = await this.$store.dispatch('SearchTeacher',val);
-			if(response.status == 200)
-				this.subTeachers = response.data;
-			else 
-				this.$router.push('/') 
-		},
-		params:{
-			handler: async function(newValue){
-				if(newValue.timeFrom){
-					localStorage.timeFrom = newValue.timeFrom;
-				}
-				if(newValue.timeTo){
-					localStorage.timeTo = newValue.timeTo;
-				}
-				if(newValue.office){
-					localStorage.officeName = JSON.stringify(newValue.office);
-				}
-				if(!newValue.change){
-					this.$store.dispatch('ResetSubTeacher');
-					this.search = null;
-					this.isLoading = false;
-				}
-			},
-			deep: true
-		},
-		subTeacher: function(){
-			if(this.subTeacher.Id)
-				this.groupOffices = this.suboffices;
-			else
-				this.groupOffices = this.offices;
+		SetGroup(office,group){
+			this.overlay = true;
+			group.date = new Date().toISOString().substr(0, 10);
+			group.change = false;
+			group.officeId = office.Id;
+			group.teacherId = this.teacherId;
+			group.subteacherId = null;
+			this.$store.dispatch('SetGroup',group);
+			this.overlay = false;
+			this.$router.push({path: '/group'});
 		}
 	}
 }
 </script>
 <style scoped>
 	.myform{
-		background: #ffffff;
-		border-radius: 12px;
+		background:#f0f4f5;
 	}
 
+	.myform_active{
+		background:#e1e5e6;
+		color: #d2d4d9;
+	}
+
+	.myform_bakc{
+		background:#ededed !important;
+	}
+
+	.divider{
+		box-shadow: 0px 2px 5px rgba(196, 197, 197) !important;
+	}
+	
 	.rounded-btn{
 		background-image: linear-gradient(to right,rgb(251, 171, 23) 0%,rgb(250, 191, 82) 100%);
 		box-shadow: 0px 8px 5px rgba(196, 197, 197);

@@ -1,35 +1,33 @@
 <template>
-	<v-container fluid>
+	<v-container >
 		<v-row class="d-flex justify-space-around align-center">
-			<v-col  cols="6" xl="7" lg="7" md="7" sm="7">
-				<v-img src="@/assets/images/aiplusLogoMini.png" max-height="53" max-width="115"></v-img>
-			</v-col>
-			<v-col class="d-flex justify-end align-center" cols="4" xl="3" lg="3" md="3" sm="3">
-				<h4 class="grey--text text--darken-2">{{currentUser.lastname +' '+currentUser.firstname}}</h4>
-			</v-col>
-			<v-col cols="2" xl="1" lg="1" md="1" sm="1">
-				<v-btn icon class="orange--text" @click="LogOut">
-					<v-icon>mdi-export</v-icon>
-				</v-btn>
-			</v-col>
+			<Header/>
 		</v-row>
 		<v-row>
 			<v-col cols="12" lg="2">
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="`/teacher/${currentTeacher.Id}`">Назад</router-link>
+				<router-link class="orange--text text-decoration-none" :to="`/teacher/${currentTeacher.Id}`">Главная</router-link>
 			</v-col>
 		</v-row>
 		<v-row>
 			<v-col cols="12" lg="12">
-				<v-tabs color="basil">
-					<v-tab>Журнал</v-tab>
-					<v-tab>Персональные тесты</v-tab>
-					<v-tab-item>
+				<div class="tab-slider--nav">
+					<ul class="tab-slider--tabs">
+						<li class="tab-slider--trigger active" rel="tab1">Журнал</li>
+						<li class="tab-slider--trigger" rel="tab2">Тесты</li>
+					</ul>
+				</div>
+			</v-col>
+		</v-row>
+		<v-row>
+			<v-col cols="12" lg="12">
+				<div class="tab-slider--container">
+					<div id="tab1" class="tab-slider--body">
 						<JournalForm />
-					</v-tab-item>
-					<v-tab-item>
+					</div>
+					<div id="tab2" class="tab-slider--body">
 						<PersonalTestJournal />
-					</v-tab-item>
-				</v-tabs>
+					</div>
+				</div>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -38,12 +36,14 @@
 <script>
 import JournalForm from '@/components/JournalForm'
 import PersonalTestJournal from '@/components/PersonalTestJournal'
+import Header from '@/components/Header'
 
 export default {
 	name: 'Journal',
 	components: {
 		JournalForm,
-		PersonalTestJournal
+		PersonalTestJournal,
+		Header
 	},
 	mounted() {
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
@@ -53,6 +53,28 @@ export default {
 		} else {
 			this.$store.state.currentUser = user;
 		}
+
+		this.$nextTick(() => {			
+			$("document").ready(function(){
+				$(".tab-slider--body").hide();
+				$(".tab-slider--body:first").show();
+			});
+
+			$(".tab-slider--nav li").click(function() {
+				$(".tab-slider--body").hide();
+				var activeTab = $(this).attr("rel");
+				console.log('hey');
+				$("#"+activeTab).fadeIn();
+					if($(this).attr("rel") == "tab2"){
+						$('.tab-slider--tabs').addClass('slide');
+					}else{
+						$('.tab-slider--tabs').removeClass('slide');
+					}
+				$(".tab-slider--nav li").removeClass("active");
+				$(this).addClass("active");
+			});
+		
+		});
 	},
 	computed: {
 		currentUser(){
@@ -73,4 +95,63 @@ export default {
 
 <style scoped>
 
+.tab-slider--nav{
+	width: 100%;
+	float: left;
+	margin-bottom: 20px;
+}
+.tab-slider--tabs{
+	width: 100%;
+	border: 1px solid #a6a6a6;
+	display: block;
+	float: left;
+	margin: 0;
+	padding: 6px 0;
+	list-style: none;
+	position: relative;
+	border-radius: 35px;
+	overflow: hidden;
+	background: #fff;
+	height: 50px;
+	user-select: none; 
+}
+
+.tab-slider--tabs:after{
+	content: "";
+	width: 50%;
+	background: #fbab17;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	transition: all 250ms ease-in-out;
+	border-radius: 35px;
+}
+
+.tab-slider--tabs.slide:after{
+	left: 50%;
+}
+
+.tab-slider--trigger {
+	width: 50%;
+	font-size: 17px;
+	line-height: 1;
+	color: #969696;
+	text-align: center;
+	padding: 10px 20px;
+	position: relative;
+	z-index: 2;
+	cursor: pointer;
+	display: inline-block;
+	transition: color 250ms ease-in-out;
+	user-select: none; 
+}
+
+.active{
+	color: #ffffff !important;
+}
+
+.tab-slider--body{
+	margin-bottom: 20px;
+}
 </style>

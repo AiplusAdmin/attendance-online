@@ -2,14 +2,16 @@
   <v-row justify="end">
     <v-dialog v-model="dialog" width="600px">
       <template v-slot:activator="{ on, attrs }">
-        <v-icon
-			class="information mr-4"
-			large
-			color="#fbab17"
-			v-bind="attrs"
-			v-on="on">
-				mdi-information
-		</v-icon>
+        
+			<v-btn
+				color="orange mr-1"
+				dark
+				fab
+				v-bind="attrs"
+				v-on="on"
+				>
+					<v-icon large>mdi-information-outline</v-icon>
+			</v-btn>
       </template>
       <v-card>
         <v-card-title>

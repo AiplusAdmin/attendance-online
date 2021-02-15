@@ -1,26 +1,25 @@
 <template>
 	<v-container>
-		<v-row class="d-flex flex-row" align="center">
-			<v-col cols="12" lg="2">
-				<div class="font-weight-bold grey--text text--darken-3 text-h5">Персональные данные</div>
+		<v-row class="white d-flex flex-row mb-1" align="center">
+			<v-col cols="12" lg="2" class="pa-6">
+				<div class="font-weight-bold grey--text text--darken-1 text-body-2 text-uppercase">Персональные данные</div>
 			</v-col>
 		</v-row>
-		<v-row class="white journal-round" justify="start">		
-			<v-col cols = "12" lg = "4" class="currentTeacher">
-				<v-list class="pa-0 listnone">
-					<v-subheader class="pa-0 text-subtitle-2 text-uppercase font-weight-bold grey--text text--darken-2">Учитель</v-subheader>
+		<v-row class="white" justify="start">		
+			<v-col cols = "12" lg = "4" class="px-6">
+				<v-list class="px-0 pb-6 borderbottom ">
+					<v-subheader class="pa-0 text-body-1 text-uppercase font-weight-bold orange--text">Учитель</v-subheader>
 					<v-list-item dense inactive class="pa-0 teacher-rounded">
 						<v-list-item-content class="pa-0">
-							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="currentUser.lastname + ' ' + currentUser.firstname"></v-list-item-title>
+							<v-list-item-title class="mb-2 text-h6 text-uppercase font-weight-bold grey--text text--darken-4" v-text="currentUser.lastname"></v-list-item-title>
+							<v-list-item-title class="text-h6 text-uppercase font-weight-bold grey--text text--darken-4" v-text="currentUser.firstname"></v-list-item-title>
 						</v-list-item-content>
 					</v-list-item>
 				</v-list>
 			</v-col>
-			<v-col cols="12" lg="6">
-			</v-col>
 		</v-row>
-		<v-row>
-			<v-col class = "px-0" cols="12" lg="12">
+		<v-row class="white">
+			<v-col class = "px-0 pt-0" cols="12" lg="12">
 				<PersonalTestFilter />
 			</v-col>
 		</v-row>
@@ -114,7 +113,7 @@ export default {
 </script>
 
 <style scoped>
-	.journal-round{
-		border-radius: 12px;
+	.borderbottom{
+		border-bottom: 1px solid #fbab17;
 	}
 </style>

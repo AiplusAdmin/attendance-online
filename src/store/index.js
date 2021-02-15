@@ -13,7 +13,7 @@ export default new Vuex.Store({
 	groupStudents: [],
 	timesFrom : ['08:00','08:45','09:15','09:30','10:15','10:45','11:00','11:45','12:15','12:30','12:45','13:00','13:30','13:45','14:30','15:00','15:15','16:00','16:45','17:30','18:15','19:00','19:45'],
 	timesTo : ['00:00'],
-	srezLevel: ['A','B','C','Нет'],	
+	srezLevel: ['A','B','C'],	
 	offices : [],
 	equal: true,
 	suboffices : [],
@@ -432,6 +432,13 @@ export default new Vuex.Store({
 			commit('RESET_CURRENT_USER');
 		}
 	},
+	SetGroup({commit}, group){
+		try{
+			commit('SET_CURRENT_GROUP', group);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
 	async GetGroup({commit}, params){
 		try{
 			var teacherId = params.params.change ? params.subTeacher.Id:params.params.teacherId;
@@ -454,6 +461,15 @@ export default new Vuex.Store({
 				return {status: response.data.status};
 			} 
 		}catch{
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetOfficeGroups({commit}, params){
+		try{
+			var response = await Api().post('/officegoups', {office:params.office,teacherId: params.teacherId});
+			
+			return response;
+		}catch(err){
 			commit('RESET_CURRENT_USER');
 		}
 	},
@@ -498,10 +514,9 @@ export default new Vuex.Store({
 				var day = today.getFullYear()+'-'+("0" + (today.getMonth()+1)).slice(-2)+'-'+("0" + today.getDate()).slice(-2);
 				var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 	
-				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students,Aibucks: params.Aibucks,topic: params.topic,homework: params.homework,foskres: params.foskres, kolhar: params.kolhar});
+				var pass_response = await Api().post('/setattendence',{group: params.group, submitDay: day, submitTime: time, isSubmitted: false, students: params.students,Aibucks: params.Aibucks,topic: params.topic,homework: params.homework,foskres: params.foskres, kolhar: params.kolhar,teacherName: params.teacherName});
 
 				if(pass_response.data.status == 200){
-					Api().post('/sendmessagetelegram',params);									
 					commit('RESET_GROUP');
 					return {status: 200};
 				} else {
@@ -509,7 +524,7 @@ export default new Vuex.Store({
 				}
 			} else if(response.data.status == 401 || response.data.status == 400){
 				commit('RESET_CURRENT_USER');
-				return {status: response.data.status, text: 'Ваше время в системе истекло перезайдите'};
+				return {status: response.data.status, text: 'Заполните уровень группы и номер кабинета'};
 			}else if(response.data.status == 410){
 				commit('RESET_GROUP');
 				return {status: response.data.status, text: 'Аттенданс уже заполнен'};
@@ -556,7 +571,7 @@ export default new Vuex.Store({
 				}	
 			});
 			var isOperator = arr.every(elem => elem == true);
-			commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: isOperator});
+			commit('SET_GROUP_DETAILS',{isStudentAdd: true, isOperator: !isOperator});
 			return {status: 200};	
 		}catch{
 			commit('RESET_CURRENT_USER');
@@ -830,6 +845,13 @@ export default new Vuex.Store({
 		try{
 			var response = await Api().get('/schools');
 			return response.data.data;
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async UpdateRegiterFine({commit},register){
+		try{
+			Api().put(`/registers/${register.Id}`,register);
 		}catch(err){
 			commit('RESET_CURRENT_USER');
 		}

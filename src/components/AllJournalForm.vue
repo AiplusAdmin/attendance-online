@@ -37,6 +37,14 @@
 							</v-col>
 						</v-row>
 					</template>
+					<template v-slot:[`item.Fine`]="{ item }">
+						<v-text-field v-model="item.Fine"
+							type="text" 
+							color="#fbab17"
+							@change='addFine(item)'
+						>
+						</v-text-field>
+					</template>
 					<template v-slot:expanded-item="{headers}">
 						<td class="px-0" :colspan="headers.length">
 							<v-data-table
@@ -66,84 +74,92 @@ export default {
 			headers: [
 				{
 					text: 'Id',
-					value: 'Id'
+					value: 'Id',
 				},
 				{
 					text: 'Филиал',
 					value: 'Name',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Отделение',
 					value: 'Branch',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Группа',
 					value: 'GroupName',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Предмет',
 					value: 'Subject',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Время',
 					value: 'Time',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Дни обучения',
-					value: 'WeekDays'
+					value: 'WeekDays',
 				},
 				{
 					text: 'Дата Урока',
-					value: 'LessonDate'
+					value: 'LessonDate',
 				},
 				{
 					text: 'Дата Сабмита',
-					value: 'SubmitDay'
+					value: 'SubmitDay',
 				},
 				{
 					text: 'Время Сабмита',
-					value: 'SubmitTime'
+					value: 'SubmitTime',
 				},
 				{
 					text: 'Преподаватель',
 					value: 'FullName',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Кабинет',
 					value: 'Room',
-					filterable: true
+					filterable: true,
 				},
 				{
 					text: 'Уровень среза',
 					value: 'LevelTest',
-					filterable: true
+					filterable: true,
 				},
 				{	
 					text: 'Айбаксы',
-					value: 'Aibucks'
+					value: 'Aibucks',
+				},
+				{	
+					text: 'Тема Урока',
+					value: 'Topic',
 				},
 				{	
 					text: 'Заменяемый Препод',
-					value: 'SubFullName'
+					value: 'SubFullName',
 				},
 
 				{	
 					text: 'Кол. Учеников',
-					value: 'Passed'
+					value: 'Passed',
 				},
 				{
 					text: 'Общ. Кол. Учеников',
-					value: 'All'
+					value: 'All',
+				},
+				{
+					text: 'Опоздание (мин.)',
+					value: 'Fine',
 				},
 				{
 					text: '',
-					value: 'data-table-expand'
+					value: 'data-table-expand',
 				}
 			],
 			filters: {
@@ -160,38 +176,45 @@ export default {
 				{
 					text: 'ID',
 					value: 'ClientId',
-					sortable: false
+					sortable: false,
+					divider: true,
 
 				},
 				{
 					text: 'ФИО студента',
 					value: 'FullName',
-					sortable: false
+					sortable: false,
+					divider: true,
 				},
 				{
 					text: 'Присутвовал',
 					value: 'Pass',
-					sortable: false
+					sortable: false,
+					divider: true,
 				},
 				{
 					text: 'Д.з',
 					value: 'homework',
-					sortable: false
+					sortable: false,
+					divider: true,
 				},
 				{
 					text: 'Срез',
 					value: 'test',
-					sortable: false
+					sortable: false,
+					divider: true,
 				},
 				{
 					text: 'Активность',
 					value: 'lesson',
-					sortable: false
+					sortable: false,
+					divider: true,
 				},
 				{
 					text: 'Комментарии',
 					value: 'Comment',
-					sortable: false
+					sortable: false,
+					divider: true
 				},
 			],
 			expanded: [],
@@ -224,7 +247,7 @@ export default {
 		}
 	},
 	async mounted(){
-		await this.$store.dispatch('GetRegisterToAdmin',{date: new Date().toISOString().substr(0, 10)});
+		await this.$store.dispatch('GetRegisterToAdmin',{dateFrom: new Date().toISOString().substr(0, 10),dateTo: new Date().toISOString().substr(0, 10)});
 	},
 	methods:{
 		columnValueList(val) {
@@ -244,6 +267,9 @@ export default {
 					this.$router.push('/');
 				}
 			}
+		},
+		addFine(item){
+			this.$store.dispatch('UpdateRegiterFine',item);
 		}
 	}
 }

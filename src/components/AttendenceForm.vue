@@ -2,16 +2,13 @@
 	<v-container>
 		<v-row class="d-flex flex-row primary" align="center">
 			<v-col>
-				<router-link class="pl-4 orange--text text-decoration-underline" :to="`/teacher/${currentTeacher.Id}`" v-text="'Изменить'"><v-icon color="#fbab17">mdi-chevron-left</v-icon></router-link>
+				<router-link class=" orange--text text-decoration-none" :to="`/teacher/${currentTeacher.Id}`" v-text="'Изменить группу'"><v-icon color="#fbab17">mdi-chevron-left</v-icon></router-link>
 			</v-col>
 			<v-spacer></v-spacer>
-			<v-col>
-				<InfoComment />
-			</v-col>
 		</v-row>
 		<v-divider></v-divider>
 		<v-row align="center">		
-			<v-col cols = "6" lg="3" class="currentTeacher primary">
+			<v-col cols = "6" lg="6" class="currentTeacher primary">
 				<v-list class="primary">
 					<v-subheader class="px-0 font-weight-bold grey--text text--darken-2">Тренер</v-subheader>
 					<v-list-item inactive class="teacher-rounded">
@@ -22,7 +19,7 @@
 					</v-list-item>
 				</v-list>
 			</v-col>
-			<v-col v-if="currentGroup.change" cols = "6" lg="3" class="currentTeacher primary">
+			<v-col v-if="currentGroup.change" cols = "6" lg="6" class="currentTeacher primary">
 				<v-list class="primary">
 					<v-subheader class="px-0 font-weight-bold  grey--text text--darken-2">Заменяю</v-subheader>
 					<v-list-item inactive class="teacher-rounded">
@@ -94,7 +91,7 @@
 						<v-list-item inactive>
 							<v-col cols="9" class="pa-0">
 							<v-list-item-content>
-								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень среза</v-list-item-title>
+								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень группы</v-list-item-title>
 							</v-list-item-content>
 							</v-col>
 							<v-col cols="3" class="pa-0">
@@ -131,7 +128,7 @@
 							</v-list-item-content>
 							</v-col>
 						</v-list-item>
-					<!--	<v-list-item inactive v-if="currentGroup.symbol == 'E' && (currentGroup.klass == '5' || currentGroup.klass == '7' || currentGroup.klass == '6' || currentGroup.klass == '4')">
+						<v-list-item inactive v-if="currentGroup.symbol == 'E' && (currentGroup.klass == '5' || currentGroup.klass == '7' || currentGroup.klass == '6' || currentGroup.klass == '4')">
 							<v-col cols="9" class="pa-0">
 							<v-list-item-content>
 								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Уровень</v-list-item-title>
@@ -153,27 +150,70 @@
 							</v-list-item-content>
 							</v-col>
 						</v-list-item>
-						<v-list-item inactive v-if="currentGroup.klass == '5' || currentGroup.klass == '7' || currentGroup.klass == '6' || currentGroup.klass == '4'">
+						<v-list-item class="py-2" inactive v-if="currentGroup.klass == '5' || currentGroup.klass == '7' || currentGroup.klass == '6' || currentGroup.klass == '4'">
 							<v-col cols="9" class="pa-0">
-							<v-list-item-content>
-								<v-list-item-title class="font-weight-bold grey--text text--darken-2">Тема</v-list-item-title>
-							</v-list-item-content>
+								<v-list-item-content>
+									<v-list-item-title class="font-weight-bold grey--text text--darken-2">Тема</v-list-item-title>
+								</v-list-item-content>
 							</v-col>
-							<v-col cols="3" class="pa-0">
-							<v-list-item-content>
-								<v-select
-									v-model="topic"
-									:items="topics"
-									item-text="Name"
-									color="#fbab17"
-									return-object
-									flat dense
-									:rules="[requiredObject('Тема')]" required>
+							<v-col v-if="isMobile" cols="3" class="pa-0">
+								<v-dialog
+									ref="topicMenu"
+									v-model="topicModal"
+									width="290px"
+								>
+									<template v-slot:activator="{ on, attrs }">
+										<v-text-field
+											v-model="topicName"
+											placeholder="Темы"
+											color="#fbab17"
+											flat dense
+											v-bind="attrs"
+											v-on="on"
+										></v-text-field>
+									</template>
+									<v-card
+										class="mx-auto"
+										max-width="300"
+										tile
 									>
-								</v-select>
-							</v-list-item-content>
+										<v-list dense>
+											<v-subheader>
+												<v-list-item inactive>
+													<v-list-item-content>
+														<v-list-item-title class="grey--text text--darken-3 font-weight-bold text-subtitle-1">Темы</v-list-item-title>
+													</v-list-item-content>
+													<v-list-item-action>
+														<v-icon @click="closeThemeModal" color="#fbab17">mdi-close-thick</v-icon>
+													</v-list-item-action>
+												</v-list-item>
+											</v-subheader>
+											<v-list-item-group>
+												<v-list-item v-for="topic in topics" :key="topic.Id" @click="SetTopic(topic)">
+													<v-list-item-content>
+														<v-list-item-title >{{topic.Name}}</v-list-item-title>
+													</v-list-item-content>
+												</v-list-item>
+											</v-list-item-group>
+										</v-list>
+									</v-card>
+								</v-dialog>
 							</v-col>
-						</v-list-item>-->
+							<v-col v-else cols="3" class="pa-0">
+								<v-list-item-content>
+									<v-select
+										v-model="topic"
+										:items="topics"
+										item-text="Name"
+										color="#fbab17"
+										return-object
+										flat dense
+										:rules="[requiredObject('Тема')]" required>
+										>
+									</v-select>
+								</v-list-item-content>
+							</v-col>
+						</v-list-item>
 					</v-list-item-group>
 					</v-list>
 				</v-form>
@@ -211,7 +251,7 @@
 								<v-switch v-model="foskres" class="mt-5" color="#fbab17"></v-switch>
 							</v-toolbar>
 							<v-toolbar flat>
-								<v-toolbar-title>Кол. хар.</v-toolbar-title>
+								<v-toolbar-title>Количественные характеристики</v-toolbar-title>
 								<v-spacer></v-spacer>
 								<v-switch v-model="kolhar" class="mt-5" color="#fbab17"></v-switch>
 							</v-toolbar>
@@ -305,7 +345,7 @@
 							<v-switch v-model="foskres" class="mt-5" color="#fbab17"></v-switch>
 					</v-toolbar>
 					<v-toolbar flat>
-						<v-toolbar-title>Колличественные характеристики</v-toolbar-title>
+						<v-toolbar-title>Кол. хар.</v-toolbar-title>
 						<v-spacer></v-spacer>
 						<v-switch v-model="kolhar" class="mt-5" color="#fbab17"></v-switch>
 					</v-toolbar>
@@ -374,19 +414,38 @@
 										</template>
 									</v-list-item>
 									<v-list-item
+										v-show="student.attendence && currentGroup.klass == '6'"
+										:key="`iswatch-${student.clientid}`"
+										:value="student.attendence"
+										inactive
+									>
+										<template v-slot:default="{ active }">
+											<v-list-item-content>
+												<v-list-item-title class="grey--text text--darken-3">Смотрел разбор</v-list-item-title>
+											</v-list-item-content>
+											<v-list-item-action>
+												<v-checkbox
+													v-model="student.iswatched"
+													:input-value="active"
+													color="#fbab17"
+												></v-checkbox>
+											</v-list-item-action>
+										</template>
+									</v-list-item>
+									<v-list-item
 										v-show="student.attendence && kolhar"
 										:key="`kolhar-${student.clientid}`"
 										:value="student.homework"
 										class="pr-0"
 										inactive>
 										<v-row class="align-center">
-											<v-col cols='7' class="py-0">
+											<v-col cols='9' class="py-0">
 												<v-list-item-content>
 													<v-list-item-title class="grey--text text--darken-3">Колличественные характеристики</v-list-item-title>
 												</v-list-item-content>
 											</v-col>
-											<v-col cols='3' class="pa-0">
-												<v-list-item-action>
+											<v-col cols='3' class="py-0">
+												<v-list-item-action class="mr-2">
 													<v-text-field 
 														v-model="student.kolhar"
 														type="number" 
@@ -412,7 +471,7 @@
 												</v-list-item-content>
 											</v-col>
 											<v-col cols='3' class="pa-0">
-												<v-list-item-action>
+												<v-list-item-action class="mr-2">
 													<v-text-field 
 														v-model="student.foskres"
 														type="number" 
@@ -438,7 +497,7 @@
 												</v-list-item-content>
 											</v-col>
 											<v-col cols='5' class="pa-0">
-												<v-list-item-action>
+												<v-list-item-action class="mr-7">
 													<v-select
 														v-model="student.homework"
 														:items="homeworks"
@@ -461,13 +520,13 @@
 										inactive
 									>
 										<v-row class="align-center">
-											<v-col cols='7' class="py-0">
+											<v-col cols='5' class="py-0">
 												<v-list-item-content>
 													<v-list-item-title class="grey--text text--darken-3">Срез</v-list-item-title>
 												</v-list-item-content>
 											</v-col>
-											<v-col cols='5' class="pa-0">
-												<v-list-item-action>
+											<v-col cols='7' class="pa-0">
+												<v-list-item-action class="mr-7">
 													<v-select
 														v-model="student.test"
 														:items="tests"
@@ -497,7 +556,7 @@
 											</v-col>
 											<v-spacer></v-spacer>
 											<v-col cols='3' class="pa-0">
-												<v-list-item-action>
+												<v-list-item-action class="mr-2">
 													<v-text-field 
 														v-model="student.lesson"
 														type="number" 
@@ -517,29 +576,52 @@
 										class="pr-0"
 										inactive
 									>
-									<v-row class="align-center">
-										<v-col cols='7' class="py-0">
-											<v-list-item-content>
-												<v-list-item-title class="grey--text text--darken-3">Комментарии</v-list-item-title>
-											</v-list-item-content>
-										</v-col>
-										<v-col cols='5' class="pa-0">
-											<v-list-item-action>
-												<v-select
-													v-model="student.comment"
-													:items="comments"
-													item-text="value"
-													item-value="text"
-													color="#fbab17"
-													item-color='#fbab17'
-													clearable
-													placeholder="Комментарии"
-													multiple>
-												</v-select>
-											</v-list-item-action>
-										</v-col>
-									</v-row>
-								</v-list-item>
+										<v-row class="align-center">
+											<v-col cols='7' class="py-0">
+												<v-list-item-content>
+													<v-list-item-title class="grey--text text--darken-3">Комментарии</v-list-item-title>
+												</v-list-item-content>
+											</v-col>
+											<v-col cols='5' class="pa-0">
+												<v-list-item-action>
+													<v-select
+														v-model="student.comment"
+														:items="comments"
+														item-text="value"
+														item-value="text"
+														color="#fbab17"
+														item-color='#fbab17'
+														clearable
+														placeholder="Комментарии"
+														multiple>
+													</v-select>
+												</v-list-item-action>
+											</v-col>
+										</v-row>
+									</v-list-item>
+									<v-divider v-if="student.mentor"></v-divider>
+									<v-list-item
+										v-if="student.mentor"
+										v-show="student.attendence"
+										:key="`mentor-${student.clientid}`"
+										:value="student.comment"
+										class="pr-0"
+										inactive
+									>
+											<v-col cols='10' class="py-0">
+												<v-list-item-content>
+													<v-list-item-title class="grey--text text--darken-3 font-weight-bold">Ответственный</v-list-item-title>
+													<v-list-item-title class="grey--text text--darken-3">{{student.mentor}}</v-list-item-title>
+												</v-list-item-content>
+											</v-col>
+											<v-col cols='1' class="pa-0">
+												<v-list-item-action>
+													<v-btn class="btntel" large icon :href="`tel:${student.tel}`">
+														<v-icon  class="iconphone" >mdi-phone</v-icon>
+													</v-btn>
+												</v-list-item-action>
+											</v-col>
+									</v-list-item>
 							</v-list-item-group>
 						</v-list>
 					</v-card>
@@ -584,7 +666,6 @@
 			</v-col>
 		</v-row>
 		<v-speed-dial
-			class="mr-1"
 			bottom
 			right
 			fixed
@@ -593,13 +674,27 @@
 				<AddStudent/>
 			</template>
 		</v-speed-dial>
+		<v-speed-dial
+			class="ml-1"
+			bottom
+			left
+			fixed
+		>
+			<template v-slot:activator>
+				<InfoComment />
+			</template>
+		</v-speed-dial>
+				
 		<InfoModal :dialog="dialog" :message="messageModal" :path="path"/>
 		<Check :checkdialog ="checkdialog" :code="code"/>
 		<Loading :overlay="overlay"/>
 		<v-snackbar
+			text
+			color="black"
 			v-model="snackbar"
 			:timeout="timeout"
 			top>
+			<v-icon class="shadow-icon pl-2">mdi-email</v-icon>
 			{{snackbarMessage}}
 		</v-snackbar>
 	</v-container>
@@ -640,11 +735,20 @@ export default {
 					text : 'Присутствовал',
 					value : 'attendence',
 				},
+				{
+					text : 'Кол. хар.',
+					value: 'kolhar',
+					sortable: false
+				},
+				{
+					text : 'Тест',
+					value: 'foskres',
+					sortable: false
+				},
 				{ 
 					text : 'Д/з',
 					value: 'homework',
 					sortable: false
-
 				},
 				{ 
 					text : 'Срез',
@@ -683,12 +787,15 @@ export default {
 			overlay: false,
 			engLevel: null,
 			topic: null,
+			topicModal: false,
+			topicMenu: false,
+			topicName: null,
 		/*	homework: {
 				level: null,
 				text: null
 			},*/
 			snackbar:false,
-			timeout: 5000,
+			timeout: 8000,
 			snackbarMessage: null
 		}
 	},
@@ -747,7 +854,9 @@ export default {
 		this.SelectEngLevel();
 
 		if(!localStorage.groupStudents || JSON.parse(localStorage.groupStudents).length == 0){
+			this.overlay = true;
 			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id, date: this.currentGroup.date,teacherId: this.currentTeacher.Id});
+			this.overlay = false;
 			if(response.status == 200){
 				this.SortStudent();
 				this.isLoading = false;
@@ -819,7 +928,7 @@ export default {
 								if(student.aibaks == 0){
 									if(student.homework >3 && student.homework <= 7)
 										student.aibaks+=1;
-									if(student.homework >7 && student.homework <= 10)
+									else if(student.homework >7 && student.homework <= 10)
 										student.aibaks+=2;
 									if(student.lesson > 50 && student.lesson <= 100)
 										student.aibaks+=1;
@@ -827,7 +936,6 @@ export default {
 								total+=student.aibaks;
 							}
 						});
-						console.log(total);
 						this.$store.dispatch('SetExtraFieldsGroup',{params: this.extraparams});
 						this.overlay = true;
 						var response = await this.$store.dispatch('SetAttendence',{group: this.currentGroup, students: this.groupStudents, teacherId: this.$store.state.currentTeacher.Id, teacherName: this.$store.state.currentTeacher.LastName + ' ' + this.$store.state.currentTeacher.FirstName,Aibucks: total,topic: this.topic, homework: this.homework,foskres: this.foskres, kolhar: this.kolhar});
@@ -901,6 +1009,14 @@ export default {
 		SelectEngLevel(){
 			var level = this.engLevel ? this.engLevel.Id: null;
 			this.$store.dispatch('GetTopics',{klass: this.currentGroup.klass,branch: this.currentGroup.branch,subject: this.currentGroup.subject, level: level});
+		},
+		SetTopic(topic){
+			this.topic = topic;
+			this.topicName = topic.Name;
+			this.topicModal = false;
+		},
+		closeThemeModal(){
+			this.topicModal = false;
 		}
 	},
 	watch:{
@@ -946,5 +1062,22 @@ export default {
 	.chis{
 		border: solid 3px;
 		border-radius: 120px;
+	}
+	
+	.snacbar{
+		background-color: #e0e0e0;
+	}
+
+	.shadow-icon{
+		color: #fabb47 !important;
+	}
+
+	.iconphone{
+		color: #ffffff !important;
+	}
+
+	.btntel{
+		background-color:#5f9255;
+		box-shadow: 0px 5px 5px rgba(196, 197, 197);
 	}
 </style>
