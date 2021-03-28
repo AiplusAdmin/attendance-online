@@ -10,6 +10,13 @@ import Statistic from '@/views/Statistic'
 import AllJournal from '@/views/AllJournal'
 import PersonalTest from '@/views/PersonalTest'
 import AdminBot from '@/views/AdminBot'
+import AdminTeachers from '@/views/admin/AdminTeachers'
+import AdminStudents from '@/views/admin/AdminStudents'
+import AdminTopics from '@/views/admin/AdminTopics'
+import AdminSchools from '@/views/admin/AdminSchools'
+import AdminRooms from '@/views/admin/AdminRooms'
+import AdminSubjects from '@/views/admin/AdminSubjects'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -59,6 +66,36 @@ const routes = [
 	path: '/telegram',
 	name: 'AdminBot',
 	component: AdminBot
+  },
+  {
+	path: '/admin/teachers',
+	name: 'AdminTeachers',
+	component: AdminTeachers
+  },
+  {
+	path: '/admin/students',
+	name: 'AdminStudents',
+	component: AdminStudents
+  },
+  {
+	path: '/admin/topics',
+	name: 'AdminTopics',
+	component: AdminTopics
+  },
+  {
+	path: '/admin/schools',
+	name: 'AdminSchools',
+	component: AdminSchools
+  },
+  {
+	path: '/admin/rooms',
+	name: 'AdminRooms',
+	component: AdminRooms
+  },
+  {
+	path: '/admin/subjects',
+	name: 'AdminSubjects',
+	component: AdminSubjects
   }
 ]
 

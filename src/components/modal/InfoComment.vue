@@ -19,17 +19,25 @@
         </v-card-title>
         <v-card-text>
 			<p><span class="text-h6 font-weight-bold grey--text text--darken-3">Блоки:</span></p>
-			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">A. Поведение.</span><br/>
-			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">B. Учебный процесс.</span><br/>
-			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">C. Домашнее задание.</span><br/>
-			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">E. Психологические характеристики ученика.</span><br/>
-			<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">D. Общее состояние ученика во время урока.</span><br/><br/>
 			
-			<v-divider class="my-4"></v-divider>
-			
-			<p v-for="comment in comments" :key="comment.value">
-				<span class="font-weight-bold grey--text text--darken-3">{{comment.value}}</span> : <span class="grey--text text--darken-2">{{comment.text}}</span>
-			</p> 
+			<div v-if="currentGroup.klass == '0' || currentGroup.klass == '1' || currentGroup.klass == '2' || currentGroup.klass == '3'">
+				<div v-for="(comment,index) in commentsN" :key="index">
+					<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">{{comment.block + '. ' + comment.title}}</span><br/>
+					<v-divider class="my-4"></v-divider>
+					<p v-for="com in comment.comments" :key="com.value">
+						<span class="font-weight-bold grey--text text--darken-3">{{com.value}}</span> : <span class="grey--text text--darken-2">{{com.text}}</span>
+					</p>
+				</div>
+			</div>
+			<div v-else>
+				<div v-for="(comment,index) in comments" :key="index">
+					<span class="text-subtitle-2 font-weight-bold grey--text text--darken-2">{{comment.block + '. ' + comment.title}}</span><br/>
+					<v-divider class="my-4"></v-divider>
+					<p v-for="com in comment.comments" :key="com.value">
+						<span class="font-weight-bold grey--text text--darken-3">{{com.value}}</span> : <span class="grey--text text--darken-2">{{com.text}}</span>
+					</p>
+				</div>
+			</div> 
 		</v-card-text>
         <v-card-actions>
 			<v-btn color="orange darken-1" block text @click="dialog = false">Ок</v-btn>
@@ -48,6 +56,12 @@
 	computed:{
 		comments(){
 			return this.$store.state.comments;
+		},
+		commentsN(){
+			return this.$store.state.commentsN;
+		},
+		currentGroup(){
+			return this.$store.state.currentGroup;
 		}
 	}
   }

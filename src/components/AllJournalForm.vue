@@ -18,24 +18,50 @@
 					:items = "filteredDesserts"
 					item-key="Id"
 					:expanded.sync="expanded"
+					:search="search"
 					@item-expanded="ShowMore"
 					no-data-text = "Нет Записи"
 					show-expand
 					single-expand
 				>
 					<template v-slot:top>
+						<v-toolbar flat>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field
+										v-model="search"
+										append-icon="mdi-magnify"
+										label="Поиск"
+										color="#fbab17"
+										single-line
+										hide-details
+									></v-text-field>
+								</v-col>
+							</v-row>
+						</v-toolbar>
 						<v-row class="align-center justify-space-around px-2">
-							<v-col class="pt-6 pb-0" v-for="header in filterHeaders" :key="header.text">
-								<v-select 
-									rounded outlined flat multiple clearable dense
-									color="#fbab17"
-									:label="header.text"
-									:items="columnValueList(header.value)" 
-									item-color='#fbab17'
-									v-model="filters[header.value]">
-								</v-select>
-							</v-col>
-						</v-row>
+								<v-col class="pt-6 pb-0" v-for="header in filterHeaders" :key="header.text">
+									<v-select v-if="header.value == 'FullName'"
+										rounded outlined flat clearable dense
+										color="#fbab17"
+										:label="header.text"
+										:items="columnValueList(header.value)" 
+										item-color='#fbab17'
+										@change="CalculateDays"
+										@click:clear="Clear"
+										v-model="filters[header.value]">
+									</v-select>
+									<v-select v-else
+										rounded outlined flat multiple clearable dense
+										color="#fbab17"
+										:label="header.text"
+										:items="columnValueList(header.value)" 
+										item-color='#fbab17'
+										@click:clear="Clear"
+										v-model="filters[header.value]">
+									</v-select>
+								</v-col>
+							</v-row>
 					</template>
 					<template v-slot:[`item.Fine`]="{ item }">
 						<v-text-field v-model="item.Fine"
@@ -56,6 +82,50 @@
 						</td>
 					</template>
 				</v-data-table>
+			</v-col>
+		</v-row>
+		<v-row class="white" >
+			<v-col cols="12">
+				<v-list class="pa-0 listnone">
+					<v-subheader class="pa-0 text-subtitle-2 text-uppercase font-weight-bold grey--text text--darken-2">Тренер</v-subheader>
+					<v-list-item dense inactive class="pa-0 teacher-rounded">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="filters.FullName"></v-list-item-title>
+						</v-list-item-content>
+					</v-list-item>
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'90 минут'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{lesson}}</p>
+						</v-list-item-action>
+					</v-list-item>
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'45 минут'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{halflesson}}</p>
+						</v-list-item-action>
+					</v-list-item>
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'60 минут'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{hour}}</p>
+						</v-list-item-action>
+					</v-list-item>
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'Тренера заменяли'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{change}}</p>
+						</v-list-item-action>
+					</v-list-item>
+				</v-list>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -143,6 +213,7 @@ export default {
 				{	
 					text: 'Заменяемый Препод',
 					value: 'SubFullName',
+					filterable: true,
 				},
 
 				{	
@@ -167,10 +238,11 @@ export default {
 				GroupName: [],
 				Subject: [],
 				Time: [],
-				FullName: [],
+				FullName: '',
 				Branch: [],
 				LevelTest: [],
-				Room: []
+				Room: [],
+				SubFullName: [],
 			},
 			expandheaders: [
 				{
@@ -217,10 +289,15 @@ export default {
 					divider: true
 				},
 			],
+			search: '',
 			expanded: [],
 			expandedStudents:[],
 			dateFrom: null,
-			dateTo: null
+			dateTo: null,
+			lesson: 0,
+			halflesson: 0,
+			hour: 0,
+			change: 0 
 		}
 	},
 	computed : {
@@ -252,7 +329,7 @@ export default {
 	methods:{
 		columnValueList(val) {
 			var s = this.adminRegisters.map(d => d[val]);
-			if(val == 'FullName'){
+			if(val == 'FullName' || val == 'SubFullName'){
 				return s.sort();
 			} else {
 				return s;
@@ -270,7 +347,35 @@ export default {
 		},
 		addFine(item){
 			this.$store.dispatch('UpdateRegiterFine',item);
+		},
+		CalculateDays(){
+			var lesson = 0;
+			var halflesson = 0;
+			var hour = 0;
+			var teacher = this.filters.FullName;
+			this.filteredDesserts.map(function(register){
+				var arrTime = register.Time.split('-');
+				var arrStart = arrTime[0].split(':');
+				var arrEnd = arrTime[1].split(':');
+				var time = (arrEnd[0] - arrStart[0])*60 + (arrEnd[1]-arrStart[1]);
+				if(time == 90){
+					lesson= lesson + 1;
+				} else if (time == 60){
+					hour = hour +1;
+				} else {
+					halflesson = halflesson + 1;
+				}
+			});
+			var changeFilter = this.adminRegisters.filter(elem => elem.SubFullName == teacher);
+			this.lesson = lesson;
+			this.halflesson = halflesson;
+			this.hour = hour;
+			this.change = changeFilter.length;
+		},
+		Clear(){
+			this.filteredDesserts = this.adminRegisters;
 		}
+		
 	}
 }
 </script>

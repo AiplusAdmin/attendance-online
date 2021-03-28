@@ -69,140 +69,353 @@ export default new Vuex.Store({
 		],
 	comments:[
 		{
-			value: 'A1',
-			text: 'Регулярно достает телефон, игнорирует требование его убрать.'
+			block: 'A',
+			title: 'Поведение.',
+			comments:[
+				{
+					value: 'A1',
+					text: 'Регулярно достает телефон, игнорирует требование его убрать.'
+				},
+				{
+					value: 'A2',
+					text: 'Ругается в адрес других учеников, использует грубую лексику.'
+				},
+				{
+					value: 'A3',
+					text: 'Мешает учиться, отвлекая других учеников.'
+				},
+				{
+					value: 'A4',
+					text: 'Уходит с урока до его завершения (без разрешения тренера).'
+				},
+				{
+					value: 'A5',
+					text: 'Много разговаривает на посторонние темы.'
+				},
+				{
+					value: 'A6',
+					text: 'Списывает во время теста/среза.'
+				}
+			]
 		},
 		{
-			value: 'A2',
-			text: 'Ругается в адрес других учеников, использует грубую лексику.'
+			block: 'B',
+			title: 'Учебный процесс.',
+			comments: [
+				{
+					value: 'B1',
+					text: 'Хорошо понимает темы, но плохо пишет тест.'
+				},
+				{
+					value: 'B2',
+					text: 'Выполняет все задания молча, не участвует в активном обсуждении.'
+				},
+				{
+					value: 'B3',
+					text: 'В течение урока не работает, ленится.'
+				},
+				{
+					value: 'B4',
+					text: 'Выполняет задания быстрее других учеников (возможно, необходимо поменять группу)'
+				},
+				{
+					value: 'B5',
+					text: 'Отстает от класса по многим темам.'
+				},
+				{
+					value: 'B6',
+					text: 'Опоздал более, чем на 10 минут.'
+				},
+				{
+					value: 'B7',
+					text: 'Проявляет неуважение к тренеру.'
+				},
+				{
+					value: 'B8',
+					text: 'Активно и прилежно работает на уроке.'
+				},
+				{
+					value: 'B9',
+					text: 'Из-за частых пропусков у ученика большие пробелы.'
+				},
+				{
+					value: 'B10',
+					text: 'Невнимательный, часто спешит и совершает ошибки.'
+				}
+			]
 		},
 		{
-			value: 'A3',
-			text: 'Мешает учиться, отвлекая других учеников.'
+			block: 'C',
+			title: 'Домашнее задание.',
+			comments:[
+				{
+					value: 'C1',
+					text: 'Не выполнил д/з.'
+				},
+				{
+					value: 'C2',
+					text: 'Потерял рабочий материал.'
+				},
+				{
+					value: 'C3',
+					text: 'Не записал заданные правила в тетрадь.'
+				},
+				{
+					value: 'C4',
+					text: 'Не выучил формулы (слова, правила).'
+				},
+				{
+					value: 'C5',
+					text: 'Не выполнил домашнее задание из-за высокой нагрузки в школе.'
+				},
+				{
+					value: 'C6',
+					text: 'Регулярно выполняет д/з.'
+				},
+				{
+					value: 'C7',
+					text: 'Списывает д/з (интернет, photomath и тд).'
+				}
+			]
 		},
 		{
-			value: 'A4',
-			text: 'Уходит с урока до его завершения (без разрешения тренера).'
+			block: 'D',
+			title: 'Психологические характеристики ученика.',
+			comments:[
+				{
+					value: 'D1',
+					text: 'Трудно сосредоточить внимание на учебном процессе.'
+				},
+				{
+					value: 'D2',
+					text: 'Быстро забывает о чём идёт речь или что было задано.'
+				},
+				{
+					value: 'D3',
+					text: 'Для выполнения работы ученику требуется более длительное время, чем другим.'
+				},
+				{
+					value: 'D4',
+					text: 'Сильно расстраивается при неудачах и ошибках.'
+				},
+				{
+					value: 'D5',
+					text: 'Отсутствует мотивация к учебе.'
+				},
+				{
+					value: 'D6',
+					text: 'Стесняется отвечать на вопросы, отмалчивается.'
+				},
+				{
+					value: 'D7',
+					text: 'Энергичный, дружелюбный, любознательный.'
+				}
+			]
 		},
 		{
-			value: 'A5',
-			text: 'Много разговаривает на посторонние темы.'
-		},
-		{
-			value: 'A6',
-			text: 'Списывает во время теста/среза.'
-		},
-		{
-			value: 'B1',
-			text: 'Хорошо понимает темы, но плохо пишет тест.'
-		},
-		{
-			value: 'B2',
-			text: 'Выполняет все задания молча, не участвует в активном обсуждении.'
-		},
-		{
-			value: 'B3',
-			text: 'В течение урока не работает, ленится.'
-		},
-		{
-			value: 'B4',
-			text: 'Выполняет задания быстрее других учеников (возможно, необходимо поменять группу)'
-		},
-		{
-			value: 'B5',
-			text: 'Отстает от класса по многим темам.'
-		},
-		{
-			value: 'B6',
-			text: 'Опоздал более, чем на 10 минут.'
-		},
-		{
-			value: 'B7',
-			text: 'Проявляет неуважение к тренеру.'
-		},
-		{
-			value: 'B8',
-			text: 'Активно и прилежно работает на уроке.'
-		},
-		{
-			value: 'B9',
-			text: 'Из-за частых пропусков у ученика большие пробелы.'
-		},
-		{
-			value: 'B10',
-			text: 'Невнимательный, часто спешит и совершает ошибки.'
-		},
-		{
-			value: 'C1',
-			text: 'Не выполнил д/з.'
-		},
-		{
-			value: 'C2',
-			text: 'Потерял рабочий материал.'
-		},
-		{
-			value: 'C3',
-			text: 'Не записал заданные правила в тетрадь.'
-		},
-		{
-			value: 'C4',
-			text: 'Не выучил формулы (слова, правила).'
-		},
-		{
-			value: 'C5',
-			text: 'Не выполнил домашнее задание из-за высокой нагрузки в школе.'
-		},
-		{
-			value: 'C6',
-			text: 'Регулярно выполняет д/з.'
-		},
-		{
-			value: 'C7',
-			text: 'Списывает д/з (интернет, photomath и тд).'
-		},
-		{
-			value: 'D1',
-			text: 'Трудно сосредоточить внимание на учебном процессе.'
-		},
-		{
-			value: 'D2',
-			text: 'Быстро забывает о чём идёт речь или что было задано.'
-		},
-		{
-			value: 'D3',
-			text: 'Для выполнения работы ученику требуется более длительное время, чем другим.'
-		},
-		{
-			value: 'D4',
-			text: 'Сильно расстраивается при неудачах и ошибках.'
-		},
-		{
-			value: 'D5',
-			text: 'Отсутствует мотивация к учебе.'
-		},
-		{
-			value: 'D6',
-			text: 'Стесняется отвечать на вопросы, отмалчивается.'
-		},
-		{
-			value: 'D7',
-			text: 'Энергичный, дружелюбный, любознательный.'
-		},
-		{
-			value: 'E1',
-			text: 'Без настроения и не расположен к учебе.'
-		},
-		{
-			value: 'E2',
-			text: 'Не выспался и на уроке был сонным, не мог сосредоточиться.'
-		},
-		{
-			value: 'E3',
-			text: 'Был в хорошем расположении духа, активным и общительным.'
+			block: 'E',
+			title: 'Общее состояние ученика во время урока.',
+			comments:[
+				{
+					value: 'E1',
+					text: 'Без настроения и не расположен к учебе.'
+				},
+				{
+					value: 'E2',
+					text: 'Не выспался и на уроке был сонным, не мог сосредоточиться.'
+				},
+				{
+					value: 'E3',
+					text: 'Был в хорошем расположении духа, активным и общительным.'
+				}
+			]
 		}
 	],
-	tests : 
-	[
+	commentsN:[
+		{
+			block: 'A',
+			title: 'Поведение.',
+			comments: [
+				{
+					value: 'A1',
+					text: 'Отвлекается на уроках.'
+				},
+				{
+					value: 'A2',
+					text: 'Внимательно слушает учителя.'
+				},
+				{
+					value: 'A3',
+					text: 'Не слышит учителя.'
+				},
+				{
+					value: 'A4',
+					text: 'Не слышит учителя.'
+				},
+				{
+					value: 'A5',
+					text: 'Не настроен на учебу.'
+				},
+				{
+					value: 'A6',
+					text: 'Не Выспался. Засыпает на уроке.'
+				},
+				{
+					value: 'A7',
+					text: 'Отвлекает других учеников.'
+				}
+			]
+		},
+		{
+			block: 'B',
+			title: 'Учебный процесс.',
+			comments: [
+				{
+					value: 'B1',
+					text: 'В течении урока не работает, ленится.'
+				},
+				{
+					value: 'B2',
+					text: 'Проявляет не уважение к тренеру, постоянно спорит.'
+				},
+				{
+					value: 'B3',
+					text: 'Хорошо понимает темы.'
+				},
+				{
+					value: 'B4',
+					text: 'Активно и прилежно работает на уроке.'
+				},
+				{
+					value: 'B5',
+					text: 'Из-за частых пропусков у ученика появились большие пробелы.'
+				},
+				{
+					value: 'B6',
+					text: 'Невнимательный и часто спешит при выполнении заданий.'
+				},
+				{
+					value: 'B7',
+					text: 'Не выполняет задания на уроке. Не хочет писать в тетради.'
+				},
+				{
+					value: 'B8',
+					text: 'Стесняется отвечать на вопросы. Отмалчивается.'
+				},
+				{
+					value: 'B9',
+					text: 'Опоздал более чем на 10 минут.'
+				},
+				{
+					value: 'B10',
+					text: 'Имеется языковой барьер.'
+				},
+				{
+					value: 'B11',
+					text: 'Хорошо развито критическое мышление.'
+				},
+				{
+					value: 'B12',
+					text: 'Хорошо развито критическое мышление.'
+				},
+				{
+					value: 'B13',
+					text: 'Тяжело даются логические задачи.'
+				}
+			]
+		},
+		{
+			block: 'C',
+			title: 'Домашнее задание.',
+			comments: [
+				{
+					value: 'C1',
+					text: 'Систематически не выполняет д/з.'
+				},
+				{
+					value: 'C2',
+					text: 'Забыл д/з дома.'
+				},
+				{
+					value: 'C3',
+					text: 'Регулярно выполняет д/з.'
+				},
+				{
+					value: 'C4',
+					text: 'Не учит слова по казахскому.'
+				},
+				{
+					value: 'C5',
+					text: 'Не учит слова по казахскому.'
+				},
+				{
+					value: 'C6',
+					text: 'Не учит правила и формулы.'
+				}
+			]
+		},
+		{
+			block: 'D',
+			title: 'Общее развитие.',
+			comments: [
+				{
+					value: 'D1',
+					text: 'Хорошая память.'
+				},
+				{
+					value: 'D2',
+					text: 'Хорошо развита речь.'
+				},
+				{
+					value: 'D3',
+					text: 'Не богатый словарный запас.'
+				},
+				{
+					value: 'D4',
+					text: 'Не выговаривает отдельные звуки.'
+				},
+				{
+					value: 'D5',
+					text: 'Плохая память.'
+				},
+				{
+					value: 'D6',
+					text: 'Нет концентрации внимания.'
+				},
+				{
+					value: 'D7',
+					text: 'Хорошая моторика руки.'
+				},
+				{
+					value: 'D8',
+					text: 'Плохая моторика руки.'
+				},
+				{
+					value: 'D9',
+					text: 'Неправильно держит ручку.'
+				}
+			]
+		},
+		{
+			block: 'E',
+			title: 'Рекомендации.',
+			comments: [
+				{
+					value: 'E1',
+					text: 'Уделять больше внимания (времени) чтению.'
+				},
+				{
+					value: 'E2',
+					text: 'Уделять больше внимания (времени) письму.'
+				},
+				{
+					value: 'E3',
+					text: 'Учить правила (формулы, слова).'
+				}
+			]
+		}
+	],
+	tests : [
 			{
 				text:'0',
 				value: 0
@@ -266,9 +479,22 @@ export default new Vuex.Store({
 	newStudents : [{value:null,icon:''}],
 	homeWorkLevels: ['A','B','C'],
 	personalHeaders: [],
-	personalItems: []
+	personalItems: [],
+	adminTable : {
+		Name: 'Преповадатели',
+		Table: 'Teachers',
+		Router: 'teachers'
+	},
+	adminItems: []
 },
   mutations: {
+		SET_ADMIN_TABLE(state,table){
+			state.adminTable = table;
+			window.localStorage.adminTable = JSON.stringify(table);
+		},
+		SET_ADMIN_TABLEITEMS(state,items){
+			state.adminItems = items;
+		},
 		SET_CURRENT_USER(state,user){
 			state.currentUser = user;
 			window.localStorage.currentUser = JSON.stringify(user);
@@ -383,6 +609,7 @@ export default new Vuex.Store({
 			window.localStorage.change = false;
 			window.localStorage.groupStudents = JSON.stringify([]);
 			window.localStorage.currentGroup = JSON.stringify({});
+			window.localStorage.adminTable = JSON.stringify({});
 		},
 		RESET_SUBTEACHER(state){
 			state.subTeacher = {};
@@ -402,6 +629,9 @@ export default new Vuex.Store({
 		}
   },
   actions: {
+	setAdminTable({commit},table){
+		commit('SET_ADMIN_TABLE',table);
+	},
 	changeTimesTo({commit},timeFrom){
 		commit('SET_TIMES_TO',timeFrom);
 	},
@@ -523,7 +753,6 @@ export default new Vuex.Store({
 					return {status: 500};
 				}
 			} else if(response.data.status == 401 || response.data.status == 400){
-				commit('RESET_CURRENT_USER');
 				return {status: response.data.status, text: 'Заполните уровень группы и номер кабинета'};
 			}else if(response.data.status == 410){
 				commit('RESET_GROUP');
@@ -852,6 +1081,59 @@ export default new Vuex.Store({
 	async UpdateRegiterFine({commit},register){
 		try{
 			Api().put(`/registers/${register.Id}`,register);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetTableColumns({commit},params){
+		try{
+			var response = await Api().get(`/${params}`);
+			
+			commit('SET_ADMIN_TABLEITEMS',response.data.data);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async GetExtraTableColumns({commit},params){
+		try{
+			var response = await Api().get(`/${params}`);
+			
+			return response.data.data;
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async AdminEdit({commit},params){
+		try{
+			Api().put(`/${params.router}/${params.item.Id}`,params.item);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async AdminDelete({commit},params){
+		try{
+			Api().delete(`/${params.router}/${params.Id}`);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async AdminCreate({commit},params){
+		try{
+			await Api().post(`/${params.router}`,params.item);
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async AddSutdentsHH({commit}){
+		try{
+			await Api().post('/addstudentexample');
+		}catch(err){
+			commit('RESET_CURRENT_USER');
+		}
+	},
+	async AddTeachersHH({commit}){
+		try{
+			await Api().post('/addteacherexample');
 		}catch(err){
 			commit('RESET_CURRENT_USER');
 		}

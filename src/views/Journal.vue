@@ -1,5 +1,5 @@
 <template>
-	<v-container >
+	<v-container fluid>
 		<v-row class="d-flex justify-space-around align-center">
 			<Header/>
 		</v-row>
@@ -8,8 +8,8 @@
 				<router-link class="orange--text text-decoration-none" :to="`/teacher/${currentTeacher.Id}`">Главная</router-link>
 			</v-col>
 		</v-row>
-		<v-row>
-			<v-col cols="12" lg="12">
+		<v-row class="d-flex justify-center px-7">
+			<v-col cols="12" lg="10">
 				<div class="tab-slider--nav">
 					<ul class="tab-slider--tabs">
 						<li class="tab-slider--trigger active" rel="tab1">Журнал</li>

@@ -88,7 +88,8 @@ export default {
 						this.$router.push({ path: '/statistics'});
 					else if(data.data.roleId == 4)
 						this.$router.push({ path: '/journals'});
-
+					else if(data.data.roleId == 5)
+						this.$router.push({ path: '/admin/teachers'});
 				}else{
 
 					this.click = false;
