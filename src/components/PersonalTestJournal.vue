@@ -29,9 +29,24 @@
 					class="studentsTable elevation-1"
 					:headers="personalHeaders"
 					:items = "filteredDesserts"
+					:search="search"
 					no-data-text = "Нет Записи"
 				>
 					<template v-slot:top>
+						<v-toolbar flat>
+							<v-row>
+								<v-col cols="12">
+									<v-text-field
+										v-model="search"
+										append-icon="mdi-magnify"
+										label="Поиск"
+										color="#fbab17"
+										single-line
+										hide-details
+									></v-text-field>
+								</v-col>
+							</v-row>
+						</v-toolbar>
 						<v-row class="align-center justify-space-around px-2">
 							<v-col class="pt-6 pb-0" v-for="header in filterHeaders" :key="header.text">
 								<v-select 
@@ -64,6 +79,7 @@ export default {
 		return{
 			dateFrom: null,
 			dateTo: null,
+			search: '',
 			filters: {
 				Student: [],
 			}
