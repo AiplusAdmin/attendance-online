@@ -713,7 +713,7 @@ export default new Vuex.Store({
 	},
 	async GetStudents({commit}, params){
 		try{
-			var response = await Api().post('/groupstudents', params);
+			var response = await Api().post('/groupstudents', {group: params.group,teacherId: params.teacherId});
 			
 			if(response.data.status == 200)
 				commit('SET_GROUP_STUDENTS',response.data.data);

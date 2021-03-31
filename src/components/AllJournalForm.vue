@@ -42,7 +42,7 @@
 						<v-row class="align-center justify-space-around px-2">
 								<v-col class="pt-6 pb-0" v-for="header in filterHeaders" :key="header.text">
 									<v-select v-if="header.value == 'FullName'"
-										rounded outlined flat clearable dense
+										rounded outlined flat multiple clearable dense
 										color="#fbab17"
 										:label="header.text"
 										:items="columnValueList(header.value)" 
@@ -90,7 +90,7 @@
 					<v-subheader class="pa-0 text-subtitle-2 text-uppercase font-weight-bold grey--text text--darken-2">Тренер</v-subheader>
 					<v-list-item dense inactive class="pa-0 teacher-rounded">
 						<v-list-item-content class="pa-0">
-							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="filters.FullName"></v-list-item-title>
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="filters.FullName[0]"></v-list-item-title>
 						</v-list-item-content>
 					</v-list-item>
 					<v-list-item dense inactive class="pa-0">
@@ -238,7 +238,7 @@ export default {
 				GroupName: [],
 				Subject: [],
 				Time: [],
-				FullName: '',
+				FullName: [],
 				Branch: [],
 				LevelTest: [],
 				Room: [],
@@ -352,7 +352,7 @@ export default {
 			var lesson = 0;
 			var halflesson = 0;
 			var hour = 0;
-			var teacher = this.filters.FullName;
+			var teacher = this.filters.FullName[0];
 			this.filteredDesserts.map(function(register){
 				var arrTime = register.Time.split('-');
 				var arrStart = arrTime[0].split(':');

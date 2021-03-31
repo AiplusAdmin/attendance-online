@@ -931,7 +931,8 @@ export default {
 
 		if(!localStorage.groupStudents || JSON.parse(localStorage.groupStudents).length == 0){
 			this.overlay = true;
-			var response = await this.$store.dispatch('GetStudents',{groupId : this.currentGroup.Id,inweek: this.currentGroup.inweek, date: this.currentGroup.date,teacherId: this.currentTeacher.Id});
+			console.log( this.currentGroup);
+			var response = await this.$store.dispatch('GetStudents',{group: this.currentGroup, teacherId: this.currentTeacher.Id});
 			this.overlay = false;
 			if(response.status == 200){
 				this.SortStudent();
