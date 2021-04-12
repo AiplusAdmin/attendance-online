@@ -3,12 +3,12 @@
 		<v-row class="d-flex justify-space-around align-center">
 			<Header/>
 		</v-row>
-		<v-row>
-			<v-col cols="12" lg="2">
+		<v-row :class="isMobile ? 'd-flex justify-center':'d-flex justify-center px-8'">
+			<v-col cols="12" lg="10">
 				<router-link class="orange--text text-decoration-none" :to="`/teacher/${currentTeacher.Id}`">Главная</router-link>
 			</v-col>
 		</v-row>
-		<v-row class="d-flex justify-center px-7">
+		<v-row :class="isMobile?'d-flex justify-center':'d-flex justify-center px-8'">
 			<v-col cols="12" lg="10">
 				<div class="tab-slider--nav">
 					<ul class="tab-slider--tabs">
@@ -45,7 +45,13 @@ export default {
 		PersonalTestJournal,
 		Header
 	},
+	data(){
+		return{
+			isMobile: false
+		}
+	},
 	mounted() {
+		this.onResize();
 		var user = window.localStorage.currentUser?JSON.parse(window.localStorage.currentUser):{};
 		
 		if (user == undefined || (Object.keys(user).length === 0 && user.constructor === Object)) {
@@ -88,6 +94,18 @@ export default {
 		LogOut(){
 			this.$store.dispatch('LogOut');
 			this.$router.push('/');
+		},
+		onResize(){
+			switch (this.$vuetify.breakpoint.name) {
+				case 'xs': 
+					this.isMobile = true;
+					break;
+				case 'sm': 
+					this.isMobile = true;
+					break;
+				default:
+					this.isMobile = false;
+			}
 		}
 	}
 }

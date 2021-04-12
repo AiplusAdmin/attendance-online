@@ -9,7 +9,6 @@ export default () => {
 			Accept: "application/json",
 			"Content-Type": "application/json",
 			Authorization: currentUser && currentUser.accesstoken,
-			Authtoken: currentUser && currentUser.authtoken
 		}
 	});
 }

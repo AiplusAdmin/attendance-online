@@ -1,7 +1,7 @@
 <template>
 	<v-app id="inspire" fluid>
 		<v-system-bar color="#fbab17"></v-system-bar>
-		<v-navigation-drawer v-if="currentUser.roleId==4" app>
+		<v-navigation-drawer v-if="currentUser.roleId==5" app>
 				<v-list dense>
 				<v-list-item v-for="(table,index) in tables" :key="index" link @click="SetAdminTable(table)">
 					<v-list-item-content>
