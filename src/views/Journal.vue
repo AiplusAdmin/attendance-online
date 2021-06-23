@@ -69,7 +69,6 @@ export default {
 			$(".tab-slider--nav li").click(function() {
 				$(".tab-slider--body").hide();
 				var activeTab = $(this).attr("rel");
-				console.log('hey');
 				$("#"+activeTab).fadeIn();
 					if($(this).attr("rel") == "tab2"){
 						$('.tab-slider--tabs').addClass('slide');
@@ -79,7 +78,6 @@ export default {
 				$(".tab-slider--nav li").removeClass("active");
 				$(this).addClass("active");
 			});
-		
 		});
 	},
 	computed: {

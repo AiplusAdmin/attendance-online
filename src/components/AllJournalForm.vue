@@ -224,6 +224,11 @@ export default {
 					value: 'Passed',
 				},
 				{
+					text: 'Онлайн',
+					value: 'Online',
+					filterable: true,
+				},
+				{
 					text: 'Общ. Кол. Учеников',
 					value: 'All',
 				},
@@ -246,6 +251,7 @@ export default {
 				LevelTest: [],
 				Room: [],
 				SubFullName: [],
+				Online: []
 			},
 			expandheaders: [
 				{

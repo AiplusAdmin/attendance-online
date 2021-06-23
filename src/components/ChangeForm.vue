@@ -43,8 +43,8 @@
 						color="#fbab17" 
 						locale="ru" 
 						first-day-of-week="1"
-						no-title full-width
-						:rules="[required('Дата')]" required>
+						no-title full-width readonly
+						:rules="[required('ФИО Препода')]" required>
 					</v-date-picker><br/>
 				</v-col>
 			</v-row>
@@ -224,10 +224,14 @@ export default {
 							this.click = false;
 							this.message = "Обновите либо попробуйте перезайти в систему";
 							this.dialog = true;
+					}
+					if(this.subTeacher.Id == undefined){
+							this.click = false;
+							this.message = "Выберите преподавателя";
+							this.dialog = true;
 					}else{
 						this.overlay = true;
 						var result = await this.$store.dispatch('GetGroup', { params: this.params, subTeacher: this.subTeacher});
-						console.log(result);
 						this.overlay = false;
 						if(result == undefined){
 							this.click = false;
@@ -240,7 +244,7 @@ export default {
 							this.dialog = true;
 						}else if(result.status == 404){
 							this.click = false;
-							this.message = "Данной группы не сущчествует!";
+							this.message = "Данной группы не существует!";
 							this.dialog = true;
 						}else if(result.stats == 410){
 							this.click = false;

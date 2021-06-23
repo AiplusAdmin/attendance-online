@@ -129,14 +129,14 @@
 					</v-dialog>
 				</v-toolbar>
 				<v-row class="align-center justify-space-around px-2">
-					<v-col class="pt-6 pb-0" v-for="header in filterHeaders" :key="header.text">
+					<v-col class="pt-6 pb-0" v-for="headerselect in filterHeaders" :key="headerselect.value">
 						<v-select
 							rounded outlined flat multiple dense
 							color="#fbab17"
-							:label="header.text"
-							:items="columnValueList(header.value)" 
+							:label="headerselect.text"
+							:items="columnValueList(headerselect.value)" 
 							item-color='#fbab17'
-							v-model="filters[header.value]">
+							v-model="filters[headerselect.value]">
 						</v-select>
 					</v-col>
 				</v-row>
@@ -245,7 +245,6 @@ export default {
 		editItem (item) {
 			this.editedIndex = this.adminItems.indexOf(item);
 			this.editedItem =  Object.assign({}, item);
-			console.log(this.editedItem);
 			this.dialog = true;
 		},
 		deleteItem (item) {
@@ -284,16 +283,16 @@ export default {
 				}else{
 					this.editedItem.LevelId = null;
 				}
-				console.log(this.editedItem);
 				this.$store.dispatch('AdminEdit',{router: this.adminTable.Router, item: this.editedItem});
 				Object.assign(this.adminItems[this.editedIndex],this.editedItem);
 				
 			} else {
+				console.log(this.editedItem.Level);
 				this.editedItem.SubjectId = this.editedItem.Subject.Id;
-				this.editedItem.LevelId = this.editedItem.Level.Id;
+				this.editedItem.LevelId = this.editedItem.Level ? this.editedItem.Level.Id: null;
 				this.$store.dispatch('AdminCreate',{router: this.adminTable.Router, item: this.editedItem});
 				this.editedItem.Subject = this.editedItem.Subject.Name;
-				this.editedItem.Level = this.editedItem.Level.Name;
+				this.editedItem.Level = this.editedItem.Level ?this.editedItem.Level.Name: null;
 				this.adminItems.push(this.editedItem);
 			}
 			this.close();

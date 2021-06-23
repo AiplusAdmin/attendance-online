@@ -112,8 +112,6 @@ export default {
 		}
 	},
 	async mounted(){
-		console.log(this.personalHeaders);
-		console.log(this.personalItems);
 
 	},
 	created(){

@@ -29,73 +29,199 @@ const routes = [
     path: '/teacher/:teacherId',
     name: 'About',
 	component: About,
-	props: true
+	props: true,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/change',
     name: 'Change',
 	component: Change,
-	props: true
+	props: true,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/group',
 	name: 'AttendenceList',
-	component: AttendenceList
+	component: AttendenceList,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/journal',
 	name: 'Journal',
-	component: Journal
+	component: Journal,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/statistics',
 	name: 'Statistic',
-	component: Statistic
+	component: Statistic,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/journals',
 	name: 'AllJournal',
-	component: AllJournal
+	component: AllJournal,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/tests',
 	name: 'PersonalTest',
-	component: PersonalTest
+	component: PersonalTest,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/telegram',
 	name: 'AdminBot',
-	component: AdminBot
+	component: AdminBot,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/admin/teachers',
 	name: 'AdminTeachers',
-	component: AdminTeachers
+	component: AdminTeachers,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/admin/students',
 	name: 'AdminStudents',
-	component: AdminStudents
+	component: AdminStudents,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/admin/topics',
 	name: 'AdminTopics',
-	component: AdminTopics
+	component: AdminTopics,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/admin/schools',
 	name: 'AdminSchools',
-	component: AdminSchools
+	component: AdminSchools,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/admin/rooms',
 	name: 'AdminRooms',
-	component: AdminRooms
+	component: AdminRooms,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   },
   {
 	path: '/admin/subjects',
 	name: 'AdminSubjects',
-	component: AdminSubjects
+	component: AdminSubjects,
+	beforeEnter(to,from,next){
+		var currentUser  = JSON.parse(window.localStorage.currentUser);
+		if(currentUser && currentUser.exp > Date.now()){
+			next();
+		} else {
+			window.localStorage.currentUser = JSON.stringify({});
+			next("/");
+		}
+	}
   }
 ]
 

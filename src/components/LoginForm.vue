@@ -70,7 +70,6 @@ export default {
 				
 				this.click = true;
 				var data = await this.$store.dispatch("LogIn", this.login);
-				console.log(data);
 				if(data.status == 200){
 					
 					this.click = false;

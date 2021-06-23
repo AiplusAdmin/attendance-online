@@ -159,7 +159,6 @@ export default {
 	},
 	computed: {
 		personalTest(){
-			console.log(this.$store.state.personalTest);
 			return this.$store.state.personalTest;
 		},
 		currentTeacher(){
@@ -171,14 +170,12 @@ export default {
 	},
 	methods:{
 		async setTestResults(){
-			console.log(this.valid);
 			if(!this.valid)
 				this.$refs.form.validate();
 			else {
 				if(!this.click){
 					this.click = true;
-					var response = await this.$store.dispatch('SetPersonalTests',{students: this.testStudents, teacherId: this.$store.state.currentTeacher.Id,test: this.personalTest});
-					console.log(response);
+					await this.$store.dispatch('SetPersonalTests',{students: this.testStudents, teacherId: this.$store.state.currentTeacher.Id,test: this.personalTest});
 				}
 			}
 		}

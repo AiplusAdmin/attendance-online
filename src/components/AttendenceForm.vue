@@ -3,7 +3,7 @@
 		<v-form v-model="valid"  ref="form">
 			<v-row class="d-flex flex-row primary" align="center">
 				<v-col>
-					<router-link class=" orange--text text-decoration-none" :to="`/teacher/${currentTeacher.Id}`" v-text="'Изменить группу'"><v-icon color="#fbab17">mdi-chevron-left</v-icon></router-link>
+					<router-link class=" orange--text text-decoration-none" :to="`/teacher/${currentTeacher.Id}`" v-text="'Изменить группу'"></router-link>
 				</v-col>
 				<v-spacer></v-spacer>
 			</v-row>
@@ -931,14 +931,12 @@ export default {
 
 		if(!localStorage.groupStudents || JSON.parse(localStorage.groupStudents).length == 0){
 			this.overlay = true;
-			console.log( this.currentGroup);
 			var response = await this.$store.dispatch('GetStudents',{group: this.currentGroup, teacherId: this.currentTeacher.Id});
 			this.overlay = false;
 			if(response.status == 200){
 				this.SortStudent();
 				this.isLoading = false;
 				var res = await this.$store.dispatch('GetLastLessonRoom', { groupId: this.currentGroup.Id});
-				console.log(res);
 				if(res.status == 200){
 					this.extraparams.room = res.data.room;
 					this.extraparams.level = res.data.level;
@@ -956,12 +954,10 @@ export default {
 			this.SortStudent();
 			this.isLoading = false;
 			var r = await this.$store.dispatch('GetLastLessonRoom', { groupId: this.currentGroup.Id});
-			console.log(r);
 			if(r.status == 200){
 				this.extraparams.room = r.data.room;
 				this.extraparams.level = r.data.level;
 			}
-			
 		}
 	},
 	created(){

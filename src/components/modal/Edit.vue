@@ -115,8 +115,6 @@ export default {
 						this.params.newPass = null;
 						this.params.repeatPass = null;
 						this.dialog = false;
-					} else if(response.staus == 500){
-						console.log('Ошибка');
 					}
 				}
 			} else {
@@ -128,7 +126,6 @@ export default {
 		params:{
 			handler: function(newVal){
 				if(newVal.oldPass != null){
-					console.log(newVal);
 					if(newVal.newPass === null){
 						this.errMessageNew = 'Объязательное поле';
 					}else {

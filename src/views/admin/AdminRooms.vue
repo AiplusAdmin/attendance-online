@@ -186,7 +186,6 @@ export default {
 		editItem (item) {
 			this.editedIndex = this.adminItems.indexOf(item);
 			this.editedItem =  Object.assign({}, item);
-			console.log(this.editedItem);
 			this.dialog = true;
 		},
 		deleteItem (item) {

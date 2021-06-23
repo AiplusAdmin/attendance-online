@@ -587,8 +587,6 @@ export default {
 			try{
 				const formData = new FormData();
 				formData.append('files',this.currentFile);
-				console.log(this.currentFile);
-				console.log(formData);
 				await Api().post('/telegram/upload',formData);
 			}catch(err){
 				console.log(err);

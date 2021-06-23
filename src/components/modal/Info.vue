@@ -38,7 +38,6 @@ export default {
 		CloseModal(){
 			this.$parent.$parent.dialog = false;
 			this.dialog = !this.dialog;
-			console.log(this.path);
 			if(this.path)
 				this.$router.push(this.path);
 			

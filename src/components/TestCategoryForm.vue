@@ -94,7 +94,6 @@ export default {
 			this.tests = await this.$store.dispatch('GetTests',{testcategoryid: newValue.Id});
 		},
 		getTests(){
-			console.log('HEY');
 			this.$store.dispatch('GetPersonalTest', { params: this.params});
 			this.$router.push('/tests');
 		}
