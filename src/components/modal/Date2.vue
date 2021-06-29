@@ -96,6 +96,7 @@ export default {
 			this.$parent.$parent.dateFrom = this.dateFrom;
 			this.$parent.$parent.dateTo = this.dateTo;
 			await this.$store.dispatch('GetRegisterByTeacherId',{teacherId:this.$store.state.currentTeacher.Id, dateFrom: this.dateFrom,dateTo: this.dateTo});
+			this.$parent.CalculateDays();
 			this.$refs.menuFrom.save(this.dateFrom);
 			this.menuFrom = false;
 			this.$refs.menuTo.save(this.dateTo);

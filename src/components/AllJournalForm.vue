@@ -362,26 +362,71 @@ export default {
 			var lesson = 0;
 			var halflesson = 0;
 			var hour = 0;
-			var teacher = this.filters.FullName[0];
-			this.teacherSearch = this.filters.FullName[0];
-			this.filteredDesserts.map(function(register){
-				var arrTime = register.Time.split('-');
-				var arrStart = arrTime[0].split(':');
-				var arrEnd = arrTime[1].split(':');
-				var time = (arrEnd[0] - arrStart[0])*60 + (arrEnd[1]-arrStart[1]);
-				if(time == 90){
-					lesson= lesson + 1;
-				} else if (time == 60){
-					hour = hour +1;
-				} else {
-					halflesson = halflesson + 1;
+			var teacher = this.filters.FullName[0] ? this.filters.FullName[0]: null;
+			this.teacherSearch = this.filters.FullName[0] ? this.filters.FullName[0] : null;
+			var hash = new Array();
+			if(teacher){
+				this.filteredDesserts.map(function(register){
+				if(!(register.LessonDate in hash)){
+					hash[register.LessonDate] = new Array();
+					hash[register.LessonDate].push(register.Time);
+					var arrTime = register.Time.split('-');
+					var arrStart = arrTime[0].split(':');
+					var arrEnd = arrTime[1].split(':');
+					var time = (arrEnd[0] - arrStart[0])*60 + (arrEnd[1]-arrStart[1]);
+					
+					if(time == 90){
+						if(register.Passed == 0)
+							lesson= lesson + 0.5;
+						else
+							lesson= lesson + 1; 
+					} else if (time == 60){
+						if(register.Passed == 0)
+							hour = hour +0.5;
+						else 
+							hour = hour +1;
+					} else {
+						if(register.Passed == 0)
+							halflesson = halflesson + 0.5;
+						else
+							halflesson = halflesson + 1;
+					}
+				}else {
+					if(hash[register.LessonDate].includes(register.Time)){
+						console.log(`${register.LessonDate} уже есть урок за ${register.Time}`);
+					} else {
+						hash[register.LessonDate].push(register.Time);
+						arrTime = register.Time.split('-');
+						arrStart = arrTime[0].split(':');
+						arrEnd = arrTime[1].split(':');
+						time = (arrEnd[0] - arrStart[0])*60 + (arrEnd[1]-arrStart[1]);
+						
+						if(time == 90){
+							if(register.Passed == 0)
+								lesson= lesson + 0.5;
+							else
+								lesson= lesson + 1; 
+						} else if (time == 60){
+							if(register.Passed == 0)
+								hour = hour +0.5;
+							else 
+								hour = hour +1;
+						} else {
+							if(register.Passed == 0)
+								halflesson = halflesson + 0.5;
+							else
+								halflesson = halflesson + 1;
+						}
+					}
 				}
 			});
-			var changeFilter = this.adminRegisters.filter(elem => elem.SubFullName == teacher);
-			this.lesson = lesson;
-			this.halflesson = halflesson;
-			this.hour = hour;
-			this.change = changeFilter.length;
+				var changeFilter = this.adminRegisters.filter(elem => elem.SubFullName == teacher);
+				this.lesson = lesson;
+				this.halflesson = halflesson;
+				this.hour = hour;
+				this.change = changeFilter.length;
+			}
+			
 		},
 		CalculateDaysSearch(teacher){
 			this.teacherSearch = teacher;

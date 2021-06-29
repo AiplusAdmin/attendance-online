@@ -56,6 +56,36 @@
 				</v-data-table>
 			</v-col>
 		</v-row>
+		<v-row class="white" >
+			<v-col cols="12">
+				<v-list class="pa-0 listnone">
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'90 минут'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{lesson}}</p>
+						</v-list-item-action>
+					</v-list-item>
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'45 минут'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{halflesson}}</p>
+						</v-list-item-action>
+					</v-list-item>
+					<v-list-item dense inactive class="pa-0">
+						<v-list-item-content class="pa-0">
+							<v-list-item-title class="text-subtitle-1 text-uppercase font-weight-bold grey--text text--darken-4" v-text="'60 минут'"></v-list-item-title>
+						</v-list-item-content>
+						<v-list-item-action>
+							<p>{{hour}}</p>
+						</v-list-item-action>
+					</v-list-item>
+				</v-list>
+			</v-col>
+		</v-row>
 	</v-container>
 </template>
 
@@ -149,7 +179,10 @@ export default {
 			expanded: [],
 			expandedStudents:[],
 			dateFrom: null,
-			dateTo: null
+			dateTo: null,
+			lesson: 0,
+			halflesson: 0,
+			hour: 0,
 		}
 	},
 	computed : {
@@ -165,6 +198,7 @@ export default {
 	},
 	async mounted(){
 		await this.$store.dispatch('GetRegisterByTeacherId',{teacherId:this.currentTeacher.Id, dateFrom: new Date().toISOString().substr(0, 10),dateTo: new Date().toISOString().substr(0, 10)});
+		this.CalculateDays();
 	},
 	created(){
 		if(Object.entries(this.currentTeacher).length === 0)
@@ -189,7 +223,71 @@ export default {
 			var date = new Date(day);
 			date.setDate(date.getDate()+1);
 			return date.toISOString().substr(0, 10)
-		}
+		},
+		CalculateDays(){
+			var lesson = 0;
+			var halflesson = 0;
+			var hour = 0;
+			var hash = new Array();
+			this.currentRegister.map(function(register){
+				if(!(register.LessonDate in hash)){
+					hash[register.LessonDate] = new Array();
+					hash[register.LessonDate].push(register.Time);
+					var arrTime = register.Time.split('-');
+					var arrStart = arrTime[0].split(':');
+					var arrEnd = arrTime[1].split(':');
+					var time = (arrEnd[0] - arrStart[0])*60 + (arrEnd[1]-arrStart[1]);
+					
+					if(time == 90){
+						if(register.Passed == 0)
+							lesson= lesson + 0.5;
+						else
+							lesson= lesson + 1; 
+					} else if (time == 60){
+						if(register.Passed == 0)
+							hour = hour +0.5;
+						else 
+							hour = hour +1;
+					} else {
+						if(register.Passed == 0)
+							halflesson = halflesson + 0.5;
+						else
+							halflesson = halflesson + 1;
+					}
+				}else {
+					if(hash[register.LessonDate].includes(register.Time)){
+						console.log(`${register.LessonDate} уже есть урок за ${register.Time}`);
+					} else {
+						hash[register.LessonDate].push(register.Time);
+						arrTime = register.Time.split('-');
+						arrStart = arrTime[0].split(':');
+						arrEnd = arrTime[1].split(':');
+						time = (arrEnd[0] - arrStart[0])*60 + (arrEnd[1]-arrStart[1]);
+						
+						if(time == 90){
+							if(register.Passed == 0)
+								lesson= lesson + 0.5;
+							else
+								lesson= lesson + 1; 
+						} else if (time == 60){
+							if(register.Passed == 0)
+								hour = hour +0.5;
+							else 
+								hour = hour +1;
+						} else {
+							if(register.Passed == 0)
+								halflesson = halflesson + 0.5;
+							else
+								halflesson = halflesson + 1;
+						}
+					}
+				}
+			});
+			
+			this.lesson = lesson;
+			this.halflesson = halflesson;
+			this.hour = hour;
+		},
 	},
 	watch:{
 
