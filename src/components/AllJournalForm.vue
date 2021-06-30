@@ -74,6 +74,14 @@
 						>
 						</v-text-field>
 					</template>
+					<template v-slot:[`item.Online`]="{ item }">
+						<td v-if="item.Online == true">
+							Онлайн
+						</td>
+						<td v-else>
+							Бумажный
+						</td>
+					</template>
 					<template v-slot:expanded-item="{headers}">
 						<td class="px-0" :colspan="headers.length">
 							<v-data-table
